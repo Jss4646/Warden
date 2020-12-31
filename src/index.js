@@ -7,7 +7,7 @@ import TestingTool from "./pages/testing-tool";
 import ScreenshotTool from "./pages/screenshot-tool";
 import SeoTool from "./pages/seo-tool";
 
-import "./css/normalize.css";
+import "./css/index.css";
 
 const Router = () => (
   <BrowserRouter>
