@@ -1,0 +1,66 @@
+.login-modal-container {
+  display: flex;
+  justify-content: center;
+
+  .login-modal {
+    position: absolute;
+    top: 80px;
+    width: 480px;
+
+    grid-template-rows: 55px auto;
+    box-shadow: 0 9px 28px 8px rgba(0, 0, 0, 0.05), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12);
+
+    .login-modal__header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-content: center;
+
+      padding: 0 24px;
+      border-bottom: $qa-tool-light-grey 1px solid;
+
+      h4 {
+        margin: auto 0;
+        font-size: 16px;
+        line-height: 22px;
+      }
+
+      span {
+        margin: auto 0;
+        font-size: 26px;
+        line-height: 15px;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .login-modal__form {
+      .login-modal__inputs {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        padding: 24px 100px;
+
+        .text-input-container:not(:first-child) {
+          margin-top: 24px;
+        }
+
+        label {
+          display: flex;
+          align-content: flex-end;
+          margin: auto 8px;
+        }
+      }
+
+      .login-modal__submit {
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px 16px;
+
+        border-top: $qa-tool-light-grey 1px solid;
+      }
+    }
+  }
+}

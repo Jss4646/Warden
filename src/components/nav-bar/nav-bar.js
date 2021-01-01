@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import Logo from "./logo";
+import Logo from "../logo";
 import Navigation from "./navigation";
-import NavLoginModal from "../css/components/nav-login-modal";
+import NavLoginModal from "./nav-login-modal";
 
 class NavBar extends Component {
   render() {

@@ -1,0 +1,68 @@
+body * {
+  box-sizing: border-box;
+}
+
+a {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 22px;
+
+  color: $qa-tool-blue-2;
+
+  &:hover {
+    color: $qa-tool-blue;
+  }
+}
+
+input {
+  border: $qa-tool-light-grey-2 1px solid;
+  border-radius: 2px;
+  padding: 6px 12px;
+}
+
+label {
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+p {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.header {
+  font-style: normal;
+}
+
+h1 {
+  @extend .header;
+  font-weight: bold;
+  font-size: 38px;
+  line-height: 46px;
+}
+
+h2 {
+  @extend .header;
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 38px;
+}
+
+h3 {
+  @extend .header;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+h4 {
+  @extend .header;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 28px;
+}
+
