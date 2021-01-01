@@ -13,9 +13,9 @@ const Router = () => (
   <BrowserRouter>
     <Switch>
       <Route exact path="/" component={Home} />
-      <Route exact path="/testing-tool" component={TestingTool} />
+      <Route exact path="/automated-tests" component={TestingTool} />
       <Route exact path="/screenshot-tool" component={ScreenshotTool} />
-      <Route exact path="/seo-tool" component={SeoTool} />
+      <Route exact path="/seo-tools" component={SeoTool} />
     </Switch>
   </BrowserRouter>
 );

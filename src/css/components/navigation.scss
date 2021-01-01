@@ -1,0 +1,28 @@
+.navigation {
+  display: flex;
+  list-style: none;
+  justify-content: stretch;
+  height: 48px;
+
+  .navigation__item {
+    .navigation__link {
+      display: flex;
+      align-items: center;
+      color: $qa-tool-grey;
+      text-decoration: none;
+      height: 100%;
+      padding: 0 20px;
+      border-bottom: $qa-tool-light-grey 1px solid;
+
+      span {
+        margin-right: 10px;
+      }
+    }
+
+    .navigation__link--current-page {
+      color: $qa-tool-blue-2;
+      border-bottom: $qa-tool-blue-2 2px solid;
+    }
+  }
+}
+
