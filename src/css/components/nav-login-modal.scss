@@ -1,6 +1,7 @@
 .login-modal-container {
   display: flex;
   justify-content: center;
+  margin-left: auto;
 
   .login-modal {
     position: absolute;
@@ -47,11 +48,24 @@
           margin-top: 24px;
         }
 
-        label {
-          display: flex;
-          align-content: flex-end;
-          margin: auto 8px;
+        .text-input-container {
+          width: 100%;
+
+          input {
+            width: 100%;
+          }
+
+          label {
+            width: 30%;
+            display: flex;
+            justify-content: flex-end;
+            margin: auto 8px auto 0;
+          }
         }
+      }
+
+      .login-modal__forgot-password {
+        margin-top: 4px;
       }
 
       .login-modal__submit {

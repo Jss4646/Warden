@@ -19,6 +19,15 @@ input {
   border: $qa-tool-light-grey-2 1px solid;
   border-radius: 2px;
   padding: 6px 12px;
+
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 14px;
+
+  &:focus {
+    outline: none;
+    border: $qa-tool-blue 1px solid;
+  }
 }
 
 label {

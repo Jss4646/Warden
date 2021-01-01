@@ -1,16 +1,21 @@
 .button {
+  display: grid;
+  place-content: center;
   text-decoration: none;
   padding: 5px 16px;
   flex-grow: 0;
   border-radius: 2px;
+  cursor: pointer;
 }
 
 .button--primary {
   background-color: $qa-tool-blue-2;
+  border: $qa-tool-blue-2 1px solid;
   color: white;
 
   &:hover {
     background-color: $qa-tool-blue;
+    border: $qa-tool-blue 1px solid;
     color: white;
   }
 }
@@ -21,8 +26,6 @@
   color: $qa-tool-blue-2;
 
   &:hover {
-    background-color: $qa-tool-blue-2;
-    color: white;
-    border: $qa-tool-blue-2 1px solid;
+    background-color: $qa-tool-light-grey;
   }
 }

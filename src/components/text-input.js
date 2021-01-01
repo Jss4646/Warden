@@ -6,12 +6,14 @@ const TextInput = ({
   className = "",
   inputRef,
 }) => {
+  const label = labelText ? <label>{labelText}</label> : null;
+
   return (
     <div
       className={`${className} text-input-container`}
       style={{ display: "flex" }}
     >
-      <label>{labelText}</label>
+      {label}
       <input ref={inputRef} type="text" placeholder={placeHolderText} />
     </div>
   );
