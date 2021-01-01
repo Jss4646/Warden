@@ -3,8 +3,11 @@
   list-style: none;
   justify-content: stretch;
   height: 48px;
+  width: fit-content;
+  flex-shrink: 0;
 
   .navigation__item {
+    flex-shrink: 0;
     .navigation__link {
       display: flex;
       align-items: center;
@@ -14,7 +17,7 @@
       padding: 0 20px;
       border-bottom: $qa-tool-light-grey 1px solid;
 
-      span {
+      span:nth-child(1) {
         margin-right: 10px;
       }
     }
