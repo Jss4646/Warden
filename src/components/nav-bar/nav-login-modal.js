@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import Button from "../button";
 import TextInput from "../text-input";
 
+/**
+ * A login modal opened by a button
+ */
 class NavLoginModal extends Component {
   emailRef = React.createRef();
   passwordRef = React.createRef();
@@ -67,9 +70,11 @@ class NavLoginModal extends Component {
                 className="login_modal__password"
                 inputRef={this.passwordRef}
               />
+              {/* eslint-disable */}
               <a href="#" className="login-modal__forgot-password">
                 forgot password
               </a>
+              {/* eslint-enable */}
             </div>
             <div className="login-modal__submit">
               <Button

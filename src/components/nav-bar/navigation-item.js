@@ -1,5 +1,7 @@
 import React from "react";
-import {
+import PropTypes from "prop-types";
+// eslint-disable-next-line no-unused-vars
+import Icon, {
   CameraOutlined,
   CameraTwoTone,
   HomeOutlined,
@@ -10,7 +12,13 @@ import {
   ToolTwoTone,
 } from "@ant-design/icons";
 
-const NavigationItem = ({ pageName, currentPage }) => {
+/**
+ * A navigation list element
+ *
+ * @param { "home" | "screenshot-tool" | "automated-tests" | "seo-tools" } pageName
+ * @param {boolean} [currentPage]
+ */
+const NavigationItem = ({ pageName, currentPage = false }) => {
   let pageLogo;
   let currentPageClass = currentPage ? "navigation__link--current-page" : "";
 
@@ -54,6 +62,25 @@ const NavigationItem = ({ pageName, currentPage }) => {
   }
 };
 
+NavigationItem.propTypes = {
+  pageName: PropTypes.oneOf([
+    "home",
+    "screenshot-tool",
+    "automated-tests",
+    "seo-tools",
+  ]).isRequired,
+  currentPage: PropTypes.bool,
+};
+
+/**
+ * Creates the jsx for a navigation item
+ *
+ * @param {Icon} logo
+ * @param {String} text
+ * @param {String} currentPageClass
+ * @param {String} link
+ * @returns {JSX.Element}
+ */
 const navigationElement = (logo, text, currentPageClass, link) => {
   return (
     <li className="navigation__item">

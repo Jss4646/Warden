@@ -3,8 +3,11 @@ import Logo from "../logo";
 import Navigation from "./navigation";
 import NavLoginModal from "./nav-login-modal";
 import Button from "../button";
-import SearchBar from "./search-bar";
+import NavSearchBar from "./nav-search-bar";
 
+/**
+ * The navigation bar used for the QA Tools site
+ */
 class NavBar extends Component {
   render() {
     return (
@@ -18,7 +21,7 @@ class NavBar extends Component {
           text="Register"
           className="nav-bar__register-button"
         />
-        <SearchBar />
+        <NavSearchBar />
       </div>
     );
   }

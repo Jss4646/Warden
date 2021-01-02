@@ -1,6 +1,9 @@
 import React from "react";
 import NavigationItem from "./navigation-item";
 
+/**
+ * The navigation bar filled will a list of main pages
+ */
 const Navigation = () => {
   return (
     <ul className="navigation">

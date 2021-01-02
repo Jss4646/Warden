@@ -1,8 +1,18 @@
 import React from "react";
+import PropTypes from "prop-types";
 
+/**
+ * An <a> element styled to look like a button
+ *
+ * @param {String} [link]
+ * @param {String} [className]
+ * @param {String} text
+ * @param {"default" | "primary"} [buttonStyle]
+ * @param {function} [onClickFunction]
+ */
 const Button = ({
-  link,
-  className = "",
+  link = "#",
+  className,
   text,
   buttonStyle = "default",
   onClickFunction,
@@ -33,6 +43,14 @@ const Button = ({
     default:
       return undefined;
   }
+};
+
+Button.propTypes = {
+  link: PropTypes.string,
+  className: PropTypes.string,
+  text: PropTypes.string.isRequired,
+  buttonStyle: PropTypes.oneOf(["default", "primary"]),
+  onClickFunction: PropTypes.func,
 };
 
 export default Button;

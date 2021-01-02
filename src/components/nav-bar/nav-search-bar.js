@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import TextInput from "../text-input";
 import Button from "../button";
 
-class SearchBar extends Component {
+/**
+ * The search bar for the QA Tools site
+ */
+class NavSearchBar extends Component {
   searchBarRef = React.createRef();
 
   render() {
@@ -18,4 +21,4 @@ class SearchBar extends Component {
   }
 }
 
-export default SearchBar;
+export default NavSearchBar;
