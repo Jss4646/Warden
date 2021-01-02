@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { NavLink } from "react-router-dom";
 
 /**
  * An <a> element styled to look like a button
@@ -20,24 +21,24 @@ const Button = ({
   switch (buttonStyle) {
     case "default":
       return (
-        <a
-          href={link}
+        <NavLink
+          to={link}
           className={`button button--default ${className}`}
           onClick={onClickFunction}
         >
           {text}
-        </a>
+        </NavLink>
       );
 
     case "primary":
       return (
-        <a
-          href={link}
+        <NavLink
+          to={link}
           className={`button button--primary ${className}`}
           onClick={onClickFunction}
         >
           {text}
-        </a>
+        </NavLink>
       );
 
     default:

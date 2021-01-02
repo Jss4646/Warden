@@ -1,5 +1,11 @@
 import React from "react";
 import NavigationItem from "./navigation-item";
+import {
+  CameraOutlined,
+  HomeOutlined,
+  SettingOutlined,
+  ToolOutlined,
+} from "@ant-design/icons";
 
 /**
  * The navigation bar filled will a list of main pages
@@ -7,10 +13,22 @@ import NavigationItem from "./navigation-item";
 const Navigation = () => {
   return (
     <ul className="navigation">
-      <NavigationItem currentPage={true} pageName="home" />
-      <NavigationItem currentPage={false} pageName="screenshot-tool" />
-      <NavigationItem currentPage={false} pageName="automated-tests" />
-      <NavigationItem currentPage={false} pageName="seo-tools" />
+      <NavigationItem link="/" logo={<HomeOutlined />} text="home" />
+      <NavigationItem
+        link="screenshot-tool"
+        logo={<CameraOutlined />}
+        text="Screenshot Tool"
+      />
+      <NavigationItem
+        link="automated-tests"
+        logo={<SettingOutlined />}
+        text="Automated Tests"
+      />
+      <NavigationItem
+        link="seo-tools"
+        logo={<ToolOutlined />}
+        text="SEO Tools"
+      />
     </ul>
   );
 };

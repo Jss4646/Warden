@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import bindComponentToState from "../tools/bindComponentToState";
 
 class ScreenshotTool extends Component {
   render() {
@@ -6,4 +7,5 @@ class ScreenshotTool extends Component {
   }
 }
 
+ScreenshotTool = bindComponentToState(ScreenshotTool);
 export default ScreenshotTool;
