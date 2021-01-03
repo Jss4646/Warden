@@ -17,8 +17,8 @@ class ScreenshotTool extends Component {
         <div className="screenshot-tool__left-side">
           <UrlBar {...this.props}>
             <Button type="primary">Take Screenshot</Button>
+            <Button>Screenshot URL List</Button>
             <Button>Crawl URL</Button>
-            <Button>Load URLs</Button>
             <Button>Add URL</Button>
           </UrlBar>
 
