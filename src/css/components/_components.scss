@@ -1,4 +1,5 @@
-@import './nav-bar';
-@import './logo';
-@import './navigation';
-@import './nav-login-modal';
+@import 'nav-bar/nav-bar';
+@import 'global/logo';
+@import 'nav-bar/navigation';
+@import 'nav-bar/nav-login-modal';
+@import 'pages/screenshot-tool';

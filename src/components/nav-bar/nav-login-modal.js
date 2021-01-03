@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button } from "antd";
 import TextInput from "../global/text-input";
-import { Link } from "react-router-dom";
 
 /**
  * A login modal opened by a button
