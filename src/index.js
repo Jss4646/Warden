@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 
 import "./css/index.css";
+import "antd/dist/antd.css";
 
 import NavBar from "./components/nav-bar/nav-bar";
 import Home from "./pages/home";

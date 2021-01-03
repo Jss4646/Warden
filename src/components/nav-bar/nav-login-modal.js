@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import Button from "../button";
-import TextInput from "../text-input";
+import { Button } from "antd";
+import TextInput from "../global/text-input";
+import { Link } from "react-router-dom";
 
 /**
  * A login modal opened by a button
@@ -45,10 +46,11 @@ class NavLoginModal extends Component {
         <Button
           link="#"
           className="login-button"
-          text="login"
-          buttonStyle="primary"
-          onClickFunction={this.toggleModalOpenState}
-        />
+          type="primary"
+          onClick={this.toggleModalOpenState}
+        >
+          Login
+        </Button>
         <div
           className="login-modal"
           style={this.state.isOpen ? { display: "grid" } : { display: "none" }}
@@ -77,12 +79,7 @@ class NavLoginModal extends Component {
               {/* eslint-enable */}
             </div>
             <div className="login-modal__submit">
-              <Button
-                link="#"
-                className="login-modal__submit-button"
-                text="Login"
-                buttonStyle="primary"
-              />
+              <Button type="primary">Login</Button>
             </div>
           </form>
         </div>

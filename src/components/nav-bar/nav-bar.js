@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import Logo from "../logo";
+import Logo from "../global/logo";
 import Navigation from "./navigation";
 import NavLoginModal from "./nav-login-modal";
-import Button from "../button";
-import NavSearchBar from "./nav-search-bar";
+import { Button, Input } from "antd";
 import bindComponentToState from "../../tools/bindComponentToState";
+import { Link } from "react-router-dom";
 
 /**
  * The navigation bar used for the QA Tools site
@@ -20,14 +20,20 @@ class NavBar extends Component {
         <Logo />
         <Navigation />
         <NavLoginModal />
-        <Button
-          buttonStyle="default"
-          link="/register"
-          text="Register"
-          className="nav-bar__register-button"
-          onClickFunction={this.updateUsername}
+        <Link to="register">
+          <Button
+            text="Register"
+            className="nav-bar__register-button"
+            onClick={this.updateUsername}
+          >
+            Register
+          </Button>
+        </Link>
+        <Input.Search
+          placeholder="Screenshots, URL Lists, Test Results"
+          enterButton="Search"
+          className="nav-bar__search-bar"
         />
-        <NavSearchBar />
       </div>
     );
   }
