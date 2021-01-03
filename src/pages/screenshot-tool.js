@@ -22,7 +22,9 @@ class ScreenshotTool extends Component {
             <Button>Add URL</Button>
           </UrlBar>
 
-          {exampleContent(this)}
+          <div className="screenshot-tool__accordion-container">
+            {exampleContent(this)}
+          </div>
         </div>
 
         <div className="screenshot-tool__sidebar">
@@ -56,7 +58,46 @@ const exampleContent = (_this) => {
         className="screenshot-tool__website-panel"
         extra={<Input size="small" placeholder="Search" />}
       >
-        <Collapse bordered={false} className="screenshot-tool__page-accordion">
+        <Collapse
+          defaultActiveKey={["1"]}
+          bordered={false}
+          className="screenshot-tool__page-accordion"
+        >
+          <Panel
+            key={1}
+            header="/"
+            className="screenshot-tool_page-panel"
+            extra={<Input size="small" placeholder="Search" />}
+          >
+            <Screenshot
+              image={placeholderImage.default}
+              device="1080p Desktop"
+              {..._this.props}
+            />
+            <Screenshot
+              image={placeholderImage.default}
+              device="1080p Desktop"
+              {..._this.props}
+            />
+            <Screenshot
+              image={placeholderImage.default}
+              device="1080p Desktop"
+              {..._this.props}
+            />
+          </Panel>
+        </Collapse>
+      </Panel>
+      <Panel
+        key={2}
+        header="example.com"
+        className="screenshot-tool__website-panel"
+        extra={<Input size="small" placeholder="Search" />}
+      >
+        <Collapse
+          defaultActiveKey={["1"]}
+          bordered={false}
+          className="screenshot-tool__page-accordion"
+        >
           <Panel
             key={1}
             header="/"

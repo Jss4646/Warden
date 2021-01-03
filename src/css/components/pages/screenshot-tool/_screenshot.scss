@@ -1,0 +1,33 @@
+.screenshot {
+  width: 436.5px;
+  flex-shrink: 0;
+
+  .ant-card-head {
+    border-bottom: $qa-tool-light-grey-2 1px solid;
+    margin-bottom: 0;
+  }
+
+  .ant-card-cover {
+    img {
+      border-radius: 0;
+    }
+  }
+
+  .ant-card-body {
+    display: none;
+  }
+
+  .ant-card-actions {
+    border-top: $qa-tool-light-grey-2 1px solid;
+  }
+
+  .screenshot__menu {
+    display: none;
+    position: absolute;
+    top: 79px;
+  }
+
+  .screenshot__menu--open {
+    display: block;
+  }
+}

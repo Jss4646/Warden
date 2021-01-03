@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Button, Card } from "antd";
+import { Button, Card, Menu } from "antd";
 
 import {
-  EditOutlined,
+  DeleteOutlined,
   EllipsisOutlined,
-  SettingOutlined,
+  SaveOutlined,
 } from "@ant-design/icons";
 
 class Screenshot extends Component {
@@ -15,16 +15,42 @@ class Screenshot extends Component {
         extra={<Button type="link">view</Button>}
         size="small"
         bordered={false}
-        cover={<img alt="example" src={this.props.image} />}
+        cover={
+          <>
+            <img
+              className="screenshot__image"
+              alt="example"
+              src={this.props.image}
+            />
+            {menu}
+          </>
+        }
         actions={[
-          <SettingOutlined key="setting" />,
-          <EditOutlined key="edit" />,
+          <DeleteOutlined key="setting" />,
+          <SaveOutlined key="edit" />,
           <EllipsisOutlined key="ellipsis" />,
         ]}
-        style={{ width: "500px" }}
+        className="screenshot"
       />
     );
   }
 }
+
+const menu = (
+  <Menu className="screenshot__menu">
+    <Menu.Item>
+      <Button type="link">Delete screenshot</Button>
+    </Menu.Item>
+    <Menu.Item>
+      <Button type="text">Save to my collection</Button>
+    </Menu.Item>
+    <Menu.Item>
+      <Button type="text">Save to computer</Button>
+    </Menu.Item>
+    <Menu.Item>
+      <Button type="text">Show details</Button>
+    </Menu.Item>
+  </Menu>
+);
 
 export default Screenshot;

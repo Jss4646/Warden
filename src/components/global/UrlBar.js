@@ -19,7 +19,7 @@ class UrlBar extends Component {
    * validates a URL using regex
    *
    * @param url
-   * @returns {""|boolean}
+   * @returns {boolean}
    */
   validateURL(url) {
     const pattern = new RegExp(
