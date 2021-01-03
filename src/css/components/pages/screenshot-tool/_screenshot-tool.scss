@@ -1,0 +1,14 @@
+.screenshot-tool {
+  display: grid;
+  grid-template-columns: 70% auto;
+
+  .screenshot-tool__left-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .screenshot-tool__website-accordion {
+    width: 100%;
+  }
+}

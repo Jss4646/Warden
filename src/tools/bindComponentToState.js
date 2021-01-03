@@ -9,6 +9,7 @@ function bindComponentToState(component) {
 function mapStateToProps(state) {
   return {
     currentUser: state.currentUser,
+    appState: state.appState,
   };
 }
 

@@ -1,5 +1,4 @@
 import { createStore } from "redux";
-
 import rootReducer from "./reducers";
 
 const tempUser = {
@@ -28,8 +27,14 @@ const tempUser = {
   ],
 };
 
+const appState = {
+  currentUrl: "",
+  isCurrentUrlValid: false,
+};
+
 const defaultState = {
   currentUser: tempUser,
+  appState,
 };
 
 const store = createStore(rootReducer, defaultState);

@@ -1,8 +1,11 @@
 import { combineReducers } from "redux";
 
-import { routerReducer } from "react-router-redux";
 import currentUser from "./currentUser";
+import appState from "./appState";
 
-const rootReducer = combineReducers({ currentUser, routing: routerReducer });
+const rootReducer = combineReducers({
+  currentUser,
+  appState,
+});
 
 export default rootReducer;

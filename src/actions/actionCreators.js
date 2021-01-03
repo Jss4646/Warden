@@ -10,3 +10,17 @@ export function updateUsername(username) {
     username,
   };
 }
+
+export function updateCurrentUrl(url) {
+  return {
+    type: "UPDATE_CURRENT_URL",
+    newUrl: url,
+  };
+}
+
+export function updateIsCurrentUrlValid(isValid) {
+  return {
+    type: "UPDATE_IS_CURRENT_URL_VALID",
+    isValid,
+  };
+}
