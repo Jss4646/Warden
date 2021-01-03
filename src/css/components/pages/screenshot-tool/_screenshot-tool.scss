@@ -43,4 +43,17 @@
     }
   }
 
+  .screenshot-tool__sidebar {
+    height: 100%;
+
+    .screenshot-tool__sidebar-accordion {
+      height: 100%;
+      overflow: auto;
+      border-radius: 0;
+      border-top: none;
+      border-bottom: none;
+      border-right: none;
+    }
+  }
+
 }
