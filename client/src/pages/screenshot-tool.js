@@ -38,7 +38,15 @@ class ScreenshotTool extends Component {
           <UrlBar {...this.props}>
             <Button type="primary">Take Screenshot</Button>
             <Button>Screenshot URL List</Button>
-            <Button>Crawl URL</Button>
+            <Button
+              onClick={async () => {
+                const res = await fetch("/api/hello");
+                const body = await res.json();
+                console.log(body);
+              }}
+            >
+              Crawl URL
+            </Button>
             <Button onClick={this.addUrlToUrlList}>Add URL</Button>
           </UrlBar>
 
