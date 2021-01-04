@@ -10,7 +10,27 @@ import Devices from "../components/screenshot-tool/Devices";
 
 const { Panel } = Collapse;
 
+/**
+ * The screenshot tools page component
+ */
 class ScreenshotTool extends Component {
+  constructor(props) {
+    super(props);
+
+    /**
+     * Adds a url to the url list
+     */
+    this.addUrlToUrlList = () => {
+      const { appState, addUrlToUrlList } = this.props;
+      const { currentUrl, urls, isCurrentUrlValid } = appState;
+
+      const parsedUrl = isCurrentUrlValid ? new URL(currentUrl).href : false;
+
+      if (isCurrentUrlValid && !urls.includes(parsedUrl))
+        addUrlToUrlList(parsedUrl);
+    };
+  }
+
   render() {
     return (
       <div className="screenshot-tool">
@@ -19,7 +39,7 @@ class ScreenshotTool extends Component {
             <Button type="primary">Take Screenshot</Button>
             <Button>Screenshot URL List</Button>
             <Button>Crawl URL</Button>
-            <Button>Add URL</Button>
+            <Button onClick={this.addUrlToUrlList}>Add URL</Button>
           </UrlBar>
 
           <div className="screenshot-tool__accordion-container">
@@ -33,7 +53,7 @@ class ScreenshotTool extends Component {
             className="screenshot-tool__sidebar-accordion"
           >
             <Panel key={1} header="URL List">
-              <UrlList />
+              <UrlList {...this.props} />
             </Panel>
 
             <Panel key={2} header="Devices">
@@ -71,17 +91,17 @@ const exampleContent = (_this) => {
           >
             <Screenshot
               image={placeholderImage.default}
-              device="1080p Desktop"
+              deviceName="1080p Desktop"
               {..._this.props}
             />
             <Screenshot
               image={placeholderImage.default}
-              device="1080p Desktop"
+              deviceName="1080p Desktop"
               {..._this.props}
             />
             <Screenshot
               image={placeholderImage.default}
-              device="1080p Desktop"
+              deviceName="1080p Desktop"
               {..._this.props}
             />
           </Panel>
@@ -106,17 +126,17 @@ const exampleContent = (_this) => {
           >
             <Screenshot
               image={placeholderImage.default}
-              device="1080p Desktop"
+              deviceName="1080p Desktop"
               {..._this.props}
             />
             <Screenshot
               image={placeholderImage.default}
-              device="1080p Desktop"
+              deviceName="1080p Desktop"
               {..._this.props}
             />
             <Screenshot
               image={placeholderImage.default}
-              device="1080p Desktop"
+              deviceName="1080p Desktop"
               {..._this.props}
             />
           </Panel>

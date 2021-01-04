@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { Button, Card, Menu } from "antd";
 
 import {
@@ -7,11 +8,17 @@ import {
   SaveOutlined,
 } from "@ant-design/icons";
 
+/**
+ * Displays a card containing the screenshot image
+ *
+ * @param {String} deviceName
+ * @param {String} image
+ */
 class Screenshot extends Component {
   render() {
     return (
       <Card
-        title={this.props.device}
+        title={this.props.deviceName}
         extra={<Button type="link">view</Button>}
         size="small"
         bordered={false}
@@ -35,6 +42,11 @@ class Screenshot extends Component {
     );
   }
 }
+
+Screenshot.propTypes = {
+  deviceName: PropTypes.string.isRequired,
+  image: PropTypes.string.isRequired,
+};
 
 const menu = (
   <Menu className="screenshot__menu">

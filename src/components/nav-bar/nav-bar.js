@@ -10,10 +10,6 @@ import { Link } from "react-router-dom";
  * The navigation bar used for the QA Tools site
  */
 class NavBar extends Component {
-  updateUsername = () => {
-    this.props.updateUsername("Josh");
-  };
-
   render() {
     return (
       <div className="nav-bar">
@@ -21,11 +17,7 @@ class NavBar extends Component {
         <Navigation />
         <NavLoginModal />
         <Link to="register">
-          <Button
-            text="Register"
-            className="nav-bar__register-button"
-            onClick={this.updateUsername}
-          >
+          <Button text="Register" className="nav-bar__register-button">
             Register
           </Button>
         </Link>

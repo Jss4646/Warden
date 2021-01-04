@@ -1,22 +1,30 @@
 import React, { Component } from "react";
 import { Input, Progress } from "antd";
 
+/**
+ * The url bar component
+ */
 class UrlBar extends Component {
   constructor(props) {
     super(props);
 
+    /**
+     * Updates isCurrentUrl valid and the currentUrl every time a character is
+     * updated in the url bar
+     *
+     * @param event
+     */
     this.updateUrl = (event) => {
       const url = event.target.value;
 
-      this.props.updateIsCurrentUrlValid(this.validateURL(url));
+      const isCurrentUrlValid = this.validateURL(url);
+      this.props.updateIsCurrentUrlValid(isCurrentUrlValid);
       this.props.updateCurrentUrl(url);
     };
-
-    this.updateUrl = this.updateUrl.bind(this);
   }
 
   /**
-   * validates a URL using regex
+   * Validates a URL using regex
    *
    * @param url
    * @returns {boolean}

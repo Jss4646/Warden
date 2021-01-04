@@ -30,6 +30,7 @@ const tempUser = {
 const appState = {
   currentUrl: "",
   isCurrentUrlValid: false,
+  urls: [],
 };
 
 const defaultState = {

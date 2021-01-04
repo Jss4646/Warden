@@ -10,6 +10,18 @@ export default function appState(state = [], action) {
       newState.isCurrentUrlValid = action.isValid;
       return newState;
 
+    case "ADD_URL_TO_URL_LIST":
+      newState.urls.push(action.url);
+      return newState;
+
+    case "REMOVE_URL_FROM_URL_LIST":
+      newState.urls.splice(action.urlIndex, 1);
+      return newState;
+
+    case "CLEAR_URLS":
+      newState.urls = [];
+      return newState;
+
     default:
       return state;
   }
