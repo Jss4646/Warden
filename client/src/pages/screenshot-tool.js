@@ -46,6 +46,8 @@ class ScreenshotTool extends Component {
           }
         );
         const body = await res.json();
+        const url = new URL(body.url);
+        body.sites.unshift(`${url.origin}/`);
         importUrls(body.sites);
         updateIsLoadingUrls(false);
       }
