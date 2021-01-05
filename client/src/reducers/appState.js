@@ -22,6 +22,14 @@ export default function appState(state = [], action) {
       newState.urls = [];
       return newState;
 
+    case "IMPORT_URLS":
+      newState.urls = action.newUrls;
+      return newState;
+
+    case "UPDATE_IS_LOADING_URLS":
+      newState.isLoadingUrls = action.isCrawling;
+      return newState;
+
     default:
       return state;
   }

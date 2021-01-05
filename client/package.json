@@ -2,7 +2,7 @@
   "name": "qa-hub",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000/",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@testing-library/jest-dom": "^5.11.8",
@@ -15,6 +15,7 @@
     "@types/react-redux": "^7.1.14",
     "@types/redux": "^3.6.0",
     "antd": "^4.9.4",
+    "http-proxy-middleware": "^1.0.6",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -24,7 +25,6 @@
     "react-scripts": "4.0.1",
     "redux": "^4.0.5",
     "sass": "^1.32.0",
-    "typescript": "^4.1.3",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

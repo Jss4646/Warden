@@ -38,3 +38,17 @@ export function clearUrls() {
     type: "CLEAR_URLS",
   };
 }
+
+export function importUrls(urls) {
+  return {
+    type: "IMPORT_URLS",
+    newUrls: urls,
+  };
+}
+
+export function updateIsLoadingUrls(isCrawling) {
+  return {
+    type: "UPDATE_IS_LOADING_URLS",
+    isCrawling,
+  };
+}

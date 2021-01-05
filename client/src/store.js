@@ -31,6 +31,7 @@ const appState = {
   currentUrl: "",
   isCurrentUrlValid: false,
   urls: [],
+  isLoadingUrls: false,
 };
 
 const defaultState = {

@@ -14,8 +14,6 @@ import SeoTools from "./pages/seo-tools";
 
 import store from "./store";
 
-console.log(process.versions.node);
-
 const Router = () => (
   <Provider store={store}>
     <BrowserRouter>

@@ -4,7 +4,7 @@ import { CloseOutlined } from "@ant-design/icons";
 
 class UrlList extends Component {
   render() {
-    const { urls } = this.props.appState;
+    const { urls, isLoadingUrls } = this.props.appState;
 
     return (
       <div className="url-list">
@@ -12,9 +12,9 @@ class UrlList extends Component {
           className="url-list__urls"
           size="small"
           dataSource={urls}
+          loading={isLoadingUrls}
           renderItem={(item) => (
             <List.Item className="url-list__item">
-              <span className="url-list__text">{item}</span>
               <Button
                 size="small"
                 type="text"
@@ -29,6 +29,7 @@ class UrlList extends Component {
               >
                 <CloseOutlined />
               </Button>
+              <span className="url-list__text">{item}</span>
             </List.Item>
           )}
         />

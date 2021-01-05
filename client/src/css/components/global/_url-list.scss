@@ -6,21 +6,19 @@
   .url-list__urls {
     width: 100%;
     border: $qa-tool-light-grey 1px solid;
-    overflow: auto;
+    overflow-y: auto;
     height: 383px;
 
     .url-list__item {
       padding: 0 0 0 8px;
-
-      .url-list__text {
-        display: flex;
-        align-items: center;
-        height: 25px;
-      }
+      display: flex;
+      flex-shrink: 0;
+      width: fit-content;
+      overflow-y: hidden;
+      white-space: nowrap;
 
       button {
-        position: -webkit-sticky; /* Safari */
-        position: sticky;
+        position: absolute;
         right: 0;
         background-color: white;
       }

@@ -29,6 +29,27 @@ class ScreenshotTool extends Component {
       if (isCurrentUrlValid && !urls.includes(parsedUrl))
         addUrlToUrlList(parsedUrl);
     };
+
+    this.crawlUrl = async () => {
+      const { appState, importUrls, updateIsLoadingUrls } = this.props;
+      const { isCurrentUrlValid, currentUrl } = appState;
+      if (isCurrentUrlValid) {
+        updateIsLoadingUrls(true);
+        const res = await fetch(
+          `${process.env.REACT_APP_PROXY}/api/crawl-url`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url: currentUrl }),
+          }
+        );
+        const body = await res.json();
+        importUrls(body.sites);
+        updateIsLoadingUrls(false);
+      }
+    };
   }
 
   render() {
@@ -38,15 +59,7 @@ class ScreenshotTool extends Component {
           <UrlBar {...this.props}>
             <Button type="primary">Take Screenshot</Button>
             <Button>Screenshot URL List</Button>
-            <Button
-              onClick={async () => {
-                const res = await fetch("/api/hello");
-                const body = await res.json();
-                console.log(body);
-              }}
-            >
-              Crawl URL
-            </Button>
+            <Button onClick={this.crawlUrl}>Crawl URL</Button>
             <Button onClick={this.addUrlToUrlList}>Add URL</Button>
           </UrlBar>
 
