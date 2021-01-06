@@ -5,23 +5,19 @@ import { Input, Progress } from "antd";
  * The url bar component
  */
 class UrlBar extends Component {
-  constructor(props) {
-    super(props);
+  /**
+   * Updates isCurrentUrl valid and the currentUrl every time a character is
+   * updated in the url bar
+   *
+   * @param event
+   */
+  updateUrl = (event) => {
+    const url = event.target.value;
 
-    /**
-     * Updates isCurrentUrl valid and the currentUrl every time a character is
-     * updated in the url bar
-     *
-     * @param event
-     */
-    this.updateUrl = (event) => {
-      const url = event.target.value;
-
-      const isCurrentUrlValid = this.validateURL(url);
-      this.props.updateIsCurrentUrlValid(isCurrentUrlValid);
-      this.props.updateCurrentUrl(url);
-    };
-  }
+    const isCurrentUrlValid = this.validateURL(url);
+    this.props.updateIsCurrentUrlValid(isCurrentUrlValid);
+    this.props.updateCurrentUrl(url);
+  };
 
   /**
    * Validates a URL using regex
@@ -29,7 +25,7 @@ class UrlBar extends Component {
    * @param url
    * @returns {boolean}
    */
-  validateURL(url) {
+  validateURL = (url) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" + // protocol
         "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
@@ -40,7 +36,7 @@ class UrlBar extends Component {
       "i"
     ); // fragment locator
     return !!pattern.test(url);
-  }
+  };
 
   render() {
     const { currentUrl, isCurrentUrlValid } = this.props.appState;

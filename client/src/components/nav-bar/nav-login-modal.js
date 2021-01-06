@@ -9,11 +9,7 @@ class NavLoginModal extends Component {
   emailRef = React.createRef();
   passwordRef = React.createRef();
   modalRef = React.createRef();
-
-  constructor(props) {
-    super(props);
-    this.state = { isOpen: false };
-  }
+  state = { isOpen: false };
 
   componentDidMount() {
     document.addEventListener("click", (event) => {

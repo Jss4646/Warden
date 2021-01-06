@@ -1,0 +1,19 @@
+.devices {
+  .devices__tree {
+    border: $qa-tool-light-grey-2 1px solid;
+  }
+
+  .devices__buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    button {
+      margin-top: 16px;
+    }
+
+    button:not(:first-child) {
+      margin-left: 8px;
+    }
+  }
+}

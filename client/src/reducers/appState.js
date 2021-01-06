@@ -1,3 +1,5 @@
+import devices from "../data/devices.json";
+
 export default function appState(state = [], action) {
   let newState = { ...state };
 
@@ -28,6 +30,18 @@ export default function appState(state = [], action) {
 
     case "UPDATE_IS_LOADING_URLS":
       newState.isLoadingUrls = action.isCrawling;
+      return newState;
+
+    case "SET_SELECTED_DEVICES":
+      newState.selectedDevices = action.selectedDevices;
+      return newState;
+
+    case "SELECT_ALL_DEVICES":
+      newState.selectedDevices = Object.keys(devices);
+      return newState;
+
+    case "DESELECT_ALL_DEVICES":
+      newState.selectedDevices = [];
       return newState;
 
     default:

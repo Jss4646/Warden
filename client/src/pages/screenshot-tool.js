@@ -72,7 +72,7 @@ class ScreenshotTool extends Component {
 
         <div className="screenshot-tool__sidebar">
           <Collapse
-            defaultActiveKey={["1", "2"]}
+            defaultActiveKey={["2"]}
             className="screenshot-tool__sidebar-accordion"
           >
             <Panel key={1} header="URL List">
@@ -80,7 +80,7 @@ class ScreenshotTool extends Component {
             </Panel>
 
             <Panel key={2} header="Devices">
-              <Devices />
+              <Devices {...this.props} />
             </Panel>
           </Collapse>
         </div>

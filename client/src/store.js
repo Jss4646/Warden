@@ -32,6 +32,7 @@ const appState = {
   isCurrentUrlValid: false,
   urls: [],
   isLoadingUrls: false,
+  selectedDevices: [],
 };
 
 const defaultState = {
