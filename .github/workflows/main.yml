@@ -9,9 +9,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup client
-        run: npm install -g serve && cd client && npm build 
+        run:  cd client && npm build
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: serve -l 5000 -s build
+          start: npx serve -l 5000 -s ./client/build
           wait-on: 'http://localhost:5000'
