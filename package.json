@@ -6,9 +6,9 @@
   "scripts": {
     "test:client": "cypress run",
     "client": "cd ./client; npm start",
-    "css": "cd ./client; npm run watch:css",
+    "css:watch": "cd ./client; npm run watch:css",
     "server": "nodemon index.js",
-    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" \"npm run css\""
+    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" \"npm run css:watch\""
   },
   "repository": {
     "type": "git",
