@@ -59,10 +59,16 @@ class ScreenshotTool extends Component {
       <div className="screenshot-tool">
         <div className="screenshot-tool__left-side">
           <UrlBar {...this.props}>
-            <Button type="primary">Take Screenshot</Button>
-            <Button>Screenshot URL List</Button>
-            <Button onClick={this.crawlUrl}>Crawl URL</Button>
-            <Button onClick={this.addUrlToUrlList}>Add URL</Button>
+            <Button type="primary" id="take-screenshot-button">
+              Take Screenshot
+            </Button>
+            <Button id="screenshot-url-list-button">Screenshot URL List</Button>
+            <Button onClick={this.crawlUrl} id="crawl-url-button">
+              Crawl URL
+            </Button>
+            <Button onClick={this.addUrlToUrlList} id="add-url-button">
+              Add URL
+            </Button>
           </UrlBar>
 
           <div className="screenshot-tool__accordion-container">
@@ -75,11 +81,11 @@ class ScreenshotTool extends Component {
             defaultActiveKey={["2"]}
             className="screenshot-tool__sidebar-accordion"
           >
-            <Panel key={1} header="URL List">
+            <Panel key={1} header="URL List" id="url-list-dropdown">
               <UrlList {...this.props} />
             </Panel>
 
-            <Panel key={2} header="Devices">
+            <Panel key={2} header="Devices" id="devices-dropdown">
               <Devices {...this.props} />
             </Panel>
           </Collapse>

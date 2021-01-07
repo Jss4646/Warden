@@ -13,6 +13,7 @@ class UrlList extends Component {
           size="small"
           dataSource={urls}
           loading={isLoadingUrls}
+          id="url-list"
           renderItem={(item) => (
             <List.Item className="url-list__item">
               <Button
@@ -34,8 +35,10 @@ class UrlList extends Component {
           )}
         />
         <div className="url-list__buttons">
-          <Button onClick={() => this.props.clearUrls()}>Clear URLs</Button>
-          <Button>Load URLs</Button>
+          <Button onClick={() => this.props.clearUrls()} id="clear-urls-button">
+            Clear URLs
+          </Button>
+          <Button id="load-urls-button">Load URLs</Button>
         </div>
       </div>
     );

@@ -54,6 +54,7 @@ class UrlBar extends Component {
           placeholder="https://example.com"
           onChange={this.updateUrl}
           value={currentUrl}
+          id="url-bar-input"
         />
         <div className="url-bar__buttons">{this.props.children}</div>
         <Progress showInfo={false} className="url-bar__progress" />

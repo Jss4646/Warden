@@ -26,4 +26,8 @@ const Router = () => (
   </Provider>
 );
 
+if (window.Cypress) {
+  window.store = store;
+}
+
 ReactDOM.render(<Router />, document.getElementById("root"));
