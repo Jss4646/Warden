@@ -78,7 +78,7 @@ class ScreenshotTool extends Component {
 
         <div className="screenshot-tool__sidebar">
           <Collapse
-            defaultActiveKey={["2"]}
+            defaultActiveKey={["1"]}
             className="screenshot-tool__sidebar-accordion"
           >
             <Panel key={1} header="URL List" id="url-list-dropdown">
