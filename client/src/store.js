@@ -1,5 +1,6 @@
 import { createStore } from "redux";
 import rootReducer from "./reducers";
+import * as placeholderImage from "./data/placeholder-image.png";
 
 const tempUser = {
   username: "Jack",
@@ -33,7 +34,11 @@ const appState = {
   urls: [],
   isLoadingUrls: false,
   selectedDevices: [],
-  screenshots: {},
+  screenshots: {
+    "example.com": {
+      "/": [{ deviceName: "example device", image: placeholderImage.default }],
+    },
+  },
 };
 
 const defaultState = {

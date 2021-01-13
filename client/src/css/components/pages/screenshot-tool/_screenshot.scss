@@ -9,6 +9,8 @@
 
   .ant-card-cover {
     .screenshot__loading {
+      display: flex;
+      align-items: center;
       height: 100%;
     }
 
