@@ -1,17 +1,16 @@
 import React, { Component } from "react";
 import bindComponentToState from "../tools/bindComponentToState";
-import { Button, Col, Collapse, Input, Spin } from "antd";
+import { Button, Collapse } from "antd";
 import UrlBar from "../components/global/UrlBar";
 import Screenshot from "../components/screenshot-tool/Screenshot";
 
-import * as placeholderImage from "../data/placeholder-image.png";
 import UrlList from "../components/global/UrlList";
 import Devices from "../components/screenshot-tool/Devices";
 import CrawlUrlButton from "../components/screenshot-tool/Crawl-url-button";
 import AddToUrlListButton from "../components/screenshot-tool/Add-to-url-list-button";
 import ScreenshotUrlListButton from "../components/screenshot-tool/Screenshot-url-list-button";
 import TakeScreenshotButton from "../components/screenshot-tool/Take-screenshot-button";
-import { CloseOutlined, CloseSquareOutlined } from "@ant-design/icons";
+import { CloseOutlined } from "@ant-design/icons";
 
 const { Panel } = Collapse;
 
@@ -117,86 +116,6 @@ class ScreenshotTool extends Component {
     );
   }
 }
-
-const exampleContent = (_this) => {
-  return (
-    <Collapse
-      defaultActiveKey={["1"]}
-      className="screenshot-tool__website-accordion"
-    >
-      <Panel
-        key={1}
-        header="example.com"
-        className="screenshot-tool__website-panel"
-        extra={<Input size="small" placeholder="Search" />}
-      >
-        <Collapse
-          defaultActiveKey={["1"]}
-          bordered={false}
-          className="screenshot-tool__page-accordion"
-        >
-          <Panel
-            key={1}
-            header="/"
-            className="screenshot-tool_page-panel"
-            extra={<Input size="small" placeholder="Search" />}
-          >
-            <Screenshot
-              image={placeholderImage.default}
-              deviceName="1080p Desktop"
-              {..._this.props}
-            />
-            <Screenshot
-              image={placeholderImage.default}
-              deviceName="1080p Desktop"
-              {..._this.props}
-            />
-            <Screenshot
-              image={placeholderImage.default}
-              deviceName="1080p Desktop"
-              {..._this.props}
-            />
-          </Panel>
-        </Collapse>
-      </Panel>
-      <Panel
-        key={2}
-        header="example.com"
-        className="screenshot-tool__website-panel"
-        extra={<Input size="small" placeholder="Search" />}
-      >
-        <Collapse
-          defaultActiveKey={["1"]}
-          bordered={false}
-          className="screenshot-tool__page-accordion"
-        >
-          <Panel
-            key={1}
-            header="/"
-            className="screenshot-tool_page-panel"
-            extra={<Input size="small" placeholder="Search" />}
-          >
-            <Screenshot
-              image={placeholderImage.default}
-              deviceName="1080p Desktop"
-              {..._this.props}
-            />
-            <Screenshot
-              image={placeholderImage.default}
-              deviceName="1080p Desktop"
-              {..._this.props}
-            />
-            <Screenshot
-              image={placeholderImage.default}
-              deviceName="1080p Desktop"
-              {..._this.props}
-            />
-          </Panel>
-        </Collapse>
-      </Panel>
-    </Collapse>
-  );
-};
 
 ScreenshotTool = bindComponentToState(ScreenshotTool);
 export default ScreenshotTool;

@@ -7,7 +7,8 @@ const takeScreenshot = (url, props) => {
   const { selectedDevices } = props.appState;
 
   for (const deviceKey of selectedDevices) {
-    const { width, height, userAgent, scale, name } = devices[deviceKey];
+    // const { width, height, userAgent, scale, name } = devices[deviceKey];
+    const { name } = devices[deviceKey];
 
     const screenshotId = uuidv1();
 
@@ -23,19 +24,19 @@ const takeScreenshot = (url, props) => {
 
     addScreenshot(screenshotData);
 
-    const params = {
-      access_key: process.env.REACT_APP_ACCESS_KEY,
-      url: parsedUrl,
-      fresh: true,
-      full_page: true,
-      scroll_page: true,
-      format: "jpeg",
-      quality: "80",
-      user_agent: userAgent,
-      scale_factor: scale,
-      width,
-      height,
-    };
+    // const params = {
+    //   access_key: process.env.REACT_APP_ACCESS_KEY,
+    //   url: parsedUrl,
+    //   fresh: true,
+    //   full_page: true,
+    //   scroll_page: true,
+    //   format: "jpeg",
+    //   quality: "80",
+    //   user_agent: userAgent,
+    //   scale_factor: scale,
+    //   width,
+    //   height,
+    // };
 
     /** Use for actual api call **/
     // const screenshotImage = await this.fetchScreenshot(params);
