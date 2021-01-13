@@ -28,11 +28,12 @@ const tempUser = {
 };
 
 const appState = {
-  currentUrl: "",
-  isCurrentUrlValid: false,
+  currentUrl: "https://pragmatic.agency",
+  isCurrentUrlValid: true,
   urls: [],
   isLoadingUrls: false,
   selectedDevices: [],
+  screenshots: {},
 };
 
 const defaultState = {

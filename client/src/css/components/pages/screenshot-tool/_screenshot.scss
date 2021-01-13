@@ -8,8 +8,18 @@
   }
 
   .ant-card-cover {
-    img {
-      border-radius: 0;
+    .screenshot__loading {
+      height: 100%;
+    }
+
+    .screenshot__image-container {
+      height: 250px;
+      overflow: auto;
+
+      img {
+        width: 100%;
+        border-radius: 0;
+      }
     }
   }
 

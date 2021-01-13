@@ -8,14 +8,28 @@ class Devices extends Component {
 
     this.treeData = [
       {
-        title: "Desktop devices",
-        key: "desktop",
-        children: [],
-      },
-      {
         title: "Mobile devices",
         key: "mobile",
         children: [],
+        checkable: false,
+      },
+      {
+        title: "Desktop devices",
+        key: "desktop",
+        children: [],
+        checkable: false,
+      },
+      {
+        title: "Tablet devices",
+        key: "tablet",
+        children: [],
+        checkable: false,
+      },
+      {
+        title: "Laptop devices",
+        key: "laptop",
+        children: [],
+        checkable: false,
       },
     ];
 
@@ -27,29 +41,38 @@ class Devices extends Component {
 
     for (const [key, device] of entries(devices)) {
       const dataItem = {
-        title: device.deviceName,
+        title: device.name,
         value: key,
         key,
       };
 
-      if (device.deviceType === "mobile") {
-        this.treeData[1].children.push(dataItem);
-      } else if (device.deviceType === "desktop") {
-        this.treeData[0].children.push(dataItem);
-      } else {
-        throw new Error(
-          "The device type should be either 'desktop' or 'mobile'"
-        );
+      switch (device.device) {
+        case "mobile":
+          this.treeData[0].children.push(dataItem);
+          break;
+        case "desktop":
+          this.treeData[1].children.push(dataItem);
+          break;
+        case "tablet":
+          this.treeData[2].children.push(dataItem);
+          break;
+        case "laptop":
+          this.treeData[3].children.push(dataItem);
+          break;
+        default:
+          throw new Error(
+            `The device type (${device.deviceType}) should be either 'desktop' or 'mobile'`
+          );
       }
     }
   };
 
   render() {
     const {
-      setSelectedDevices,
       selectAllDevices,
       deselectAllDevices,
       appState,
+      setSelectedDevices,
     } = this.props;
     const { selectedDevices } = appState;
 
@@ -59,7 +82,7 @@ class Devices extends Component {
           className="devices__tree"
           checkable
           treeData={this.treeData}
-          defaultExpandedKeys={["mobile", "desktop"]}
+          // defaultExpandedKeys={["mobile", "desktop"]}
           onCheck={(checkedKeys, event) => setSelectedDevices(checkedKeys)}
           checkedKeys={selectedDevices}
           selectable={false}

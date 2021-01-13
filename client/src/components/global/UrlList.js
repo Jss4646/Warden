@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button, List } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { bool } from "prop-types";
 
 class UrlList extends Component {
   loadUrlsRef = React.createRef();

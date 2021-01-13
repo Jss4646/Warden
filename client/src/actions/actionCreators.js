@@ -123,3 +123,63 @@ export function deselectAllDevices() {
     type: "DESELECT_ALL_DEVICES",
   };
 }
+
+/**
+ *
+ * @param {Object} screenshot
+ * @returns {{screenshot: Object, type: string}}
+ */
+export function addScreenshot(screenshot) {
+  return {
+    type: "ADD_SCREENSHOT",
+    screenshot,
+  };
+}
+
+/**
+ *
+ * @param {String} screenshotImage
+ * @param {Object} screenshot
+ * @returns {{screenshotImage: String, screenshot: Object}}
+ */
+export function addScreenshotImage(screenshotImage, screenshot) {
+  return {
+    type: "ADD_SCREENSHOT_IMAGE",
+    screenshotImage,
+    screenshot,
+  };
+}
+
+/**
+ *
+ * @param {number} index
+ * @returns {{index: number, type: string}}
+ */
+export function removeScreenshot(index) {
+  return {
+    type: "REMOVE_SCREENSHOT",
+    index,
+  };
+}
+
+/**
+ *
+ * @returns {{type: string}}
+ */
+export function removeAllScreenshots() {
+  return {
+    type: "REMOVE_ALL_SCREENSHOTS",
+  };
+}
+
+/**
+ *
+ * @param {Array} screenshots
+ * @returns {{type: string, screenshots: Array}}
+ */
+export function setScreenshots(screenshots) {
+  return {
+    type: "SET_SCREENSHOTS",
+    screenshots,
+  };
+}

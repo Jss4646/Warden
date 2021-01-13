@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Card, Menu } from "antd";
+import { Button, Card, Menu, Spin } from "antd";
+import * as placeholderImage from "../../data/image.jpeg";
 
 import {
   DeleteOutlined,
@@ -24,11 +25,21 @@ class Screenshot extends Component {
         bordered={false}
         cover={
           <>
-            <img
-              className="screenshot__image"
-              alt="example"
-              src={this.props.image}
-            />
+            <div className="screenshot__image-container">
+              <Spin
+                spinning={this.props.image === ""}
+                wrapperClassName="screenshot__loading"
+              >
+                <img
+                  onError={(event) =>
+                    (event.target.src = placeholderImage.default)
+                  }
+                  className="screenshot__image"
+                  alt="example"
+                  src={this.props.image}
+                />
+              </Spin>
+            </div>
             {menu}
           </>
         }

@@ -2,6 +2,8 @@ import devices from "../data/devices.json";
 
 export default function appState(state = [], action) {
   let newState = { ...state };
+  const { screenshots } = newState;
+  const { screenshot } = action;
 
   switch (action.type) {
     case "UPDATE_CURRENT_URL":
@@ -42,6 +44,38 @@ export default function appState(state = [], action) {
 
     case "DESELECT_ALL_DEVICES":
       newState.selectedDevices = [];
+      return newState;
+
+    case "ADD_SCREENSHOT":
+      const { host, pathname } = screenshot;
+
+      if (screenshots[host]) {
+        if (screenshots[host][pathname]) {
+          screenshots[host][pathname].push(screenshot);
+        } else {
+          screenshots[host][pathname] = [screenshot];
+        }
+      } else {
+        screenshots[host] = {};
+        screenshots[host][pathname] = [screenshot];
+      }
+
+      return newState;
+
+    case "ADD_SCREENSHOT_IMAGE":
+      screenshot.image = action.screenshotImage;
+      return newState;
+
+    case "REMOVE_SCREENSHOT":
+      delete newState.screenshots[action.index];
+      return newState;
+
+    case "SET_SCREENSHOTS":
+      newState.screenshots = action.screenshots;
+      return newState;
+
+    case "REMOVE_ALL_SCREENSHOTS":
+      newState.screenshots = {};
       return newState;
 
     default:
