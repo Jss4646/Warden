@@ -10,7 +10,8 @@ import CrawlUrlButton from "../components/screenshot-tool/Crawl-url-button";
 import AddToUrlListButton from "../components/screenshot-tool/Add-to-url-list-button";
 import ScreenshotUrlListButton from "../components/screenshot-tool/Screenshot-url-list-button";
 import TakeScreenshotButton from "../components/screenshot-tool/Take-screenshot-button";
-import { CloseOutlined } from "@ant-design/icons";
+import ScreenshotBar from "../components/screenshot-tool/screenshot-bar";
+import Sidebar from "../components/global/sidebar";
 
 const { Panel } = Collapse;
 
@@ -18,70 +19,6 @@ const { Panel } = Collapse;
  * The screenshot tools page component
  */
 class ScreenshotTool extends Component {
-  displayScreenshots = () => {
-    const { screenshots } = this.props.appState;
-
-    if (screenshots) {
-      return (
-        <Collapse
-          defaultActiveKey={["1"]}
-          className="screenshot-tool__website-accordion"
-        >
-          {Object.keys(screenshots).map((siteName, i) => {
-            const site = screenshots[siteName];
-            return (
-              <Panel
-                key={i}
-                header={siteName}
-                className="screenshot-tool__website-panel"
-                extra={
-                  <Button size="middle" type="text">
-                    <CloseOutlined />
-                  </Button>
-                }
-              >
-                <Collapse
-                  bordered={false}
-                  className={"screenshot-tool__page-accordion"}
-                >
-                  {Object.keys(site).map((pageName, i) => {
-                    const page = site[pageName];
-
-                    return (
-                      <Panel
-                        key={i}
-                        header={pageName}
-                        className="screenshot-tool_page-panel"
-                        extra={
-                          <Button size="middle" type="text">
-                            <CloseOutlined />
-                          </Button>
-                        }
-                      >
-                        {page.map((screenshot, i) => {
-                          return (
-                            <Screenshot
-                              key={i}
-                              deviceName={screenshot.deviceName}
-                              image={screenshot.image}
-                              {...this.props}
-                            />
-                          );
-                        })}
-                      </Panel>
-                    );
-                  })}
-                </Collapse>
-              </Panel>
-            );
-          })}
-        </Collapse>
-      );
-    } else {
-      return "";
-    }
-  };
-
   render() {
     return (
       <div className="screenshot-tool">
@@ -93,25 +30,17 @@ class ScreenshotTool extends Component {
             <AddToUrlListButton {...this.props} />
           </UrlBar>
 
-          <div className="screenshot-tool__accordion-container">
-            {this.displayScreenshots()}
-          </div>
+          <ScreenshotBar {...this.props} />
         </div>
 
-        <div className="screenshot-tool__sidebar">
-          <Collapse
-            defaultActiveKey={["2"]}
-            className="screenshot-tool__sidebar-accordion"
-          >
-            <Panel key={1} header="URL List" id="url-list-dropdown">
-              <UrlList {...this.props} />
-            </Panel>
-
-            <Panel key={2} header="Devices" id="devices-dropdown">
-              <Devices {...this.props} />
-            </Panel>
-          </Collapse>
-        </div>
+        <Sidebar>
+          <Panel key={1} header="URL List" id="url-list-dropdown">
+            <UrlList {...this.props} />
+          </Panel>
+          <Panel key={2} header="Devices" id="devices-dropdown">
+            <Devices {...this.props} />
+          </Panel>
+        </Sidebar>
       </div>
     );
   }

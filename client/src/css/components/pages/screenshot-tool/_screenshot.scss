@@ -1,6 +1,11 @@
 .screenshot {
+  display: grid;
+  grid-template-rows: 50px 1fr 41px;
+  min-height: 0;
   width: 436.5px;
+  flex-grow: 1;
   flex-shrink: 0;
+  height: 100%;
 
   .ant-card-head {
     border-bottom: $qa-tool-light-grey-2 1px solid;
@@ -8,14 +13,15 @@
   }
 
   .ant-card-cover {
+    min-height: 0;
     .screenshot__loading {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       height: 100%;
     }
 
     .screenshot__image-container {
-      height: 250px;
+      height: 100%;
       overflow: auto;
 
       img {
@@ -31,6 +37,11 @@
 
   .ant-card-actions {
     border-top: $qa-tool-light-grey-2 1px solid;
+
+    .anticon {
+      display: flex;
+      justify-content: center;
+    }
   }
 
   .screenshot__menu {

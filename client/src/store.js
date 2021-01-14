@@ -34,11 +34,7 @@ const appState = {
   urls: [],
   isLoadingUrls: false,
   selectedDevices: [],
-  screenshots: {
-    "example.com": {
-      "/": [{ deviceName: "example device", image: placeholderImage.default }],
-    },
-  },
+  screenshots: {},
 };
 
 const defaultState = {
