@@ -16,59 +16,57 @@ import {
  * @param {String} image
  */
 class Screenshot extends Component {
-  state = {
-    showScreenshot: true,
-  };
-
   removeScreenshot = () => {
-    this.setState({ showScreenshot: false });
+    this.props.removeScreenshot(
+      this.props.screenshot.host,
+      this.props.screenshot.pathname,
+      this.props.index
+    );
   };
 
   render() {
-    if (this.state.showScreenshot) {
-      return (
-        <Card
-          title={this.props.deviceName}
-          extra={<Button type="link">view</Button>}
-          size="small"
-          bordered={false}
-          cover={
-            <>
-              <div className="screenshot__image-container">
-                <Spin
-                  spinning={this.props.image === ""}
-                  wrapperClassName="screenshot__loading"
-                >
-                  <img
-                    onError={(event) =>
-                      (event.target.src = placeholderImage.default)
-                    }
-                    className="screenshot__image"
-                    alt="example"
-                    src={this.props.image}
-                  />
-                </Spin>
-              </div>
-              {menu}
-            </>
-          }
-          actions={[
-            <DeleteOutlined key="setting" onClick={this.removeScreenshot} />,
-            <SaveOutlined key="edit" />,
-            <EllipsisOutlined key="ellipsis" />,
-          ]}
-          className="screenshot"
-        />
-      );
-    } else {
-      return "";
-    }
+    const { deviceName, image } = this.props.screenshot;
+
+    return (
+      <Card
+        title={deviceName}
+        extra={<Button type="link">view</Button>}
+        size="small"
+        bordered={false}
+        cover={
+          <>
+            <div className="screenshot__image-container">
+              <Spin
+                spinning={image === ""}
+                wrapperClassName="screenshot__loading"
+              >
+                <img
+                  onError={(event) =>
+                    (event.target.src = placeholderImage.default)
+                  }
+                  className="screenshot__image"
+                  alt="example"
+                  src={image}
+                />
+              </Spin>
+            </div>
+            {menu}
+          </>
+        }
+        actions={[
+          <DeleteOutlined key="setting" onClick={this.removeScreenshot} />,
+          <SaveOutlined key="edit" />,
+          <EllipsisOutlined key="ellipsis" />,
+        ]}
+        className="screenshot"
+      />
+    );
   }
 }
 
 Screenshot.propTypes = {
-  deviceName: PropTypes.string.isRequired,
-  image: PropTypes.string.isRequired,
+  screenshot: PropTypes.object,
+  index: PropTypes.number,
 };
 
 const menu = (

@@ -155,9 +155,11 @@ export function addScreenshotImage(screenshotImage, screenshot) {
  * @param {number} index
  * @returns {{index: number, type: string}}
  */
-export function removeScreenshot(index) {
+export function removeScreenshot(host, path, index) {
   return {
     type: "REMOVE_SCREENSHOT",
+    host,
+    path,
     index,
   };
 }

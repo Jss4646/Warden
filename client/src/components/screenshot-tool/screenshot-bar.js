@@ -45,8 +45,8 @@ class ScreenshotBar extends Component {
             {screenshots[site][page].map((screenshot, index) => (
               <Screenshot
                 key={index}
-                deviceName={screenshot.deviceName}
-                image={screenshot.image}
+                screenshot={screenshot}
+                index={index}
                 {...this.props}
               />
             ))}

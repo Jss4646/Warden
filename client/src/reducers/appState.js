@@ -67,7 +67,7 @@ export default function appState(state = [], action) {
       return newState;
 
     case "REMOVE_SCREENSHOT":
-      delete newState.screenshots[action.index];
+      newState.screenshots[action.host][action.path].splice(action.index, 1);
       return newState;
 
     case "SET_SCREENSHOTS":

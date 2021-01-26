@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import bindComponentToState from "../tools/bindComponentToState";
-import { Button, Collapse } from "antd";
+import { Collapse } from "antd";
 import UrlBar from "../components/global/UrlBar";
-import Screenshot from "../components/screenshot-tool/Screenshot";
 
 import UrlList from "../components/global/UrlList";
 import Devices from "../components/screenshot-tool/Devices";

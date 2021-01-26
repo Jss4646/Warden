@@ -41,7 +41,7 @@ const appState = {
           image:
             "blob:http://localhost:3000/6a58d95b-8012-4f5d-a529-9c0ac3712e20",
           id: "392e9690-56a1-11eb-8fcb-733de26f9659",
-          host: "pragmatic.agency",
+          host: "example.com",
           pathname: "/",
         },
       ],
