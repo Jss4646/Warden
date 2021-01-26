@@ -15,7 +15,7 @@ class NavLoginModal extends Component {
     document.addEventListener("click", (event) => {
       if (
         event.target !== this.modalRef.current &&
-        !this.modalRef.current.contains(event.target) &&
+        !this.modalRef?.current?.contains(event.target) &&
         this.state.isOpen
       ) {
         this.closeModal();

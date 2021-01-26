@@ -1,6 +1,5 @@
 import { createStore } from "redux";
 import rootReducer from "./reducers";
-import * as placeholderImage from "./data/placeholder-image.png";
 
 const tempUser = {
   username: "Jack",
@@ -33,8 +32,21 @@ const appState = {
   isCurrentUrlValid: true,
   urls: [],
   isLoadingUrls: false,
-  selectedDevices: [],
-  screenshots: {},
+  selectedDevices: ["iphone-5/se"],
+  screenshots: {
+    "example.com": {
+      "/": [
+        {
+          deviceName: "iPhone 5/SE",
+          image:
+            "blob:http://localhost:3000/6a58d95b-8012-4f5d-a529-9c0ac3712e20",
+          id: "392e9690-56a1-11eb-8fcb-733de26f9659",
+          host: "pragmatic.agency",
+          pathname: "/",
+        },
+      ],
+    },
+  },
 };
 
 const defaultState = {
@@ -42,5 +54,9 @@ const defaultState = {
   appState,
 };
 
-const store = createStore(rootReducer, defaultState);
+const store = createStore(
+  rootReducer,
+  defaultState,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 export default store;

@@ -16,41 +16,53 @@ import {
  * @param {String} image
  */
 class Screenshot extends Component {
+  state = {
+    showScreenshot: true,
+  };
+
+  removeScreenshot = () => {
+    this.setState({ showScreenshot: false });
+  };
+
   render() {
-    return (
-      <Card
-        title={this.props.deviceName}
-        extra={<Button type="link">view</Button>}
-        size="small"
-        bordered={false}
-        cover={
-          <>
-            <div className="screenshot__image-container">
-              <Spin
-                spinning={this.props.image === ""}
-                wrapperClassName="screenshot__loading"
-              >
-                <img
-                  onError={(event) =>
-                    (event.target.src = placeholderImage.default)
-                  }
-                  className="screenshot__image"
-                  alt="example"
-                  src={this.props.image}
-                />
-              </Spin>
-            </div>
-            {menu}
-          </>
-        }
-        actions={[
-          <DeleteOutlined key="setting" />,
-          <SaveOutlined key="edit" />,
-          <EllipsisOutlined key="ellipsis" />,
-        ]}
-        className="screenshot"
-      />
-    );
+    if (this.state.showScreenshot) {
+      return (
+        <Card
+          title={this.props.deviceName}
+          extra={<Button type="link">view</Button>}
+          size="small"
+          bordered={false}
+          cover={
+            <>
+              <div className="screenshot__image-container">
+                <Spin
+                  spinning={this.props.image === ""}
+                  wrapperClassName="screenshot__loading"
+                >
+                  <img
+                    onError={(event) =>
+                      (event.target.src = placeholderImage.default)
+                    }
+                    className="screenshot__image"
+                    alt="example"
+                    src={this.props.image}
+                  />
+                </Spin>
+              </div>
+              {menu}
+            </>
+          }
+          actions={[
+            <DeleteOutlined key="setting" onClick={this.removeScreenshot} />,
+            <SaveOutlined key="edit" />,
+            <EllipsisOutlined key="ellipsis" />,
+          ]}
+          className="screenshot"
+        />
+      );
+    } else {
+      return "";
+    }
   }
 }
 

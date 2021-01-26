@@ -2,7 +2,7 @@ import devices from "../data/devices.json";
 import { v1 as uuidv1 } from "uuid";
 import * as placeholderImage from "../data/image.jpeg";
 
-const takeScreenshot = (url, props) => {
+const takeScreenshot = async (url, props) => {
   const { addScreenshot, addScreenshotImage } = props;
   const { selectedDevices } = props.appState;
 
@@ -39,8 +39,9 @@ const takeScreenshot = (url, props) => {
     // };
 
     /** Use for actual api call **/
-    // const screenshotImage = await this.fetchScreenshot(params);
-    // addScreenshotImage(screenshotImage, screenshotData);
+    // fetchScreenshot(params).then((screenshotImage) => {
+    //   addScreenshotImage(screenshotImage, screenshotData);
+    // });
 
     fetch(placeholderImage.default)
       .then((res) => res.arrayBuffer())
@@ -50,6 +51,25 @@ const takeScreenshot = (url, props) => {
         addScreenshotImage(imageUrl, screenshotData);
       });
   }
+};
+
+const fetchScreenshot = async (params) => {
+  console.log("Taking screenshot");
+  const fetchUrl = new URL("https://api.apiflash.com/v1/urltoimage");
+
+  Object.keys(params).forEach((key) =>
+    fetchUrl.searchParams.append(key, params[key])
+  );
+
+  return fetch(fetchUrl.toString())
+    .then((res) => res.arrayBuffer())
+    .then(async (image) => {
+      console.log("Creating image");
+      const imageBlob = new Blob([image], { type: "image/jpeg" });
+
+      return URL.createObjectURL(imageBlob);
+    })
+    .catch(console.log);
 };
 
 export default takeScreenshot;

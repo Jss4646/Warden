@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 class Tabs extends Component {
   render() {
@@ -11,5 +12,9 @@ class Tabs extends Component {
     }
   }
 }
+
+Tabs.propTypes = {
+  index: PropTypes.number,
+};
 
 export default Tabs;
