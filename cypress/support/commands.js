@@ -31,3 +31,18 @@ Cypress.Commands.add("addUrlToUrlList", (url) => {
     url,
   });
 });
+
+Cypress.Commands.add("addPlaceholderScreenshot", () => {
+  cy.window()
+    .its("store")
+    .invoke("dispatch", {
+      type: "ADD_SCREENSHOT",
+      screenshot: {
+        deviceName: "iPhone 5/SE",
+        image: "example",
+        id: "1",
+        host: "example.com",
+        pathname: "/",
+      },
+    });
+});

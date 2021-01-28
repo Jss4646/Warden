@@ -1,3 +1,9 @@
+export function resetAppState() {
+  return {
+    type: "RESET_APP_STATE",
+  };
+}
+
 /**
  *
  * @param {string} username
@@ -138,14 +144,12 @@ export function addScreenshot(screenshot) {
 
 /**
  *
- * @param {String} screenshotImage
  * @param {Object} screenshot
  * @returns {{screenshotImage: String, screenshot: Object}}
  */
-export function addScreenshotImage(screenshotImage, screenshot) {
+export function addScreenshotImage(screenshot) {
   return {
     type: "ADD_SCREENSHOT_IMAGE",
-    screenshotImage,
     screenshot,
   };
 }

@@ -54,9 +54,13 @@ class Screenshot extends Component {
           </>
         }
         actions={[
-          <DeleteOutlined key="setting" onClick={this.removeScreenshot} />,
-          <SaveOutlined key="edit" />,
-          <EllipsisOutlined key="ellipsis" />,
+          <DeleteOutlined
+            className="screenshot__delete"
+            key="delete"
+            onClick={this.removeScreenshot}
+          />,
+          <SaveOutlined className="screenshot__save" key="save" />,
+          <EllipsisOutlined className="screenshot__settings" key="settings" />,
         ]}
         className="screenshot"
       />

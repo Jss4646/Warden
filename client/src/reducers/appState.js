@@ -6,6 +6,17 @@ export default function appState(state = [], action) {
   const { screenshot } = action;
 
   switch (action.type) {
+    case "RESET_APP_STATE":
+      newState = {
+        currentUrl: "",
+        isCurrentUrlValid: true,
+        urls: [],
+        isLoadingUrls: false,
+        selectedDevices: [],
+        screenshots: {},
+      };
+      return newState;
+
     case "UPDATE_CURRENT_URL":
       newState.currentUrl = action.newUrl;
       return newState;
@@ -49,6 +60,7 @@ export default function appState(state = [], action) {
     case "ADD_SCREENSHOT":
       const { host, pathname } = screenshot;
 
+      console.log(screenshot);
       if (screenshots[host]) {
         if (screenshots[host][pathname]) {
           screenshots[host][pathname].push(screenshot);
@@ -60,6 +72,7 @@ export default function appState(state = [], action) {
         screenshots[host][pathname] = [screenshot];
       }
 
+      console.log(screenshots);
       return newState;
 
     case "ADD_SCREENSHOT_IMAGE":

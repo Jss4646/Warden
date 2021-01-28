@@ -4,7 +4,8 @@
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
   "scripts": {
-    "test:client": "cypress run",
+    "test:run": "cypress run",
+    "test:open": "cypress open",
     "client": "cd ./client; npm start",
     "css:watch": "cd ./client; npm run watch:css",
     "server": "nodemon index.js",
@@ -23,12 +24,12 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "concurrently": "^5.3.0",
-    "cypress": "^6.2.1",
     "express": "^4.17.1",
     "serve": "^11.3.2",
     "sitemapper": "^3.1.10"
   },
   "devDependencies": {
+    "cypress": "^6.3.0",
     "cypress-fill-command": "^0.1.0"
   }
 }
