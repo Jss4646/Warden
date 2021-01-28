@@ -2,13 +2,13 @@ import devices from "../data/devices.json";
 import { v1 as uuidv1 } from "uuid";
 import * as placeholderImage from "../data/image.jpeg";
 
+/* eslint-disable */
 const takeScreenshot = async (url, props) => {
   const { addScreenshot, addScreenshotImage } = props;
   const { selectedDevices } = props.appState;
 
   for (const deviceKey of selectedDevices) {
-    // const { width, height, userAgent, scale, name } = devices[deviceKey];
-    const { name } = devices[deviceKey];
+    const { width, height, userAgent, scale, name } = devices[deviceKey];
 
     const screenshotId = uuidv1();
 
@@ -24,19 +24,19 @@ const takeScreenshot = async (url, props) => {
 
     addScreenshot(screenshotData);
 
-    // const params = {
-    //   access_key: process.env.REACT_APP_ACCESS_KEY,
-    //   url: parsedUrl,
-    //   fresh: true,
-    //   full_page: true,
-    //   scroll_page: true,
-    //   format: "jpeg",
-    //   quality: "80",
-    //   user_agent: userAgent,
-    //   scale_factor: scale,
-    //   width,
-    //   height,
-    // };
+    const params = {
+      access_key: process.env.REACT_APP_ACCESS_KEY,
+      url: parsedUrl,
+      fresh: true,
+      full_page: true,
+      scroll_page: true,
+      format: "jpeg",
+      quality: "80",
+      user_agent: userAgent,
+      scale_factor: scale,
+      width,
+      height,
+    };
 
     /** Use for actual api call **/
     // fetchScreenshot(params).then((screenshotImage) => {
