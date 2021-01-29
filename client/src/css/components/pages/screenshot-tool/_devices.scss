@@ -1,6 +1,9 @@
 .devices {
   .devices__tree {
     border: $qa-tool-light-grey-2 1px solid;
+    height: 300px;
+    max-height: 300px;
+    overflow-y: auto;
   }
 
   .devices__buttons {

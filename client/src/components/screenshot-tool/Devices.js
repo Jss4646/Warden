@@ -86,7 +86,6 @@ class Devices extends Component {
           onCheck={(checkedKeys, event) => setSelectedDevices(checkedKeys)}
           checkedKeys={selectedDevices}
           selectable={false}
-          height={300}
         />
         <div className="devices__buttons">
           <Button onClick={selectAllDevices}>Select All</Button>
