@@ -30,11 +30,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "run build:css && run build:react",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "watch:css": "sass --watch ./src/css",
-    "build:css": "sass ./src/css"
+    "build:css": "sass ./src/css",
+    "build:react": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [
