@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "run build:css && run build:react",
+    "build": "npm run build:css && npm run build:react",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "watch:css": "sass --watch ./src/css",
