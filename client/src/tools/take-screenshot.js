@@ -48,7 +48,7 @@ const takeScreenshot = async (url, props) => {
       .then((image) => {
         const imageBlob = new Blob([image], { type: "image/jpeg" });
         const imageUrl = URL.createObjectURL(imageBlob);
-        addScreenshotImage(imageUrl, screenshotData);
+        addScreenshotImage(screenshotData, imageUrl);
       });
   }
 };

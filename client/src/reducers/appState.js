@@ -2,7 +2,7 @@ import devices from "../data/devices.json";
 
 export default function appState(state = [], action) {
   let newState = { ...state };
-  const { screenshots } = newState;
+  let { screenshots } = newState;
   const { screenshot } = action;
 
   switch (action.type) {
@@ -60,7 +60,6 @@ export default function appState(state = [], action) {
     case "ADD_SCREENSHOT":
       const { host, pathname } = screenshot;
 
-      console.log(screenshot);
       if (screenshots[host]) {
         if (screenshots[host][pathname]) {
           screenshots[host][pathname].push(screenshot);
@@ -72,23 +71,36 @@ export default function appState(state = [], action) {
         screenshots[host][pathname] = [screenshot];
       }
 
-      console.log(screenshots);
       return newState;
 
     case "ADD_SCREENSHOT_IMAGE":
       screenshot.image = action.screenshotImage;
       return newState;
 
-    case "REMOVE_SCREENSHOT":
-      newState.screenshots[action.host][action.path].splice(action.index, 1);
-      return newState;
-
     case "SET_SCREENSHOTS":
       newState.screenshots = action.screenshots;
       return newState;
 
-    case "REMOVE_ALL_SCREENSHOTS":
-      newState.screenshots = {};
+    case "REMOVE_SCREENSHOT":
+      screenshots[action.host][action.path].splice(action.index, 1);
+      if (screenshots[action.host][action.path].length === 0)
+        delete screenshots[action.host][action.path];
+      if (Object.keys(screenshots[action.host]).length === 0)
+        delete screenshots[action.host];
+
+      return newState;
+
+    case "REMOVE_SCREENSHOTS":
+      if (action.host && action.path) {
+        delete screenshots[action.host][action.path];
+        if (Object.keys(screenshots[action.host]).length === 0)
+          delete screenshots[action.host];
+      } else if (action.host) {
+        delete screenshots[action.host];
+      } else if (!action.host && !action.path) {
+        screenshots = {};
+      }
+
       return newState;
 
     default:

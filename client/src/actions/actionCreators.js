@@ -145,17 +145,21 @@ export function addScreenshot(screenshot) {
 /**
  *
  * @param {Object} screenshot
+ * @param {String} screenshotImage
  * @returns {{screenshotImage: String, screenshot: Object}}
  */
-export function addScreenshotImage(screenshot) {
+export function addScreenshotImage(screenshot, screenshotImage) {
   return {
     type: "ADD_SCREENSHOT_IMAGE",
     screenshot,
+    screenshotImage,
   };
 }
 
 /**
  *
+ * @param {String} host
+ * @param {String} path
  * @param {number} index
  * @returns {{index: number, type: string}}
  */
@@ -169,12 +173,15 @@ export function removeScreenshot(host, path, index) {
 }
 
 /**
- *
+ * @param {string} host
+ * @param {String} path
  * @returns {{type: string}}
  */
-export function removeAllScreenshots() {
+export function removeScreenshots(host, path) {
   return {
-    type: "REMOVE_ALL_SCREENSHOTS",
+    type: "REMOVE_SCREENSHOTS",
+    host,
+    path,
   };
 }
 
