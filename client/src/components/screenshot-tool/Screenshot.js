@@ -9,6 +9,7 @@ import {
   SaveOutlined,
 } from "@ant-design/icons";
 import ScreenshotMenu from "./screenshot-menu";
+import { downloadScreenshot } from "../../tools/screenshot-downloads";
 
 /**
  * Displays a card containing the screenshot image
@@ -31,14 +32,15 @@ class Screenshot extends Component {
 
   render() {
     const { deviceName, image } = this.props.screenshot;
-    const menu = this.state.showMenu ? (
+    const { showMenu } = this.state;
+
+    const menuComponent = (
       <ScreenshotMenu
         {...this.props}
         removeScreenshot={this.removeScreenshot}
       />
-    ) : (
-      ""
     );
+    const menu = showMenu ? menuComponent : "";
 
     return (
       <Card
@@ -58,7 +60,7 @@ class Screenshot extends Component {
                     (event.target.src = placeholderImage.default)
                   }
                   className={`screenshot__image ${
-                    this.state.showMenu ? "screenshot__image--blur" : ""
+                    showMenu ? "screenshot__image--blur" : ""
                   }`}
                   alt="example"
                   src={image}
@@ -74,7 +76,13 @@ class Screenshot extends Component {
             key="delete"
             onClick={this.removeScreenshot}
           />,
-          <SaveOutlined className="screenshot__save" key="save" />,
+          <SaveOutlined
+            className="screenshot__save"
+            key="save"
+            onClick={() => {
+              downloadScreenshot(this.props.screenshot);
+            }}
+          />,
           <EllipsisOutlined
             className="screenshot__settings"
             key="settings"
