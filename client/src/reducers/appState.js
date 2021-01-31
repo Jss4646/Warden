@@ -98,7 +98,7 @@ export default function appState(state = [], action) {
       } else if (action.host) {
         delete screenshots[action.host];
       } else if (!action.host && !action.path) {
-        screenshots = {};
+        newState.screenshots = {};
       }
 
       return newState;

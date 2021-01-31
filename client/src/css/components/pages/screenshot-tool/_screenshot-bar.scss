@@ -1,31 +1,54 @@
-.screenshot-bar {
+.screenshot-bar-wrapper {
   display: flex;
+  flex-direction: column;
 
   width: 100%;
+  height: 100%;
   min-height: 0;
-  flex-grow: 1;
   margin-bottom: 10%;
-  border-top: $qa-tool-light-grey-2 1px solid;
-  border-bottom: $qa-tool-light-grey-2 1px solid;
 
-
-  .screenshot-bar__menu {
-    width: 275px;
-    flex-shrink: 0;
-    height: 100%;
-    max-height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .screenshot-bar__screenshots {
+  .screenshot-bar {
     display: flex;
-    align-items: stretch;
-    overflow-x: auto;
+
+    width: 100%;
+    height: 95%;
+    border-top: $qa-tool-light-grey-2 1px solid;
+    border-bottom: $qa-tool-light-grey-2 1px solid;
+
+
+    .screenshot-bar__menu {
+      width: 275px;
+      flex-shrink: 0;
+      height: 100%;
+      max-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .screenshot-bar__screenshots {
+      display: flex;
+      width: 100%;
+      align-items: stretch;
+      overflow-x: auto;
+    }
+
+    .screenshot-bar__empty {
+      width: 100%;
+      padding-top: 10%;
+    }
+
+    .screenshot-bar__submenu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .screenshot-bar__delete svg {
+      width: 10px;
+    }
   }
 
-  .screenshot-bar__empty {
-    width: 100%;
-    padding-top: 10%;
+  .screenshot-bar__buttons {
+    padding: 12px;
   }
 }
