@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Card, Menu, Spin } from "antd";
+import { Button, Card, Spin } from "antd";
 import * as placeholderImage from "../../data/image.jpeg";
 
 import {
@@ -8,6 +8,7 @@ import {
   EllipsisOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
+import ScreenshotMenu from "./screenshot-menu";
 
 /**
  * Displays a card containing the screenshot image
@@ -16,6 +17,10 @@ import {
  * @param {String} image
  */
 class Screenshot extends Component {
+  state = {
+    showMenu: false,
+  };
+
   removeScreenshot = () => {
     this.props.removeScreenshot(
       this.props.screenshot.host,
@@ -26,6 +31,14 @@ class Screenshot extends Component {
 
   render() {
     const { deviceName, image } = this.props.screenshot;
+    const menu = this.state.showMenu ? (
+      <ScreenshotMenu
+        {...this.props}
+        removeScreenshot={this.removeScreenshot}
+      />
+    ) : (
+      ""
+    );
 
     return (
       <Card
@@ -44,7 +57,9 @@ class Screenshot extends Component {
                   onError={(event) =>
                     (event.target.src = placeholderImage.default)
                   }
-                  className="screenshot__image"
+                  className={`screenshot__image ${
+                    this.state.showMenu ? "screenshot__image--blur" : ""
+                  }`}
                   alt="example"
                   src={image}
                 />
@@ -60,7 +75,13 @@ class Screenshot extends Component {
             onClick={this.removeScreenshot}
           />,
           <SaveOutlined className="screenshot__save" key="save" />,
-          <EllipsisOutlined className="screenshot__settings" key="settings" />,
+          <EllipsisOutlined
+            className="screenshot__settings"
+            key="settings"
+            onClick={() => {
+              this.setState({ showMenu: !this.state.showMenu });
+            }}
+          />,
         ]}
         className="screenshot"
       />
@@ -72,22 +93,5 @@ Screenshot.propTypes = {
   screenshot: PropTypes.object,
   index: PropTypes.number,
 };
-
-const menu = (
-  <Menu className="screenshot__menu">
-    <Menu.Item>
-      <Button type="link">Delete screenshot</Button>
-    </Menu.Item>
-    <Menu.Item>
-      <Button type="text">Save to my collection</Button>
-    </Menu.Item>
-    <Menu.Item>
-      <Button type="text">Save to computer</Button>
-    </Menu.Item>
-    <Menu.Item>
-      <Button type="text">Show details</Button>
-    </Menu.Item>
-  </Menu>
-);
 
 export default Screenshot;

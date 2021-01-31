@@ -24,9 +24,13 @@
       height: 100%;
       overflow: auto;
 
-      img {
+      .screenshot__image {
         width: 100%;
         border-radius: 0;
+      }
+
+      .screenshot__image--blur {
+        filter: blur(4px);
       }
     }
   }
@@ -42,15 +46,5 @@
       display: flex;
       justify-content: center;
     }
-  }
-
-  .screenshot__menu {
-    display: none;
-    position: absolute;
-    top: 79px;
-  }
-
-  .screenshot__menu--open {
-    display: block;
   }
 }
