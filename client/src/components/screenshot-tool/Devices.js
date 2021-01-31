@@ -11,25 +11,21 @@ class Devices extends Component {
         title: "Mobile devices",
         key: "mobile",
         children: [],
-        checkable: false,
       },
       {
         title: "Desktop devices",
         key: "desktop",
         children: [],
-        checkable: false,
       },
       {
         title: "Tablet devices",
         key: "tablet",
         children: [],
-        checkable: false,
       },
       {
         title: "Laptop devices",
         key: "laptop",
         children: [],
-        checkable: false,
       },
     ];
 
@@ -67,13 +63,20 @@ class Devices extends Component {
     }
   };
 
+  updateSelectedDevices = (checkedKeys) => {
+    const { setSelectedDevices } = this.props;
+    checkedKeys = checkedKeys.filter(
+      (item) =>
+        item !== "desktop" &&
+        item !== "mobile" &&
+        item !== "tablet" &&
+        item !== "laptop"
+    );
+    setSelectedDevices(checkedKeys);
+  };
+
   render() {
-    const {
-      selectAllDevices,
-      deselectAllDevices,
-      appState,
-      setSelectedDevices,
-    } = this.props;
+    const { selectAllDevices, deselectAllDevices, appState } = this.props;
     const { selectedDevices } = appState;
 
     return (
@@ -82,8 +85,7 @@ class Devices extends Component {
           className="devices__tree"
           checkable
           treeData={this.treeData}
-          // defaultExpandedKeys={["mobile", "desktop"]}
-          onCheck={(checkedKeys, event) => setSelectedDevices(checkedKeys)}
+          onCheck={(checkedKeys) => this.updateSelectedDevices(checkedKeys)}
           checkedKeys={selectedDevices}
           selectable={false}
         />
