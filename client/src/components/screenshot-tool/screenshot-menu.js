@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Button, Menu } from "antd";
+import { downloadScreenshot } from "../../tools/screenshot-downloads";
 
 class ScreenshotMenu extends Component {
   render() {
@@ -14,7 +15,14 @@ class ScreenshotMenu extends Component {
           <Button type="text">Save to my collection</Button>
         </Menu.Item>
         <Menu.Item>
-          <Button type="text">Save to computer</Button>
+          <Button
+            type="text"
+            onClick={() => {
+              downloadScreenshot(this.props.screenshot);
+            }}
+          >
+            Save to computer
+          </Button>
         </Menu.Item>
         <Menu.Item>
           <Button type="text">Show details</Button>
