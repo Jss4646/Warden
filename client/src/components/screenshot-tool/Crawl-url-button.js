@@ -7,7 +7,7 @@ class CrawlUrlButton extends Component {
     const { isCurrentUrlValid, currentUrl } = appState;
     if (isCurrentUrlValid) {
       updateIsLoadingUrls(true);
-      const res = await fetch(`${process.env.REACT_APP_PROXY}/api/crawl-url`, {
+      const res = await fetch(`${window.location.origin}/api/crawl-url`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
