@@ -11,6 +11,10 @@ class ScreenshotBar extends Component {
     openTab: undefined,
   };
 
+  shouldComponentUpdate(nextProps) {
+    return nextProps.appState.currentUrl === this.props.appState.currentUrl;
+  }
+
   /**
    * Changes which tab is open when selected in the sidebar
    *
@@ -69,7 +73,7 @@ class ScreenshotBar extends Component {
 
   renderScreenshots = () => {
     const { screenshots } = this.props.appState;
-    return Object.keys(screenshots).map((site) => {
+    const screenshotTabs = Object.keys(screenshots).map((site) => {
       return Object.keys(screenshots[site]).map((page) => {
         return (
           <div className="screenshot-bar__screenshots" key={page}>
@@ -85,6 +89,8 @@ class ScreenshotBar extends Component {
         );
       });
     });
+    console.log(screenshotTabs);
+    return screenshotTabs;
   };
 
   render() {
