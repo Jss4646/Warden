@@ -1,6 +1,6 @@
 import { createStore } from "redux";
 import rootReducer from "./reducers";
-import * as placeholderImage from "./data/placeholder-image.png";
+// import * as placeholderImage from "./data/placeholder-image.png";
 
 const tempUser = {
   username: "Jack",
