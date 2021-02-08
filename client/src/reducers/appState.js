@@ -103,6 +103,21 @@ export default function appState(state = [], action) {
 
       return newState;
 
+    case "ADD_ACTIVITY_LOG_LINE":
+      const date = new Date();
+      const hours = date.getHours();
+      const mins = date.getMinutes();
+      const seconds = date.getSeconds();
+
+      const { textContent, environment } = action;
+      const newLineObject = {
+        textContent,
+        time: `${hours}:${mins}:${seconds}`,
+        environment,
+      };
+      newState.activityLogLines.push(newLineObject);
+      return newState;
+
     default:
       return state;
   }

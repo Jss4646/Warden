@@ -196,3 +196,17 @@ export function setScreenshots(screenshots) {
     screenshots,
   };
 }
+
+/**
+ *
+ * @param {String} textContent
+ * @param {String} environment
+ * @returns {{environment, textContent, type: string}}
+ */
+export function addActivityLogLine(textContent, environment) {
+  return {
+    type: "ADD_ACTIVITY_LOG_LINE",
+    textContent,
+    environment,
+  };
+}

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { BrowserRouter, Route } from "react-router-dom";
 
+import "./css/Monaco.woff";
 import "./css/index.css";
 import "antd/dist/antd.css";
 

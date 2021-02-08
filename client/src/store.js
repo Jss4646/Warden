@@ -34,6 +34,7 @@ const appState = {
   urls: [],
   isLoadingUrls: false,
   selectedDevices: ["iphone-5/se"],
+  activityLogLines: [],
   screenshots: {
     // "example.com": {
     //   "/": [

@@ -1,0 +1,27 @@
+.activity-log {
+  .activity-log__content {
+    height: 340px;
+    width: 100%;
+    max-height: 340px;
+    overflow: auto;
+
+    background-color: $qa-tool-light-grey;
+    padding: 10px;
+    border-radius: 8px;
+
+    * {
+      font-family: Monaco, serif !important;
+      font-size: 12px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    strong {
+      color: $qa-tool-blue;
+      font-weight: bold;
+
+    }
+  }
+}
