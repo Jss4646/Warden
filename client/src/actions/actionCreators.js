@@ -201,7 +201,7 @@ export function setScreenshots(screenshots) {
  *
  * @param {String} textContent
  * @param {String} environment
- * @returns {{environment, textContent, type: string}}
+ * @returns {{environment: string, textContent: string, type: string}}
  */
 export function addActivityLogLine(textContent, environment) {
   return {

@@ -109,11 +109,17 @@ export default function appState(state = [], action) {
       const mins = date.getMinutes();
       const seconds = date.getSeconds();
 
+      const environments = {
+        "screenshot-tool": "Screenshot tool",
+        "automated-tests": "Automated tests",
+        "seo-tools": "SEO tools",
+      };
+
       const { textContent, environment } = action;
       const newLineObject = {
         textContent,
         time: `${hours}:${mins}:${seconds}`,
-        environment,
+        environment: environments[environment],
       };
       newState.activityLogLines.push(newLineObject);
       return newState;

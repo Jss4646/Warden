@@ -89,7 +89,6 @@ class ScreenshotBar extends Component {
         );
       });
     });
-    console.log(screenshotTabs);
     return screenshotTabs;
   };
 

@@ -1,24 +1,27 @@
 import React, { Component } from "react";
-import ReactMarkdown from "react-markdown";
 
 class ActivityLog extends Component {
-  componentDidMount() {
-    this.props.addActivityLogLine("test", "screenshot-tool");
-  }
-
   render() {
     const textLines = this.props.appState.activityLogLines.map(
-      (textLineObject) => {
+      (textLineObject, index) => {
         const { textContent, time, environment } = textLineObject;
-        return `__${time} ${environment}:__ ${textContent}\n\n`;
+
+        return (
+          <div key={index} className="activity-log__line">
+            <span className="activity-log__line-prefix">
+              {time} {environment}:
+            </span>
+            {textContent}
+          </div>
+        );
       }
     );
 
     return (
       <div className="activity-log">
-        <ReactMarkdown className="activity-log__content" allowDangerousHtml>
-          {textLines.join("")}
-        </ReactMarkdown>
+        <div className="activity-log__content">
+          {textLines.map((textLine) => textLine)}
+        </div>
       </div>
     );
   }
