@@ -10,4 +10,5 @@ build:
     - cd client
     - npm install
     - npm run build
+    - cd ..
     - /bin/bash /docker/githelper2.sh
