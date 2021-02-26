@@ -1,6 +1,8 @@
 build:
   stage: build
   image: docker.synotio.se/synotio/httpd_php70_gulp:latest
+  only:
+    - triggers
   except:
     - /^build-.*$/
   script:
