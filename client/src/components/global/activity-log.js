@@ -2,20 +2,24 @@ import React, { Component } from "react";
 
 class ActivityLog extends Component {
   render() {
-    const textLines = this.props.appState.activityLogLines.map(
-      (textLineObject, index) => {
-        const { textContent, time, environment } = textLineObject;
+    let textLines = [];
 
-        return (
-          <div key={index} className="activity-log__line">
-            <span className="activity-log__line-prefix">
-              {time} {environment}:
-            </span>
-            {textContent}
-          </div>
-        );
-      }
-    );
+    if (this.props.appState.activityLogLines) {
+      textLines = this.props.appState.activityLogLines.map(
+        (textLineObject, index) => {
+          const { textContent, time, environment } = textLineObject;
+
+          return (
+            <div key={index} className="activity-log__line">
+              <span className="activity-log__line-prefix">
+                {time} {environment}:
+              </span>
+              {textContent}
+            </div>
+          );
+        }
+      );
+    }
 
     return (
       <div className="activity-log">
