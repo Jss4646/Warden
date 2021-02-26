@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteRule "^screenshot-tool" "/"
+RewriteRule "^automated-tests" "/"
+RewriteRule "^seo-tools" "/"
