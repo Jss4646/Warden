@@ -8,7 +8,7 @@ class Tabs extends Component {
     if (Array.isArray(props.children) && props.index !== undefined && props.index < props.children.flat().length) {
       return props.children.flat()[this.props.index];
     } else {
-      return <div></div>;
+      return <div />;
     }
   }
 }
