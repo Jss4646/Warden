@@ -29,7 +29,7 @@ const tempUser = {
 };
 
 const appState = {
-  currentUrl: "https://angrycreative.uk",
+  currentUrl: "https://angrycreative.com",
   isCurrentUrlValid: true,
   urls: [],
   isLoadingUrls: false,

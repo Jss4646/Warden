@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 class Tabs extends Component {
   render() {
     const props = this.props;
-    if (Array.isArray(this.props.children) && props.index !== undefined) {
+
+    if (Array.isArray(props.children) && props.index !== undefined && props.index < props.children.flat().length) {
       return props.children.flat()[this.props.index];
     } else {
       return <div></div>;
