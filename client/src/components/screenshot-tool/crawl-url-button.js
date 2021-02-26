@@ -32,10 +32,9 @@ class CrawlUrlButton extends Component {
 
     if (res.ok) {
       const body = await res.json();
-      const url = new URL(body.url);
+      const urls = this._removeDuplicates(body);
 
-      body.sites.unshift(`${url.origin}/`);
-      importUrls(body.sites);
+      importUrls(urls.map(url => url.toString()));
 
       this._logCrawDetails("Finished crawl of");
     } else {
@@ -45,6 +44,24 @@ class CrawlUrlButton extends Component {
 
     updateIsLoadingUrls(false);
   };
+
+  _removeDuplicates(body) {
+    const urls = [];
+
+    body.sites.forEach(urlString => {
+      const url = new URL(urlString);
+      if (!urls.includes(url)) {
+        urls.push(url.href)
+      }
+    })
+
+    const homeUrl = `${new URL(body.url).origin}/`
+    if (!urls.includes(homeUrl)) {
+      urls.unshift(homeUrl)
+    }
+
+    return urls;
+  }
 
   _logCrawDetails(text) {
     const { currentUrl } = this.props.appState;
