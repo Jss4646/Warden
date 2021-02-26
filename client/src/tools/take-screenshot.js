@@ -4,7 +4,7 @@ import * as placeholderImage from "../data/image.jpeg";
 
 /* eslint-disable */
 const takeScreenshot = async (url, props) => {
-  const { addScreenshot, addScreenshotImage } = props;
+  const { addScreenshot, addScreenshotImage, addActivityLogLine } = props;
   const { selectedDevices } = props.appState;
 
   for (const deviceKey of selectedDevices) {
@@ -39,8 +39,9 @@ const takeScreenshot = async (url, props) => {
     };
 
     /** Use for actual api call **/
-    // fetchScreenshot(params).then((screenshotImage) => {
-    //   addScreenshotImage(screenshotImage, screenshotData);
+    // fetchScreenshot(params, addActivityLogLine).then((screenshotImage) => {
+    //   console.log(screenshotImage);
+    //   addScreenshotImage(screenshotData, screenshotImage);
     // });
 
     fetch(placeholderImage.default)
@@ -53,7 +54,7 @@ const takeScreenshot = async (url, props) => {
   }
 };
 
-const fetchScreenshot = async (params) => {
+const fetchScreenshot = async (params, addActivityLogLine) => {
   console.log("Taking screenshot");
   const fetchUrl = new URL("https://api.apiflash.com/v1/urltoimage");
 
@@ -61,15 +62,28 @@ const fetchScreenshot = async (params) => {
     fetchUrl.searchParams.append(key, params[key])
   );
 
-  return fetch(fetchUrl.toString())
-    .then((res) => res.arrayBuffer())
+  return await fetch(fetchUrl.toString())
+    .then(async (res) => {
+      if (res.ok) {
+        return res.arrayBuffer();
+      } else {
+        console.log(res);
+        throw new Error(`Screenshot request not ok: ${await res.text()}`);
+      }
+    })
     .then(async (image) => {
       console.log("Creating image");
       const imageBlob = new Blob([image], { type: "image/jpeg" });
 
       return URL.createObjectURL(imageBlob);
     })
-    .catch(console.log);
+    .catch((err) => {
+      addActivityLogLine(
+        <>
+          Couldn't fetch screenshot: <code>{err.toString()}</code>
+        </>
+      );
+    });
 };
 
 export default takeScreenshot;

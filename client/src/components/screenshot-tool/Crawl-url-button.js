@@ -25,7 +25,7 @@ class CrawlUrlButton extends Component {
     }).catch((err) => {
       addActivityLogLine(
         <>
-          Crawling url failed <code>${err}</code>
+          Crawling url failed <code>{err}</code>
         </>
       );
     });
