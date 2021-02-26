@@ -1,0 +1,10 @@
+<VirtualHost *:80>
+   ServerName qa.dev.synot.io
+   Redirect / http://qa.dev.synot.io/
+   DocumentRoot "/qa.synot.io/client/build"
+   <Directory "/qa.synot.io/client/build">
+      AllowOverride All
+	  Options FollowSymLinks
+   </Directory>
+   DirectoryIndex index.html
+</VirtualHost>
