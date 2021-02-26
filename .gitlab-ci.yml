@@ -5,4 +5,7 @@ build:
     - /^build-.*$/
   script:
     - npm install
+    - cd client
+    - npm install
+    - npm run build
     - /bin/bash /docker/githelper2.sh
