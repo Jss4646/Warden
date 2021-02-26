@@ -1,0 +1,8 @@
+build:
+  stage: build
+  image: docker.synotio.se/synotio/httpd_php70_gulp:latest
+  except:
+    - /^build-.*$/
+  script:
+    - npm install
+    - /bin/bash /docker/githelper2.sh
