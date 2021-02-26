@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, Empty, Menu } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import Screenshot from "./Screenshot";
+import Screenshot from "./screenshot";
 import Tabs from "./tabs";
 
 const { SubMenu } = Menu;

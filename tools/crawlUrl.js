@@ -25,7 +25,6 @@ async function crawlSitemap(url, res) {
     .catch((error) => console.log(error));
 
   console.log("Finished crawling");
-  console.log(urls);
   return urls;
 }
 

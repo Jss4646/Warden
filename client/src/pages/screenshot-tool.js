@@ -4,11 +4,11 @@ import { Collapse } from "antd";
 import UrlBar from "../components/global/url-bar";
 
 import UrlList from "../components/global/url-list";
-import Devices from "../components/screenshot-tool/Devices";
-import CrawlUrlButton from "../components/screenshot-tool/Crawl-url-button";
-import AddToUrlListButton from "../components/screenshot-tool/Add-to-url-list-button";
-import ScreenshotUrlListButton from "../components/screenshot-tool/Screenshot-url-list-button";
-import TakeScreenshotButton from "../components/screenshot-tool/Take-screenshot-button";
+import Devices from "../components/screenshot-tool/devices";
+import CrawlUrlButton from "../components/screenshot-tool/crawl-url-button";
+import AddToUrlListButton from "../components/screenshot-tool/add-to-url-list-button";
+import ScreenshotUrlListButton from "../components/screenshot-tool/screenshot-url-list-button";
+import TakeScreenshotButton from "../components/screenshot-tool/take-screenshot-button";
 import ScreenshotBar from "../components/screenshot-tool/screenshot-bar";
 import Sidebar from "../components/global/sidebar";
 import ActivityLog from "../components/global/activity-log";
