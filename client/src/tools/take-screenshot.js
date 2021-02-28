@@ -25,44 +25,37 @@ const takeScreenshot = async (url, props) => {
     addScreenshot(screenshotData);
 
     const params = {
-      access_key: process.env.REACT_APP_ACCESS_KEY,
       url: parsedUrl,
-      fresh: true,
-      full_page: true,
-      scroll_page: true,
-      format: "jpeg",
-      quality: "80",
       user_agent: userAgent,
-      scale_factor: scale,
-      width,
-      height,
+      resolution: { width, height },
     };
 
     /** Use for actual api call **/
-    // fetchScreenshot(params, addActivityLogLine).then((screenshotImage) => {
-    //   console.log(screenshotImage);
-    //   addScreenshotImage(screenshotData, screenshotImage);
-    // });
+    fetchScreenshot(params, addActivityLogLine).then((screenshotImage) => {
+      addScreenshotImage(screenshotData, screenshotImage);
+    });
 
-    fetch(placeholderImage.default)
-      .then((res) => res.arrayBuffer())
-      .then((image) => {
-        const imageBlob = new Blob([image], { type: "image/jpeg" });
-        const imageUrl = URL.createObjectURL(imageBlob);
-        addScreenshotImage(screenshotData, imageUrl);
-      });
+    // fetch(placeholderImage.default)
+    //   .then((res) => res.arrayBuffer())
+    //   .then((image) => {
+    //     const imageBlob = new Blob([image], { type: "image/jpeg" });
+    //     const imageUrl = URL.createObjectURL(imageBlob);
+    //     addScreenshotImage(screenshotData, imageUrl);
+    //   });
   }
 };
 
 const fetchScreenshot = async (params, addActivityLogLine) => {
   console.log("Taking screenshot");
-  const fetchUrl = new URL("https://api.apiflash.com/v1/urltoimage");
+  const fetchUrl = new URL(`${window.location.origin}/api/take-screenshot`);
 
-  Object.keys(params).forEach((key) =>
-    fetchUrl.searchParams.append(key, params[key])
-  );
-
-  return await fetch(fetchUrl.toString())
+  return await fetch(fetchUrl.toString(), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+  })
     .then(async (res) => {
       if (res.ok) {
         return res.arrayBuffer();
