@@ -1,8 +1,8 @@
+/* eslint-disable */
 import devices from "../data/devices.json";
 import { v1 as uuidv1 } from "uuid";
 import * as placeholderImage from "../data/image.jpeg";
 
-/* eslint-disable */
 const takeScreenshot = async (url, props) => {
   const { addScreenshot, addScreenshotImage, addActivityLogLine } = props;
   const { selectedDevices } = props.appState;

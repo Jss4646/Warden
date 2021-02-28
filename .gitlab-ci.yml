@@ -6,7 +6,7 @@ build:
   except:
     - /^build-.*$/
   script:
-    - npm install
+    - npm install --only=prod
     - cd client
     - npm install
     - npm run build
