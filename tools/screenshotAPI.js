@@ -12,7 +12,6 @@ async function initialiseCluster() {
     retryLimit: 1,
     timeout: 500000,
     puppeteerOptions: {
-      executablePath: process.env.chromeLocation || undefined,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
