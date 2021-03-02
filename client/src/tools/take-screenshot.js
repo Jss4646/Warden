@@ -1,14 +1,12 @@
-/* eslint-disable */
 import devices from "../data/devices.json";
 import { v1 as uuidv1 } from "uuid";
-import * as placeholderImage from "../data/image.jpeg";
 
 const takeScreenshot = async (url, props) => {
   const { addScreenshot, addScreenshotImage, addActivityLogLine } = props;
   const { selectedDevices } = props.appState;
 
   for (const deviceKey of selectedDevices) {
-    const { width, height, userAgent, scale, name } = devices[deviceKey];
+    const { width, height, userAgent, name } = devices[deviceKey];
 
     const screenshotId = uuidv1();
 
@@ -35,14 +33,6 @@ const takeScreenshot = async (url, props) => {
     fetchScreenshot(params, addActivityLogLine).then((screenshotImage) => {
       addScreenshotImage(screenshotData, screenshotImage);
     });
-
-    // fetch(placeholderImage.default)
-    //   .then((res) => res.arrayBuffer())
-    //   .then((image) => {
-    //     const imageBlob = new Blob([image], { type: "image/jpeg" });
-    //     const imageUrl = URL.createObjectURL(imageBlob);
-    //     addScreenshotImage(screenshotData, imageUrl);
-    //   });
   }
 };
 
