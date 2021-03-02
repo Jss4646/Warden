@@ -26,8 +26,9 @@ const takeScreenshot = async (url, props) => {
 
     const params = {
       url: parsedUrl,
-      user_agent: userAgent,
+      userAgent: userAgent,
       resolution: { width, height },
+      id: screenshotId,
     };
 
     /** Use for actual api call **/
