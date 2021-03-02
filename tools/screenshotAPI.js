@@ -3,7 +3,7 @@ const { Cluster } = require("puppeteer-cluster");
 async function initialiseCluster() {
   const cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
-    maxConcurrency: 1,
+    maxConcurrency: 5,
     retryLimit: 1,
     timeout: 500000,
     puppeteerOptions: {
