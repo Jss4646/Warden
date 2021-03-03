@@ -5,6 +5,9 @@ export default function appState(state = [], action) {
   let { screenshots } = newState;
   const { screenshot } = action;
 
+  const host = action?.host;
+  const path = action?.path;
+
   switch (action.type) {
     case "RESET_APP_STATE":
       newState = {
@@ -58,18 +61,20 @@ export default function appState(state = [], action) {
       return newState;
 
     case "ADD_SCREENSHOT":
-      const { host, pathname } = screenshot;
+      const { url } = screenshot;
 
-      if (screenshots[host]) {
-        if (screenshots[host][pathname]) {
-          screenshots[host][pathname].push(screenshot);
+      if (screenshots[url.host]) {
+        if (screenshots[url.host][url.pathname]) {
+          screenshots[url.host][url.pathname].push(screenshot);
         } else {
-          screenshots[host][pathname] = [screenshot];
+          screenshots[url.host][url.pathname] = [screenshot];
         }
       } else {
-        screenshots[host] = {};
-        screenshots[host][pathname] = [screenshot];
+        screenshots[url.host] = {};
+        screenshots[url.host][url.pathname] = [screenshot];
       }
+
+      console.log(screenshots);
 
       return newState;
 
@@ -82,22 +87,20 @@ export default function appState(state = [], action) {
       return newState;
 
     case "REMOVE_SCREENSHOT":
-      screenshots[action.host][action.path].splice(action.index, 1);
-      if (screenshots[action.host][action.path].length === 0)
-        delete screenshots[action.host][action.path];
-      if (Object.keys(screenshots[action.host]).length === 0)
-        delete screenshots[action.host];
+      screenshots[host][path].splice(action.index, 1);
+      if (screenshots[host][path].length === 0) delete screenshots[host][path];
+      if (Object.keys(screenshots[host]).length === 0) delete screenshots[host];
 
       return newState;
 
     case "REMOVE_SCREENSHOTS":
-      if (action.host && action.path) {
-        delete screenshots[action.host][action.path];
-        if (Object.keys(screenshots[action.host]).length === 0)
-          delete screenshots[action.host];
-      } else if (action.host) {
-        delete screenshots[action.host];
-      } else if (!action.host && !action.path) {
+      if (host && path) {
+        delete screenshots[host][path];
+        if (Object.keys(screenshots[host]).length === 0)
+          delete screenshots[host];
+      } else if (host) {
+        delete screenshots[host];
+      } else if (!host && !path) {
         newState.screenshots = {};
       }
 

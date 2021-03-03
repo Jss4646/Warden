@@ -133,6 +133,10 @@ export function deselectAllDevices() {
 /**
  *
  * @param {Object} screenshot
+ * @param {String} screenshot.deviceName - The name of the device
+ * @param {String} screenshot.image - url of screenshot image
+ * @param {String} screenshot.id - ID created by UUID to identify the screenshot
+ * @param {String} screenshot.host - The
  * @returns {{screenshot: Object, type: string}}
  */
 export function addScreenshot(screenshot) {

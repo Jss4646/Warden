@@ -31,8 +31,8 @@ class ScreenshotBar extends Component {
     this.props.removeScreenshots(host);
   };
 
-  deletePath = (site, path) => {
-    this.props.removeScreenshots(site, path);
+  deletePath = (host, path) => {
+    this.props.removeScreenshots(host, path);
   };
 
   renderMenu = () => {

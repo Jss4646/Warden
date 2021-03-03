@@ -16,8 +16,8 @@ const takeScreenshot = async (url, props) => {
       deviceName: name,
       image: "",
       id: screenshotId,
-      host: parsedUrl.host,
-      pathname: parsedUrl.pathname,
+      url: parsedUrl,
+      state: "running",
     };
 
     addScreenshot(screenshotData);
@@ -30,9 +30,9 @@ const takeScreenshot = async (url, props) => {
     };
 
     /** Use for actual api call **/
-    fetchScreenshot(params, addActivityLogLine).then((screenshotImage) => {
-      addScreenshotImage(screenshotData, screenshotImage);
-    });
+    fetchScreenshot(params, addActivityLogLine).then((screenshotImage) =>
+      addScreenshotImage(screenshotData, screenshotImage)
+    );
   }
 };
 

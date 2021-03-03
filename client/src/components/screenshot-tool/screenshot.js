@@ -24,8 +24,8 @@ class Screenshot extends Component {
 
   removeScreenshot = () => {
     this.props.removeScreenshot(
-      this.props.screenshot.host,
-      this.props.screenshot.pathname,
+      this.props.screenshot.url.host,
+      this.props.screenshot.url.pathname,
       this.props.index
     );
   };
