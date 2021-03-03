@@ -3,10 +3,13 @@ import devices from "../data/devices.json";
 export default function appState(state = [], action) {
   let newState = { ...state };
   let { screenshots } = newState;
-  const { screenshot } = action;
+  const { screenshot: screenshotRef } = action;
 
   const host = action?.host;
   const path = action?.path;
+  const url = action?.url;
+
+  const screenshot = getScreenshot(screenshots, action.id, action.url);
 
   switch (action.type) {
     case "RESET_APP_STATE":
@@ -61,29 +64,35 @@ export default function appState(state = [], action) {
       return newState;
 
     case "ADD_SCREENSHOT":
-      const { url } = screenshot;
+      const screenshotHost = screenshotRef.url.host;
+      const screenshotPath = screenshotRef.url.pathname;
 
-      if (screenshots[url.host]) {
-        if (screenshots[url.host][url.pathname]) {
-          screenshots[url.host][url.pathname].push(screenshot);
+      if (screenshots[screenshotHost]) {
+        if (screenshots[screenshotHost][screenshotPath]) {
+          screenshots[screenshotHost][screenshotPath].push(screenshotRef);
         } else {
-          screenshots[url.host][url.pathname] = [screenshot];
+          screenshots[screenshotHost][screenshotPath] = [screenshotRef];
         }
       } else {
-        screenshots[url.host] = {};
-        screenshots[url.host][url.pathname] = [screenshot];
+        screenshots[screenshotHost] = {};
+        screenshots[screenshotHost][screenshotPath] = [screenshotRef];
       }
-
-      console.log(screenshots);
 
       return newState;
 
     case "ADD_SCREENSHOT_IMAGE":
-      screenshot.image = action.screenshotImage;
+      screenshotRef.image = action.screenshotImage;
       return newState;
 
     case "SET_SCREENSHOTS":
       newState.screenshots = action.screenshots;
+      return newState;
+
+    case "SET_SCREENSHOT_STATE":
+      screenshot.state = action.state;
+      if (action.state !== "running") {
+        screenshot.endTime = new Date().getTime();
+      }
       return newState;
 
     case "REMOVE_SCREENSHOT":
@@ -107,6 +116,7 @@ export default function appState(state = [], action) {
       return newState;
 
     case "ADD_ACTIVITY_LOG_LINE":
+      // TODO Move date outside bad practice to get it here
       const date = new Date();
       const hours = date.getHours();
       const mins = date.getMinutes();
@@ -129,5 +139,16 @@ export default function appState(state = [], action) {
 
     default:
       return state;
+  }
+}
+
+function getScreenshot(screenshots, id, url) {
+  if (url) {
+    const pageScreenshots = screenshots[url.host][url.pathname];
+    for (const screenshot of pageScreenshots) {
+      if (screenshot.id === id) {
+        return screenshot;
+      }
+    }
   }
 }

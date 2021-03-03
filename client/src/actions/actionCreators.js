@@ -203,6 +203,22 @@ export function setScreenshots(screenshots) {
 
 /**
  *
+ * @param {String} id
+ * @param {URL} url
+ * @param {String} state
+ * @returns {{id, state, type: string, url}}
+ */
+export function setScreenshotState(id, url, state) {
+  return {
+    type: "SET_SCREENSHOT_STATE",
+    id,
+    url,
+    state,
+  };
+}
+
+/**
+ *
  * @param {String} textContent
  * @param {String} environment
  * @returns {{environment: string, textContent: string, type: string}}

@@ -73,7 +73,7 @@ class ScreenshotBar extends Component {
 
   renderScreenshots = () => {
     const { screenshots } = this.props.appState;
-    const screenshotTabs = Object.keys(screenshots).map((site) => {
+    return Object.keys(screenshots).map((site) => {
       return Object.keys(screenshots[site]).map((page) => {
         return (
           <div className="screenshot-bar__screenshots" key={page}>
@@ -89,7 +89,6 @@ class ScreenshotBar extends Component {
         );
       });
     });
-    return screenshotTabs;
   };
 
   render() {

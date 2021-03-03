@@ -1,8 +1,14 @@
 import devices from "../data/devices.json";
 import { v1 as uuidv1 } from "uuid";
+import { setScreenshotEndTime } from "../actions/actionCreators";
 
 const takeScreenshot = async (url, props) => {
-  const { addScreenshot, addScreenshotImage, addActivityLogLine } = props;
+  const {
+    addScreenshot,
+    addScreenshotImage,
+    addActivityLogLine,
+    setScreenshotState,
+  } = props;
   const { selectedDevices } = props.appState;
 
   for (const deviceKey of selectedDevices) {
@@ -17,6 +23,8 @@ const takeScreenshot = async (url, props) => {
       image: "",
       id: screenshotId,
       url: parsedUrl,
+      startTime: new Date().getTime(),
+      endTime: 0,
       state: "running",
     };
 
@@ -30,14 +38,24 @@ const takeScreenshot = async (url, props) => {
     };
 
     /** Use for actual api call **/
-    fetchScreenshot(params, addActivityLogLine).then((screenshotImage) =>
-      addScreenshotImage(screenshotData, screenshotImage)
-    );
+    fetchScreenshot(params, addActivityLogLine)
+      .then((screenshotImage) => {
+        addScreenshotImage(screenshotData, screenshotImage);
+        setScreenshotState(screenshotData.id, parsedUrl, "done");
+      })
+      .catch((err) => {
+        addActivityLogLine(
+          <>
+            Couldn't fetch screenshot: <code>{err.toString()}</code>
+          </>
+        );
+        setScreenshotState(screenshotData.id, parsedUrl, "broken");
+        console.error(err);
+      });
   }
 };
 
-const fetchScreenshot = async (params, addActivityLogLine) => {
-  console.log("Taking screenshot");
+const fetchScreenshot = async (params) => {
   const fetchUrl = new URL(`${window.location.origin}/api/take-screenshot`);
 
   return await fetch(fetchUrl.toString(), {
@@ -51,22 +69,16 @@ const fetchScreenshot = async (params, addActivityLogLine) => {
       if (res.ok) {
         return res.arrayBuffer();
       } else {
-        console.log(res);
         throw new Error(`Screenshot request not ok: ${await res.text()}`);
       }
     })
     .then(async (image) => {
-      console.log("Creating image");
       const imageBlob = new Blob([image], { type: "image/jpeg" });
 
       return URL.createObjectURL(imageBlob);
     })
     .catch((err) => {
-      addActivityLogLine(
-        <>
-          Couldn't fetch screenshot: <code>{err.toString()}</code>
-        </>
-      );
+      throw err;
     });
 };
 
