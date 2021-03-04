@@ -142,7 +142,8 @@ export default function appState(state = [], action) {
 }
 
 function getScreenshot(screenshots, id, url) {
-  if (url) {
+  //TODO this is bad, redo this whole file
+  if (screenshots && id && url) {
     const pageScreenshots = screenshots[url.host][url.pathname];
     for (const screenshot of pageScreenshots) {
       if (screenshot.id === id) {

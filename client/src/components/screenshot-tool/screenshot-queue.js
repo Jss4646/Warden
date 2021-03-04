@@ -86,6 +86,7 @@ class ScreenshotQueue extends Component {
                     <div className="screenshot-queue__details">
                       <span className="screenshot-queue__url">
                         {screenshot.url.host}
+                        {screenshot.url.pathname}
                       </span>
                       <span className="screenshot-queue__device">
                         {screenshot.deviceName}
