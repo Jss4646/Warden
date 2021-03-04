@@ -12,6 +12,17 @@ class ScreenshotQueue extends Component {
     abortController.abort();
   };
 
+  cancelAllScreenshots = () => {
+    const { screenshots } = this.props.appState;
+    Object.keys(screenshots).forEach((site) => {
+      Object.keys(screenshots[site]).forEach((page) => {
+        screenshots[site][page].forEach((screenshot) => {
+          screenshot.abortController.abort();
+        });
+      });
+    });
+  };
+
   render() {
     const { screenshots } = this.props.appState;
 
@@ -92,7 +103,12 @@ class ScreenshotQueue extends Component {
           })}
         </ol>
 
-        <Button className="screenshot-queue__cancel-all">Cancel all</Button>
+        <Button
+          className="screenshot-queue__cancel-all"
+          onClick={() => this.cancelAllScreenshots()}
+        >
+          Cancel all
+        </Button>
       </div>
     );
   }
