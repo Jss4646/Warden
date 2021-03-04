@@ -7,7 +7,6 @@ export default function appState(state = [], action) {
 
   const host = action?.host;
   const path = action?.path;
-  const url = action?.url;
 
   const screenshot = getScreenshot(screenshots, action.id, action.url);
 

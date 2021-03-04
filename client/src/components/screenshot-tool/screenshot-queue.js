@@ -67,9 +67,9 @@ class ScreenshotQueue extends Component {
                     <span id="screenshot-status">
                       {screenshot.state.replace(/^\w/, (c) => c.toUpperCase())}
                     </span>
-                    <a href="#" className="screenshot-queue__cancel">
+                    <Button type="link" className="screenshot-queue__cancel">
                       Cancel
-                    </a>
+                    </Button>
                   </li>
                 );
               });
