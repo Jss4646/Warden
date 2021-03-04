@@ -64,6 +64,11 @@ class ScreenshotQueue extends Component {
                     </Button>
                   ) : undefined;
 
+                const runTime =
+                  screenshot.endTime !== 0
+                    ? (screenshot.endTime - screenshot.startTime) / 1000
+                    : "---";
+
                 return (
                   <li className="screenshot-queue__list-item" key={index}>
                     {logo}
@@ -75,12 +80,7 @@ class ScreenshotQueue extends Component {
                         {screenshot.deviceName}
                       </span>
                     </div>
-                    <span id="screenshot-time-taken">
-                      {screenshot.endTime !== 0
-                        ? (screenshot.endTime - screenshot.startTime) / 1000
-                        : "---"}
-                      s
-                    </span>
+                    <span id="screenshot-time-taken">{runTime}s</span>
                     <span id="screenshot-status">
                       {screenshot.state.replace(/^\w/, (c) => c.toUpperCase())}
                     </span>
