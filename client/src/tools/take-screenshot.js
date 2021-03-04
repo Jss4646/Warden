@@ -1,6 +1,5 @@
 import devices from "../data/devices.json";
 import { v1 as uuidv1 } from "uuid";
-import { setScreenshotEndTime } from "../actions/actionCreators";
 
 const takeScreenshot = async (url, props) => {
   const {
