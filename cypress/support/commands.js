@@ -33,6 +33,8 @@ Cypress.Commands.add("addUrlToUrlList", (url) => {
 });
 
 Cypress.Commands.add("addPlaceholderScreenshot", () => {
+  const abortController = new AbortController();
+
   cy.window()
     .its("store")
     .invoke("dispatch", {
@@ -43,6 +45,7 @@ Cypress.Commands.add("addPlaceholderScreenshot", () => {
         id: "1",
         url: new URL("https://example.com"),
         status: "running",
+        abortController,
       },
     });
 });

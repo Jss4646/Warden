@@ -14,11 +14,13 @@ export default function appState(state = [], action) {
   switch (action.type) {
     case "RESET_APP_STATE":
       newState = {
-        currentUrl: "",
+        currentUrl: "https://angrycreative.com",
         isCurrentUrlValid: true,
         urls: [],
         isLoadingUrls: false,
-        selectedDevices: [],
+        selectedDevices: ["iphone-5/se"],
+        activityLogLines: [],
+        screenshotQueue: [],
         screenshots: {},
       };
       return newState;
