@@ -4,6 +4,7 @@ import { v1 as uuidv1 } from "uuid";
 const takeScreenshot = async (url, props) => {
   const {
     addScreenshot,
+    addScreenshotToQueue,
     addScreenshotImage,
     addActivityLogLine,
     setScreenshotState,
@@ -58,6 +59,7 @@ const takeScreenshot = async (url, props) => {
       });
 
     addScreenshot(screenshotData);
+    addScreenshotToQueue(screenshotData);
   }
 };
 

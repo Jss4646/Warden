@@ -8,7 +8,8 @@ export default function appState(state = [], action) {
   const host = action?.host;
   const path = action?.path;
 
-  const screenshot = getScreenshot(screenshots, action.id, action.url);
+  const renderedScreenshot = getScreenshot(screenshots, action.id, action.url);
+  const queuedScreenshot = action.screenshot;
 
   switch (action.type) {
     case "RESET_APP_STATE":
@@ -88,9 +89,9 @@ export default function appState(state = [], action) {
       return newState;
 
     case "SET_SCREENSHOT_STATE":
-      screenshot.state = action.state;
+      renderedScreenshot.state = action.state;
       if (action.state !== "running") {
-        screenshot.endTime = new Date().getTime();
+        renderedScreenshot.endTime = new Date().getTime();
       }
       return newState;
 
@@ -112,6 +113,14 @@ export default function appState(state = [], action) {
         newState.screenshots = {};
       }
 
+      return newState;
+
+    case "ADD_SCREENSHOT_TO_QUEUE":
+      newState.screenshotQueue.push(queuedScreenshot);
+      return newState;
+
+    case "CLEAR_SCREENSHOT_QUEUE":
+      newState.screenshotQueue = [];
       return newState;
 
     case "ADD_ACTIVITY_LOG_LINE":
