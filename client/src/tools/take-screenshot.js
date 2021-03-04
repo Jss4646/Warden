@@ -14,8 +14,9 @@ const takeScreenshot = async (url, props) => {
     const { width, height, userAgent, name } = devices[deviceKey];
 
     const screenshotId = uuidv1();
-
     const parsedUrl = new URL(url);
+    const abortController = new AbortController();
+    const abortSignal = abortController.signal;
 
     const screenshotData = {
       deviceName: name,
@@ -25,9 +26,8 @@ const takeScreenshot = async (url, props) => {
       startTime: new Date().getTime(),
       endTime: 0,
       state: "running",
+      abortController,
     };
-
-    addScreenshot(screenshotData);
 
     const params = {
       url: parsedUrl,
@@ -37,24 +37,31 @@ const takeScreenshot = async (url, props) => {
     };
 
     /** Use for actual api call **/
-    fetchScreenshot(params, addActivityLogLine)
+    fetchScreenshot(params, abortSignal)
       .then((screenshotImage) => {
         addScreenshotImage(screenshotData, screenshotImage);
         setScreenshotState(screenshotData.id, parsedUrl, "done");
       })
       .catch((err) => {
-        addActivityLogLine(
-          <>
-            Couldn't fetch screenshot: <code>{err.toString()}</code>
-          </>
-        );
-        setScreenshotState(screenshotData.id, parsedUrl, "broken");
+        if (err.name === "AbortError") {
+          addActivityLogLine(<>Screenshot {screenshotData.id} canceled</>);
+          setScreenshotState(screenshotData.id, parsedUrl, "canceled");
+        } else {
+          addActivityLogLine(
+            <>
+              Couldn't fetch screenshot: <code>{err.toString()}</code>
+            </>
+          );
+          setScreenshotState(screenshotData.id, parsedUrl, "broken");
+        }
         console.error(err);
       });
+
+    addScreenshot(screenshotData);
   }
 };
 
-const fetchScreenshot = async (params) => {
+const fetchScreenshot = async (params, abortSignal) => {
   const fetchUrl = new URL(`${window.location.origin}/api/take-screenshot`);
 
   return await fetch(fetchUrl.toString(), {
@@ -63,6 +70,7 @@ const fetchScreenshot = async (params) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(params),
+    signal: abortSignal,
   })
     .then(async (res) => {
       if (res.ok) {

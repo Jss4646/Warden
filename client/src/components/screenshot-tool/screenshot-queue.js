@@ -8,6 +8,10 @@ import {
 import { Button } from "antd";
 
 class ScreenshotQueue extends Component {
+  cancelScreenshot = (abortController) => {
+    abortController.abort();
+  };
+
   render() {
     const { screenshots } = this.props.appState;
 
@@ -47,6 +51,19 @@ class ScreenshotQueue extends Component {
                     );
                 }
 
+                const cancelButton =
+                  screenshot.state === "running" ? (
+                    <Button
+                      type="link"
+                      className="screenshot-queue__cancel"
+                      onClick={() =>
+                        this.cancelScreenshot(screenshot.abortController)
+                      }
+                    >
+                      Cancel
+                    </Button>
+                  ) : undefined;
+
                 return (
                   <li className="screenshot-queue__list-item" key={index}>
                     {logo}
@@ -67,9 +84,7 @@ class ScreenshotQueue extends Component {
                     <span id="screenshot-status">
                       {screenshot.state.replace(/^\w/, (c) => c.toUpperCase())}
                     </span>
-                    <Button type="link" className="screenshot-queue__cancel">
-                      Cancel
-                    </Button>
+                    {cancelButton}
                   </li>
                 );
               });
