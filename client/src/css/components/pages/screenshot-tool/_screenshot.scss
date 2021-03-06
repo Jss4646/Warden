@@ -21,7 +21,28 @@
       width: 100%;
 
       .ant-spin-container {
+        display: flex;
+        flex-direction: column;
         width: 100%;
+        min-height: 100%;
+
+        .screenshot__cover-info {
+          display: flex;
+          flex-grow: 1;
+
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          img {
+            width: 200px;
+            height: 200px;
+          }
+
+          h2 {
+            color: $qa-tool-blue-2;
+          }
+        }
       }
     }
 
