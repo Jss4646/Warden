@@ -6,7 +6,8 @@ import JSZip from "jszip";
  * @param {Object} screenshot
  */
 export function downloadScreenshot(screenshot) {
-  let { host, pathname, deviceName, image } = screenshot;
+  let { url, deviceName, image } = screenshot;
+  let { pathname, host } = url;
   pathname = pathname !== "/" ? pathname : "";
   downloadFile(`${host}${pathname}-${deviceName}-screenshot.jpeg`, image);
 }
