@@ -40,9 +40,11 @@ class ScreenshotBar extends Component {
     return Object.keys(screenshots).map((site) => {
       return (
         <SubMenu
+          data-cy="screenshot-bar-submenu"
           className="screenshot-bar__submenu"
           icon={
             <CloseOutlined
+              data-cy="screenshot-bar-submenu-delete"
               className="screenshot-bar__delete"
               onClick={() => this.deleteHost(site)}
             />
@@ -54,9 +56,11 @@ class ScreenshotBar extends Component {
             this.screenshotIndex++;
             return (
               <Menu.Item
+                data-cy="screenshot-bar-menu-item"
                 key={this.screenshotIndex - 1}
                 icon={
                   <CloseOutlined
+                    data-cy="screenshot-bar-menu-item-delete"
                     className="screenshot-bar__delete"
                     onClick={() => this.deletePath(site, page)}
                   />

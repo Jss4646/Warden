@@ -7,7 +7,11 @@ class ScreenshotMenu extends Component {
     return (
       <Menu className="screenshot__menu">
         <Menu.Item>
-          <Button type="text" onClick={this.props.removeScreenshot}>
+          <Button
+            data-cy="screenshot-menu-delete"
+            type="text"
+            onClick={this.props.removeScreenshot}
+          >
             Delete screenshot
           </Button>
         </Menu.Item>

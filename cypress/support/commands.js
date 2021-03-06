@@ -43,7 +43,7 @@ Cypress.Commands.add("addPlaceholderScreenshot", () => {
         deviceName: "iPhone 5/SE",
         image: "example",
         id: "1",
-        url: new URL("https://example.com"),
+        url: new URL("https://example.com/"),
         status: "running",
         abortController,
       },

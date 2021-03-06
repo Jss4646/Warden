@@ -108,11 +108,13 @@ class Screenshot extends Component {
           <DeleteOutlined
             className="screenshot__delete"
             key="delete"
+            data-cy="screenshot-delete-button"
             onClick={this.removeScreenshot}
           />,
           <SaveOutlined
             className="screenshot__save"
             key="save"
+            data-cy="screenshot-save-button"
             onClick={() => {
               downloadScreenshot(this.props.screenshot);
             }}
@@ -120,12 +122,14 @@ class Screenshot extends Component {
           <EllipsisOutlined
             className="screenshot__settings"
             key="settings"
+            data-cy="screenshot-menu-button"
             onClick={() => {
               this.setState({ showMenu: !this.state.showMenu });
             }}
           />,
         ]}
         className="screenshot"
+        data-cy="screenshot"
       />
     );
   }
