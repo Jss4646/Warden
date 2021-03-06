@@ -50,6 +50,7 @@ class Screenshot extends Component {
       case "done":
         cover = (
           <img
+            data-cy="screenshot-image"
             onError={(event) => (event.target.src = placeholderImage.default)}
             className={`screenshot__image ${
               showMenu ? "screenshot__image--blur" : ""

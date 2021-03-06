@@ -64,7 +64,7 @@ class UrlBar extends Component {
         : "url-bar__input--invalid-url";
 
     return (
-      <div className="url-bar">
+      <div data-cy="url-bar" className="url-bar">
         <h1 className="url-bar__title">URL</h1>
         <Input
           className={`url-bar__input ${redInputBarClass}`}

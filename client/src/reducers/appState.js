@@ -14,7 +14,7 @@ export default function appState(state = [], action) {
   switch (action.type) {
     case "RESET_APP_STATE":
       newState = {
-        currentUrl: "https://angrycreative.com",
+        currentUrl: "",
         isCurrentUrlValid: true,
         urls: [],
         isLoadingUrls: false,
