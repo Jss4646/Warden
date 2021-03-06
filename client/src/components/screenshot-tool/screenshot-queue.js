@@ -19,6 +19,11 @@ class ScreenshotQueue extends Component {
     });
   };
 
+  clearScreenshotQueue = () => {
+    this.cancelAllScreenshots();
+    this.props.clearScreenshotQueue();
+  };
+
   render() {
     const { screenshotQueue } = this.props.appState;
 
@@ -94,12 +99,20 @@ class ScreenshotQueue extends Component {
           })}
         </ol>
 
-        <Button
-          className="screenshot-queue__cancel-all"
-          onClick={() => this.cancelAllScreenshots()}
-        >
-          Cancel all
-        </Button>
+        <div className="screenshot-queue__buttons">
+          <Button
+            className="screenshot-queue__cancel-all"
+            onClick={this.cancelAllScreenshots}
+          >
+            Cancel all
+          </Button>
+          <Button
+            className="screenshot-queue__clear-all"
+            onClick={this.clearScreenshotQueue}
+          >
+            Clear all
+          </Button>
+        </div>
       </div>
     );
   }
