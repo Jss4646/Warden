@@ -19,7 +19,7 @@ describe("Screenshot tests", () => {
     cy.get("[data-cy='screenshot']").should("not.exist");
   });
 
-  it.only("Tests that you can take a screenshot", () => {
+  it("Tests that you can take a screenshot", () => {
     cy.intercept("/api/take-screenshot").as("screenshot");
     cy.get('[data-cy="url-bar"]').type("https://angrycreative.com");
     cy.get('[data-cy="take-screenshot"]').click();
