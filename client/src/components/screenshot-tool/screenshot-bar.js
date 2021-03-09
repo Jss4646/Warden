@@ -31,8 +31,8 @@ class ScreenshotBar extends Component {
     this.props.removeScreenshots(host);
   };
 
-  deletePath = (site, path) => {
-    this.props.removeScreenshots(site, path);
+  deletePath = (host, path) => {
+    this.props.removeScreenshots(host, path);
   };
 
   renderMenu = () => {
@@ -40,9 +40,11 @@ class ScreenshotBar extends Component {
     return Object.keys(screenshots).map((site) => {
       return (
         <SubMenu
+          data-cy="screenshot-bar-submenu"
           className="screenshot-bar__submenu"
           icon={
             <CloseOutlined
+              data-cy="screenshot-bar-submenu-delete"
               className="screenshot-bar__delete"
               onClick={() => this.deleteHost(site)}
             />
@@ -54,9 +56,11 @@ class ScreenshotBar extends Component {
             this.screenshotIndex++;
             return (
               <Menu.Item
+                data-cy="screenshot-bar-menu-item"
                 key={this.screenshotIndex - 1}
                 icon={
                   <CloseOutlined
+                    data-cy="screenshot-bar-menu-item-delete"
                     className="screenshot-bar__delete"
                     onClick={() => this.deletePath(site, page)}
                   />
@@ -73,7 +77,7 @@ class ScreenshotBar extends Component {
 
   renderScreenshots = () => {
     const { screenshots } = this.props.appState;
-    const screenshotTabs = Object.keys(screenshots).map((site) => {
+    return Object.keys(screenshots).map((site) => {
       return Object.keys(screenshots[site]).map((page) => {
         return (
           <div className="screenshot-bar__screenshots" key={page}>
@@ -89,7 +93,6 @@ class ScreenshotBar extends Component {
         );
       });
     });
-    return screenshotTabs;
   };
 
   render() {

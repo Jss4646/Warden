@@ -9,7 +9,6 @@ class TakeScreenshotButton extends Component {
       isCurrentUrlValid,
       selectedDevices,
     } = this.props.appState;
-    // TODO add popup telling why canceled
     if (!isCurrentUrlValid) return;
     if (selectedDevices.length === 0) return;
 
@@ -38,6 +37,7 @@ class TakeScreenshotButton extends Component {
   render() {
     return (
       <Button
+        data-cy="take-screenshot"
         onClick={this.screenshotUrl}
         type="primary"
         id="take-screenshot-button"

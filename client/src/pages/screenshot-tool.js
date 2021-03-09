@@ -12,6 +12,7 @@ import TakeScreenshotButton from "../components/screenshot-tool/take-screenshot-
 import ScreenshotBar from "../components/screenshot-tool/screenshot-bar";
 import Sidebar from "../components/global/sidebar";
 import ActivityLog from "../components/global/activity-log";
+import ScreenshotQueue from "../components/screenshot-tool/screenshot-queue";
 
 const { Panel } = Collapse;
 
@@ -34,13 +35,16 @@ class ScreenshotTool extends Component {
         </div>
 
         <Sidebar>
-          <Panel key={1} header="URL List" id="url-list-dropdown">
+          <Panel key={1} header="URL list" id="url-list-dropdown">
             <UrlList {...this.props} />
           </Panel>
           <Panel key={2} header="Devices" id="devices-dropdown">
             <Devices {...this.props} />
           </Panel>
-          <Panel key={3} header="Activity Log" id="activity-log">
+          <Panel key={3} header="Screenshot queue" id="screenshot-queue">
+            <ScreenshotQueue {...this.props} />
+          </Panel>
+          <Panel key={4} header="Activity log" id="activity-log">
             <ActivityLog {...this.props} />
           </Panel>
         </Sidebar>

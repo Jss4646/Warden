@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Button, Card, Spin } from "antd";
 import * as placeholderImage from "../../data/image.jpeg";
+import cancelSVG from "../../data/undraw_cancel_u1it.svg";
+import brokenSVG from "../../data/undraw_injured_9757.svg";
 
 import {
   DeleteOutlined,
@@ -23,15 +25,16 @@ class Screenshot extends Component {
   };
 
   removeScreenshot = () => {
+    this.props.screenshot.abortController.abort();
     this.props.removeScreenshot(
-      this.props.screenshot.host,
-      this.props.screenshot.pathname,
+      this.props.screenshot.url.host,
+      this.props.screenshot.url.pathname,
       this.props.index
     );
   };
 
   render() {
-    const { deviceName, image } = this.props.screenshot;
+    const { deviceName, image, state } = this.props.screenshot;
     const { showMenu } = this.state;
 
     const menuComponent = (
@@ -41,6 +44,47 @@ class Screenshot extends Component {
       />
     );
     const menu = showMenu ? menuComponent : "";
+
+    let cover;
+    switch (state) {
+      case "done":
+        cover = (
+          <img
+            data-cy="screenshot-image"
+            onError={(event) => (event.target.src = placeholderImage.default)}
+            className={`screenshot__image ${
+              showMenu ? "screenshot__image--blur" : ""
+            }`}
+            alt="example"
+            src={image}
+          />
+        );
+        break;
+
+      case "running":
+        cover = <div />;
+        break;
+
+      case "canceled":
+        cover = (
+          <div className="screenshot__cover-info">
+            <img src={cancelSVG} alt="Man next to big X" />
+            <h2 className="screenshot__cover-info-text">Canceled</h2>
+          </div>
+        );
+        break;
+
+      default:
+        cover = (
+          <div className="screenshot__cover-info">
+            <img src={brokenSVG} alt="Man with broken leg" />
+            <h2 className="screenshot__cover-info-text">
+              Something went wrong
+            </h2>
+          </div>
+        );
+        break;
+    }
 
     return (
       <Card
@@ -52,19 +96,10 @@ class Screenshot extends Component {
           <>
             <div className="screenshot__image-container">
               <Spin
-                spinning={image === ""}
+                spinning={state === "running"}
                 wrapperClassName="screenshot__loading"
               >
-                <img
-                  onError={(event) =>
-                    (event.target.src = placeholderImage.default)
-                  }
-                  className={`screenshot__image ${
-                    showMenu ? "screenshot__image--blur" : ""
-                  }`}
-                  alt="example"
-                  src={image}
-                />
+                {cover}
               </Spin>
             </div>
             {menu}
@@ -74,11 +109,13 @@ class Screenshot extends Component {
           <DeleteOutlined
             className="screenshot__delete"
             key="delete"
+            data-cy="screenshot-delete-button"
             onClick={this.removeScreenshot}
           />,
           <SaveOutlined
             className="screenshot__save"
             key="save"
+            data-cy="screenshot-save-button"
             onClick={() => {
               downloadScreenshot(this.props.screenshot);
             }}
@@ -86,12 +123,14 @@ class Screenshot extends Component {
           <EllipsisOutlined
             className="screenshot__settings"
             key="settings"
+            data-cy="screenshot-menu-button"
             onClick={() => {
               this.setState({ showMenu: !this.state.showMenu });
             }}
           />,
         ]}
         className="screenshot"
+        data-cy="screenshot"
       />
     );
   }

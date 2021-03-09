@@ -3,7 +3,13 @@ import devices from "../data/devices.json";
 export default function appState(state = [], action) {
   let newState = { ...state };
   let { screenshots } = newState;
-  const { screenshot } = action;
+  const { screenshot: screenshotRef } = action;
+
+  const host = action?.host;
+  const path = action?.path;
+
+  const renderedScreenshot = getScreenshot(screenshots, action.id, action.url);
+  const queuedScreenshot = action.screenshot;
 
   switch (action.type) {
     case "RESET_APP_STATE":
@@ -12,7 +18,9 @@ export default function appState(state = [], action) {
         isCurrentUrlValid: true,
         urls: [],
         isLoadingUrls: false,
-        selectedDevices: [],
+        selectedDevices: ["iphone-5/se"],
+        activityLogLines: [],
+        screenshotQueue: [],
         screenshots: {},
       };
       return newState;
@@ -58,52 +66,67 @@ export default function appState(state = [], action) {
       return newState;
 
     case "ADD_SCREENSHOT":
-      const { host, pathname } = screenshot;
+      const screenshotHost = screenshotRef.url.host;
+      const screenshotPath = screenshotRef.url.pathname;
 
-      if (screenshots[host]) {
-        if (screenshots[host][pathname]) {
-          screenshots[host][pathname].push(screenshot);
+      if (screenshots[screenshotHost]) {
+        if (screenshots[screenshotHost][screenshotPath]) {
+          screenshots[screenshotHost][screenshotPath].push(screenshotRef);
         } else {
-          screenshots[host][pathname] = [screenshot];
+          screenshots[screenshotHost][screenshotPath] = [screenshotRef];
         }
       } else {
-        screenshots[host] = {};
-        screenshots[host][pathname] = [screenshot];
+        screenshots[screenshotHost] = {};
+        screenshots[screenshotHost][screenshotPath] = [screenshotRef];
       }
 
       return newState;
 
     case "ADD_SCREENSHOT_IMAGE":
-      screenshot.image = action.screenshotImage;
+      screenshotRef.image = action.screenshotImage;
       return newState;
 
     case "SET_SCREENSHOTS":
       newState.screenshots = action.screenshots;
       return newState;
 
+    case "SET_SCREENSHOT_STATE":
+      renderedScreenshot.state = action.state;
+      if (action.state !== "running") {
+        renderedScreenshot.endTime = new Date().getTime();
+      }
+      return newState;
+
     case "REMOVE_SCREENSHOT":
-      screenshots[action.host][action.path].splice(action.index, 1);
-      if (screenshots[action.host][action.path].length === 0)
-        delete screenshots[action.host][action.path];
-      if (Object.keys(screenshots[action.host]).length === 0)
-        delete screenshots[action.host];
+      screenshots[host][path].splice(action.index, 1);
+      if (screenshots[host][path].length === 0) delete screenshots[host][path];
+      if (Object.keys(screenshots[host]).length === 0) delete screenshots[host];
 
       return newState;
 
     case "REMOVE_SCREENSHOTS":
-      if (action.host && action.path) {
-        delete screenshots[action.host][action.path];
-        if (Object.keys(screenshots[action.host]).length === 0)
-          delete screenshots[action.host];
-      } else if (action.host) {
-        delete screenshots[action.host];
-      } else if (!action.host && !action.path) {
+      if (host && path) {
+        delete screenshots[host][path];
+        if (Object.keys(screenshots[host]).length === 0)
+          delete screenshots[host];
+      } else if (host) {
+        delete screenshots[host];
+      } else if (!host && !path) {
         newState.screenshots = {};
       }
 
       return newState;
 
+    case "ADD_SCREENSHOT_TO_QUEUE":
+      newState.screenshotQueue.push(queuedScreenshot);
+      return newState;
+
+    case "CLEAR_SCREENSHOT_QUEUE":
+      newState.screenshotQueue = [];
+      return newState;
+
     case "ADD_ACTIVITY_LOG_LINE":
+      // TODO Move date outside bad practice to get it here
       const date = new Date();
       const hours = date.getHours();
       const mins = date.getMinutes();
@@ -126,5 +149,17 @@ export default function appState(state = [], action) {
 
     default:
       return state;
+  }
+}
+
+function getScreenshot(screenshots, id, url) {
+  //TODO this is bad, redo this whole file
+  if (screenshots && id && url) {
+    const pageScreenshots = screenshots[url.host][url.pathname];
+    for (const screenshot of pageScreenshots) {
+      if (screenshot.id === id) {
+        return screenshot;
+      }
+    }
   }
 }

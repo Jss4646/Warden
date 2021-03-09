@@ -1,4 +1,8 @@
 const { crawlSitemapEndpoint } = require("./tools/crawlUrl");
+const {
+  initialiseCluster,
+  generateScreenshot,
+} = require("./tools/screenshotAPI");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -8,6 +12,13 @@ const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+(async () => {
+  const cluster = await initialiseCluster();
+  app.post("/api/take-screenshot", (req, res) =>
+    generateScreenshot(req, res, cluster)
+  );
+})();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
 

@@ -23,7 +23,9 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-import "cypress-fill-command";
+Cypress.Commands.add("resetAppState", () => {
+  cy.window().its("store").invoke("dispatch", { type: "RESET_APP_STATE" });
+});
 
 Cypress.Commands.add("addUrlToUrlList", (url) => {
   cy.window().its("store").invoke("dispatch", {
@@ -33,6 +35,8 @@ Cypress.Commands.add("addUrlToUrlList", (url) => {
 });
 
 Cypress.Commands.add("addPlaceholderScreenshot", () => {
+  const abortController = new AbortController();
+
   cy.window()
     .its("store")
     .invoke("dispatch", {
@@ -41,8 +45,9 @@ Cypress.Commands.add("addPlaceholderScreenshot", () => {
         deviceName: "iPhone 5/SE",
         image: "example",
         id: "1",
-        host: "example.com",
-        pathname: "/",
+        url: new URL("https://example.com/"),
+        status: "running",
+        abortController,
       },
     });
 });
