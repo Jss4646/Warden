@@ -13,7 +13,8 @@
   }
 
   .ant-card-cover {
-    min-height: 0;
+    overflow: auto;
+
     .screenshot__loading {
       display: flex;
       align-items: flex-start;
@@ -48,7 +49,7 @@
 
     .screenshot__image-container {
       height: 100%;
-      overflow: auto;
+
 
       .screenshot__image {
         width: 100%;
