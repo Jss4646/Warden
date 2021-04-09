@@ -6,12 +6,18 @@ const {
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const Sentry = require("@sentry/node");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+Sentry.init({
+  dsn: "https://c2b2b9486fa243399f474ae3be986686@sentry.synotio.se/166",
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(Sentry.Handlers.requestHandler());
 
 (async () => {
   const cluster = await initialiseCluster();
@@ -21,6 +27,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
+
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files
