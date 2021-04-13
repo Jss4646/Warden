@@ -10,7 +10,6 @@
 
 # production
 /build/*
-!/build/.htaccess
 
 # misc
 /src/css/**/*.css
