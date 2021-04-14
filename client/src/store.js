@@ -29,7 +29,7 @@ const tempUser = {
 
 const appState = {
   currentUrl: "",
-  isCurrentUrlValid: true,
+  isCurrentUrlValid: false,
   urls: [],
   isLoadingUrls: false,
   selectedDevices: ["1080p"],
