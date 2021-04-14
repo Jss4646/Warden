@@ -7,7 +7,7 @@ import brokenSVG from "../../data/undraw_injured_9757.svg";
 
 import {
   DeleteOutlined,
-  EllipsisOutlined,
+  // EllipsisOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
 import ScreenshotMenu from "./screenshot-menu";
@@ -120,14 +120,15 @@ class Screenshot extends Component {
               downloadScreenshot(this.props.screenshot);
             }}
           />,
-          <EllipsisOutlined
-            className="screenshot__settings"
-            key="settings"
-            data-cy="screenshot-menu-button"
-            onClick={() => {
-              this.setState({ showMenu: !this.state.showMenu });
-            }}
-          />,
+          // <EllipsisOutlined
+          //   disabled={true}
+          //   className="screenshot__settings"
+          //   key="settings"
+          //   data-cy="screenshot-menu-button"
+          //   onClick={() => {
+          //     this.setState({ showMenu: !this.state.showMenu });
+          //   }}
+          // />,
         ]}
         className="screenshot"
         data-cy="screenshot"
