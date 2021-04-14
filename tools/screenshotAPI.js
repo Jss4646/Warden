@@ -59,7 +59,7 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
       .catch((err) => sendError("Couldn't set cookies", err, res));
 
   await page
-    .goto(url.toString())
+    .goto(url.toString(), { timeout: 120000 })
     .catch((err) => sendError("Couldn't navigate to page", err, res));
 
   console.log(`Screenshotting Website: ${url}`);
