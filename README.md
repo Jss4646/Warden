@@ -1,4 +1,4 @@
-# QA Tool
+# Warden
 Features:
 - Screenshot tool (WIP)
 - Automated tests (CS)
