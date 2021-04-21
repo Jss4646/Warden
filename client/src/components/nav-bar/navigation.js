@@ -2,9 +2,9 @@ import React from "react";
 import NavigationItem from "./navigation-item";
 import {
   CameraOutlined,
-  HomeOutlined,
-  SettingOutlined,
-  ToolOutlined,
+  // HomeOutlined,
+  // SettingOutlined,
+  // ToolOutlined,
 } from "@ant-design/icons";
 
 /**
@@ -13,22 +13,22 @@ import {
 const Navigation = () => {
   return (
     <ul className="navigation">
-      <NavigationItem link="/" logo={<HomeOutlined />} text="home" />
+      {/*<NavigationItem link="/" logo={<HomeOutlined />} text="home" />*/}
       <NavigationItem
-        link="screenshot-tool"
+        link="/"
         logo={<CameraOutlined />}
         text="Screenshot Tool"
       />
-      <NavigationItem
-        link="automated-tests"
-        logo={<SettingOutlined />}
-        text="Automated Tests"
-      />
-      <NavigationItem
-        link="seo-tools"
-        logo={<ToolOutlined />}
-        text="SEO Tools"
-      />
+      {/*<NavigationItem*/}
+      {/*  link="automated-tests"*/}
+      {/*  logo={<SettingOutlined />}*/}
+      {/*  text="Automated Tests"*/}
+      {/*/>*/}
+      {/*<NavigationItem*/}
+      {/*  link="seo-tools"*/}
+      {/*  logo={<ToolOutlined />}*/}
+      {/*  text="SEO Tools"*/}
+      {/*/>*/}
     </ul>
   );
 };

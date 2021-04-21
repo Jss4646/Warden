@@ -39,6 +39,7 @@ class NavLoginModal extends Component {
     return (
       <div className="login-modal-container" ref={this.modalRef}>
         <Button
+          disabled={true}
           link="#"
           className="login-button"
           type="primary"

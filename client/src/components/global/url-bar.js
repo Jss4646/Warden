@@ -38,6 +38,24 @@ class UrlBar extends Component {
     return !!pattern.test(url);
   };
 
+  /**
+   * Gets the percentage of finished screenshots in the queue
+   *
+   * @returns {number}
+   */
+  getProgressPercentage = () => {
+    const { screenshotQueue } = this.props.appState;
+
+    const runningScreenshots = screenshotQueue.reduce((sum, screenshot) => {
+      if (screenshot.state !== "running") {
+        return sum + 1;
+      }
+      return sum;
+    }, 0);
+
+    return (runningScreenshots / screenshotQueue.length) * 100;
+  };
+
   render() {
     const { currentUrl, isCurrentUrlValid } = this.props.appState;
     const redInputBarClass =
@@ -46,7 +64,7 @@ class UrlBar extends Component {
         : "url-bar__input--invalid-url";
 
     return (
-      <div className="url-bar">
+      <div data-cy="url-bar" className="url-bar">
         <h1 className="url-bar__title">URL</h1>
         <Input
           className={`url-bar__input ${redInputBarClass}`}
@@ -57,7 +75,12 @@ class UrlBar extends Component {
           id="url-bar-input"
         />
         <div className="url-bar__buttons">{this.props.children}</div>
-        <Progress showInfo={false} className="url-bar__progress" />
+        <Progress
+          showInfo={false}
+          className="url-bar__progress"
+          strokeColor="#1890FF"
+          percent={this.getProgressPercentage()}
+        />
       </div>
     );
   }

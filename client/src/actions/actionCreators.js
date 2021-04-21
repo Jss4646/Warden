@@ -133,6 +133,10 @@ export function deselectAllDevices() {
 /**
  *
  * @param {Object} screenshot
+ * @param {String} screenshot.deviceName - The name of the device
+ * @param {String} screenshot.image - url of screenshot image
+ * @param {String} screenshot.id - ID created by UUID to identify the screenshot
+ * @param {String} screenshot.host - The
  * @returns {{screenshot: Object, type: string}}
  */
 export function addScreenshot(screenshot) {
@@ -194,6 +198,48 @@ export function setScreenshots(screenshots) {
   return {
     type: "SET_SCREENSHOTS",
     screenshots,
+  };
+}
+
+/**
+ *
+ * @param {String} id
+ * @param {URL} url
+ * @param {String} state
+ * @returns {{id, state, type: string, url}}
+ */
+export function setScreenshotState(id, url, state) {
+  return {
+    type: "SET_SCREENSHOT_STATE",
+    id,
+    url,
+    state,
+  };
+}
+
+/**
+ *
+ * @param {Object} screenshot
+ * @param {String} screenshot.deviceName - The name of the device
+ * @param {String} screenshot.image - url of screenshot image
+ * @param {String} screenshot.id - ID created by UUID to identify the screenshot
+ * @param {String} screenshot.host - The
+ * @returns {{screenshot, type: string}}
+ */
+export function addScreenshotToQueue(screenshot) {
+  return {
+    type: "ADD_SCREENSHOT_TO_QUEUE",
+    screenshot,
+  };
+}
+
+/**
+ *
+ * @returns {{type: string}}
+ */
+export function clearScreenshotQueue() {
+  return {
+    type: "CLEAR_SCREENSHOT_QUEUE",
   };
 }
 

@@ -4,17 +4,18 @@ describe("URL List Tests", () => {
 
   beforeEach(() => {
     cy.visit("/screenshot-tool");
+    cy.resetAppState();
     cy.get("#url-list-dropdown").click();
   });
 
   it("Tests that you can add a url to the url list", () => {
-    cy.get("#url-bar-input").fill(testingUrl);
+    cy.get("#url-bar-input").type(testingUrl);
     cy.get("#add-url-button").click();
     cy.get("#url-list").contains(testingUrl);
   });
 
   it("Tests that you can't add an invalid url to the url list", () => {
-    cy.get("#url-bar-input").clear().fill(invalidUrl);
+    cy.get("#url-bar-input").clear().type(invalidUrl);
     cy.get("#add-url-button").click();
     cy.get("#url-list").should("not.contain", invalidUrl);
   });
@@ -28,7 +29,7 @@ describe("URL List Tests", () => {
       { url: `${testingUrl}/sitemap.xml`, sites: [`${testingUrl}/success`] }
     ).as("crawlUrl");
 
-    cy.get("#url-bar-input").fill(testingUrl);
+    cy.get("#url-bar-input").type(testingUrl);
     cy.get("#crawl-url-button").click();
     cy.get("#url-list").contains(`${testingUrl}/success`);
   });
@@ -39,7 +40,7 @@ describe("URL List Tests", () => {
       url: "/api/crawl-url",
     }).as("crawlUrl");
 
-    cy.get("#url-bar-input").clear().fill(invalidUrl);
+    cy.get("#url-bar-input").clear().type(invalidUrl);
     cy.get("#crawl-url-button").click();
     cy.get("#url-list").should("not.contain", invalidUrl);
 

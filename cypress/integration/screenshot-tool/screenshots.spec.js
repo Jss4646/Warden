@@ -1,14 +1,45 @@
 describe("Screenshot tests", () => {
   beforeEach(() => {
     cy.visit("/screenshot-tool");
-    cy.window().its("store").invoke("dispatch", { type: "RESET_APP_STATE" });
+    cy.resetAppState();
   });
 
-  it("Tests that you can delete a screenshot", () => {
+  it("Tests that you can delete a screenshot with the delete button", () => {
     cy.addPlaceholderScreenshot();
-    cy.get(".ant-menu-submenu-title").click({ force: true });
-    cy.get(".ant-menu-item").click({ force: true });
-    cy.get(".screenshot__delete").first().click();
-    cy.get(".screenshot").should("not.exist");
+    openScreenshotTab();
+    cy.get('[data-cy="screenshot-delete-button"]').click({ force: true });
+    cy.get("[data-cy='screenshot']").should("not.exist");
+  });
+
+  it("Tests that you can delete a screenshot with the submenu", () => {
+    cy.addPlaceholderScreenshot();
+    openScreenshotTab();
+    cy.get("[data-cy='screenshot-menu-button']").click({ force: true });
+    cy.get("[data-cy='screenshot-menu-delete']").click({ force: true });
+    cy.get("[data-cy='screenshot']").should("not.exist");
+  });
+
+  it("Tests that you can take a screenshot", () => {
+    cy.intercept("/api/take-screenshot").as("screenshot");
+    cy.get('[data-cy="url-bar"]').type("https://angrycreative.com");
+    cy.get('[data-cy="take-screenshot"]').click();
+
+    openScreenshotTab();
+    cy.get("[data-cy='screenshot-bar-submenu'] > div")
+      .first()
+      .should("contain.text", "angrycreative.com");
+
+    cy.get("[data-cy='screenshot-bar-menu-item']").should("have.text", "/");
+
+    cy.wait("@screenshot");
+
+    cy.get("[data-cy='screenshot-image']").should("exist");
   });
 });
+
+function openScreenshotTab() {
+  cy.get("[data-cy='screenshot-bar-submenu'] > div").first().click({
+    force: true,
+  });
+  cy.get("[data-cy='screenshot-bar-menu-item']").click({ force: true });
+}

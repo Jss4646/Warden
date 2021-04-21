@@ -1,6 +1,5 @@
 import { createStore } from "redux";
 import rootReducer from "./reducers";
-// import * as placeholderImage from "./data/placeholder-image.png";
 
 const tempUser = {
   username: "Jack",
@@ -29,25 +28,14 @@ const tempUser = {
 };
 
 const appState = {
-  currentUrl: "https://angrycreative.com",
-  isCurrentUrlValid: true,
+  currentUrl: "",
+  isCurrentUrlValid: false,
   urls: [],
   isLoadingUrls: false,
-  selectedDevices: ["iphone-5/se"],
+  selectedDevices: ["1080p"],
   activityLogLines: [],
-  screenshots: {
-    // "example.com": {
-    //   "/": [
-    //     {
-    //       deviceName: "iPhone 5/SE",
-    //       image: placeholderImage.default,
-    //       id: "392e9690-56a1-11eb-8fcb-733de26f9659",
-    //       host: "example.com",
-    //       pathname: "/",
-    //     },
-    //   ],
-    // },
-  },
+  screenshotQueue: [],
+  screenshots: {},
 };
 
 const defaultState = {

@@ -17,7 +17,11 @@ class NavBar extends Component {
         <Navigation />
         <NavLoginModal />
         <Link to="register">
-          <Button text="Register" className="nav-bar__register-button">
+          <Button
+            text="Register"
+            className="nav-bar__register-button"
+            disabled={true}
+          >
             Register
           </Button>
         </Link>
@@ -25,6 +29,7 @@ class NavBar extends Component {
           placeholder="Screenshots, URL Lists, Test Results"
           enterButton="Search"
           className="nav-bar__search-bar"
+          disabled={true}
         />
       </div>
     );
