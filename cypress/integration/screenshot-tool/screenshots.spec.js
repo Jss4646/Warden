@@ -11,14 +11,6 @@ describe("Screenshot tests", () => {
     cy.get("[data-cy='screenshot']").should("not.exist");
   });
 
-  it("Tests that you can delete a screenshot with the submenu", () => {
-    cy.addPlaceholderScreenshot();
-    openScreenshotTab();
-    cy.get("[data-cy='screenshot-menu-button']").click({ force: true });
-    cy.get("[data-cy='screenshot-menu-delete']").click({ force: true });
-    cy.get("[data-cy='screenshot']").should("not.exist");
-  });
-
   it("Tests that you can take a screenshot", () => {
     cy.intercept("/api/take-screenshot").as("screenshot");
     cy.get('[data-cy="url-bar"]').type("https://angrycreative.com");
