@@ -1,0 +1,70 @@
+.site-card {
+  display: flex;
+  flex-direction: column;
+  width: calc(25% - 20px);
+  margin: 0 10px;
+  border: 1px solid $qa-tool-light-grey-2;
+  padding: 10px 20px;
+
+  .site-card__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 12px;
+
+    .site-card__name {
+      font-weight: bold;
+      font-size: 30px;
+      line-height: 38px;
+      margin-bottom: 0;
+    }
+  }
+
+  .site-card__info {
+    margin-bottom: 10px;
+
+    & > *:first-child {
+        margin-right: 8px;
+      }
+  }
+
+  .site-card__site-status {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 5px;
+
+    .site-card__status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      &--passing > * {
+        color: $qa-tool-green;
+      }
+
+      &--difference > * {
+        color: $qa-tool-amber;
+      }
+
+      &--failing > * {
+        color: $qa-tool-red;
+      }
+    }
+  }
+
+  .site-card__buttons {
+    display: flex;
+    justify-content: space-between;
+
+    & > * {
+      flex-grow: 1;
+    }
+
+    & > *:first-child {
+      margin-right: 10px;
+    }
+  }
+}

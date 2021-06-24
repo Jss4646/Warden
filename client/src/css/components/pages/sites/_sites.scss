@@ -1,0 +1,12 @@
+.sites {
+  padding: 0 18px;
+
+   .sites__cards {
+     display: flex;
+     flex-direction: row;
+     flex-wrap: wrap;
+     width: 100%;
+     padding-top: 15px;
+   }
+
+}
