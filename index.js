@@ -4,9 +4,14 @@ const {
   generateScreenshot,
 } = require("./tools/screenshotAPI");
 
+const { addSite, getSite, getAllSites } = require("./tools/dbEndpoints");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const Sentry = require("@sentry/node");
+
+const MongoClient = require("mongodb").MongoClient;
+const client = new MongoClient("mongodb://localhost:27017");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -28,9 +33,9 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
 
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error!");
-});
+app.post("/api/add-site", (req, res) => addSite(client, req, res));
+app.post("/api/get-site", (req, res) => getSite(client, req, res));
+app.get("/api/get-all-sites", (req, res) => getAllSites(client, req, res));
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files

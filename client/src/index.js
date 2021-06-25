@@ -9,9 +9,10 @@ import "antd/dist/antd.css";
 
 import NavBar from "./components/nav-bar/nav-bar";
 import ScreenshotTool from "./pages/screenshot-tool";
+import Sites from "./pages/sites";
+import SiteDashboard from "./pages/site-dashboard";
 
 import store from "./store";
-import Sites from "./pages/sites";
 
 const Router = () => (
   <Provider store={store}>
@@ -19,6 +20,7 @@ const Router = () => (
       <NavBar />
       <Route exact path="/" component={ScreenshotTool} />
       <Route exact path="/sites" component={Sites} />
+      <Route exact path="/sites/:siteName" component={SiteDashboard} />
     </BrowserRouter>
   </Provider>
 );
