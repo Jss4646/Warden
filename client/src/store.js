@@ -38,9 +38,15 @@ const appState = {
   screenshots: {},
 };
 
+const siteData = {
+  siteName: "",
+  siteUrl: "",
+};
+
 const defaultState = {
   currentUser: tempUser,
   appState,
+  siteData,
 };
 
 const store = createStore(

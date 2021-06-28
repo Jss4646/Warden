@@ -1,0 +1,20 @@
+.pages-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid $qa-tool-light-grey;
+
+  .pages-sidebar__site-status {
+    width: 14px;
+    height: 14px;
+    align-self: flex-end;
+    margin: 14px 14px 0 0;
+
+    border-radius: 50%;
+    background: $qa-tool-light-grey-2;
+  }
+
+  .pages-sidebar__site-name {
+    margin: 14px 0;
+  }
+}

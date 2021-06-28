@@ -1,10 +1,14 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
+import bindComponentToState from "../tools/bindComponentToState";
+import PagesSidebar from "../components/site-dashboard/pages-sidebar";
+import PageScreenshots from "../components/site-dashboard/page-screenshots";
+import OptionsSidebar from "../components/site-dashboard/options-sidebar";
 
 class SiteDashboard extends Component {
   constructor(props) {
     super(props);
-    this.state = { siteName: "", siteUrl: "" };
+    this.props.clearSiteData();
   }
 
   async componentDidMount() {
@@ -29,18 +33,20 @@ class SiteDashboard extends Component {
 
     console.log("got site", siteData);
     if (typeof siteData === "object") {
-      this.setState(siteData);
+      this.props.loadSiteData(siteData);
     }
   }
 
   render() {
     return (
-      <div>
-        <span>{this.state.siteName}</span>
-        <span>{this.state.siteUrl}</span>
+      <div className="site-dashboard">
+        <PagesSidebar {...this.props} />
+        <PageScreenshots {...this.props} />
+        <OptionsSidebar {...this.props} />
       </div>
     );
   }
 }
 
+SiteDashboard = bindComponentToState(SiteDashboard);
 export default withRouter(SiteDashboard);

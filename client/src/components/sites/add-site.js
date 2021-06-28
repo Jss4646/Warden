@@ -6,7 +6,12 @@ import { withRouter } from "react-router";
 class AddSite extends Component {
   constructor(props) {
     super(props);
-    this.state = { siteName: "", siteUrl: "", errorMessage: "" };
+    this.state = {
+      siteName: "",
+      siteUrl: "",
+      errorMessage: "",
+      modalShown: false,
+    };
 
     this.updateSiteName = this.updateSiteName.bind(this);
     this.updateSiteUrl = this.updateSiteUrl.bind(this);
@@ -56,29 +61,55 @@ class AddSite extends Component {
     this.props.history.push(`/sites/${params.siteName}`);
   }
 
+  toggleModal = () => {
+    const newState = { ...this.state };
+    newState.modalShown = !newState.modalShown;
+    this.setState(newState);
+  };
+
   render() {
     return (
-      <>
-        <Button type="primary">Add site</Button>
-        <div className="add-site-modal">
-          <form>
-            <div className="add-site-modal__site-name">
-              <label>Site name:</label>
-              <Input onChange={this.updateSiteName} />
-            </div>
-            <div className="add-site-modal__site-url">
-              <label>Site url:</label>
-              <Input onChange={this.updateSiteUrl} />
-            </div>
-            <Button onClick={this.submitSite}>Submit site</Button>
-            <span className="add-site-modal__error-message">
-              {this.state.errorMessage}
-            </span>
-          </form>
-        </div>
-      </>
+      <div className="add-site">
+        <Button type="primary" onClick={this.toggleModal}>
+          {this.state.modalShown ? "Close modal" : "Add site"}
+        </Button>
+        {this.state.modalShown ? (
+          <AddSiteModal
+            updateSiteName={this.updateSiteName}
+            updateSiteUrl={this.updateSiteUrl}
+            submitSite={this.submitSite}
+            errorMessage={this.state.errorMessage}
+          />
+        ) : null}
+      </div>
     );
   }
 }
+
+const AddSiteModal = ({
+  updateSiteName,
+  updateSiteUrl,
+  submitSite,
+  errorMessage,
+}) => (
+  <div className="add-site-modal">
+    <form>
+      <div className="add-site-modal__site-name">
+        <label>Site name:</label>
+        <Input onChange={updateSiteName} />
+      </div>
+      <div className="add-site-modal__site-url">
+        <label>Site url:</label>
+        <Input onChange={updateSiteUrl} />
+      </div>
+      <div className="add-site-modal__bottom-row">
+        <Button className="add-site-modal__submit" onClick={submitSite}>
+          Submit site
+        </Button>
+        <p className="add-site-modal__error-message">{errorMessage}</p>
+      </div>
+    </form>
+  </div>
+);
 
 export default withRouter(AddSite);
