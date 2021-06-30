@@ -44,9 +44,12 @@ class AddSite extends Component {
       return;
     }
 
+    let sitePath = this.state.siteName.toLowerCase().replaceAll(" ", "-");
+
     const params = {
       siteName: this.state.siteName,
       siteUrl: this.state.siteUrl,
+      sitePath,
     };
 
     const fetchUrl = new URL(`${window.location.origin}/api/add-site`);
@@ -58,7 +61,7 @@ class AddSite extends Component {
       body: JSON.stringify(params),
     });
 
-    this.props.history.push(`/sites/${params.siteName}`);
+    this.props.history.push(`/sites/${params.sitePath}`);
   }
 
   toggleModal = () => {

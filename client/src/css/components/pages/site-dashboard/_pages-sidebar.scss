@@ -12,6 +12,14 @@
 
     border-radius: 50%;
     background: $qa-tool-light-grey-2;
+
+    &--ok {
+      background: $qa-tool-green;
+    }
+
+    &--not-okay {
+      background: $qa-tool-red;
+    }
   }
 
   .pages-sidebar__site-name {

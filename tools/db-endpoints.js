@@ -24,7 +24,7 @@ function getSite(client, req, res) {
 
     const result = await db
       .collection("sites")
-      .findOne({ siteName: req.body.siteName });
+      .findOne({ sitePath: req.body.sitePath });
 
     if (result) {
       res.send(result);
@@ -51,8 +51,26 @@ function getAllSites(client, req, res) {
   });
 }
 
+function deleteSite(client, req, res) {
+  client.connect(async (err) => {
+    if (err) throw err;
+    const db = client.db("wraith");
+
+    await db
+      .collection("sites")
+      .deleteOne({ sitePath: req.body.sitePath })
+      .catch((err) => {
+        res.status(500);
+        res.send(err);
+      });
+
+    res.send("Site deleted");
+  });
+}
+
 module.exports = {
   addSite,
   getSite,
   getAllSites,
+  deleteSite,
 };

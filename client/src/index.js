@@ -20,7 +20,7 @@ const Router = () => (
       <NavBar />
       <Route exact path="/" component={ScreenshotTool} />
       <Route exact path="/sites" component={Sites} />
-      <Route exact path="/sites/:siteName" component={SiteDashboard} />
+      <Route exact path="/sites/:sitePath" component={SiteDashboard} />
     </BrowserRouter>
   </Provider>
 );

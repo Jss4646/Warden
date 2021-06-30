@@ -10,3 +10,10 @@ export function loadSiteData(siteData) {
     siteData,
   };
 }
+
+export function setSiteStatus(siteStatus) {
+  return {
+    type: "SET_SITE_STATUS",
+    siteStatus,
+  };
+}

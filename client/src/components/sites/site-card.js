@@ -8,7 +8,7 @@ import { withRouter } from "react-router";
  */
 class SiteCard extends Component {
   goToDashboard = () => {
-    this.props.history.push(`/sites/${this.props.siteName}`);
+    this.props.history.push(`/sites/${this.props.sitePath}`);
   };
 
   render() {

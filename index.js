@@ -1,10 +1,16 @@
-const { crawlSitemapEndpoint } = require("./tools/crawlUrl");
+const { crawlSitemapEndpoint } = require("./tools/crawl-url");
 const {
   initialiseCluster,
   generateScreenshot,
-} = require("./tools/screenshotAPI");
+} = require("./tools/screenshot-api");
 
-const { addSite, getSite, getAllSites } = require("./tools/dbEndpoints");
+const {
+  addSite,
+  getSite,
+  getAllSites,
+  deleteSite,
+} = require("./tools/db-endpoints");
+const { getSiteStatus } = require("./tools/status-checker");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -36,6 +42,8 @@ app.post("/api/crawl-url", crawlSitemapEndpoint);
 app.post("/api/add-site", (req, res) => addSite(client, req, res));
 app.post("/api/get-site", (req, res) => getSite(client, req, res));
 app.get("/api/get-all-sites", (req, res) => getAllSites(client, req, res));
+app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
+app.post("/api/delete-site", (req, res) => deleteSite(client, req, res));
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files

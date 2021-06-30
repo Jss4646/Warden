@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import SiteCard from "../components/sites/site-card";
-import { Button } from "antd";
 import bindComponentToState from "../tools/bindComponentToState";
 import AddSite from "../components/sites/add-site";
 
@@ -30,7 +29,7 @@ class Sites extends Component {
           <AddSite />
         </div>
         <div className="sites__cards">
-          {this.state.sites.map((site) => {
+          {this.state.sites.map((site, index) => {
             const lastRan = site.lastRan ? site.lastRan : "Never";
             const siteStatus = {
               passing: site.passing ? site.passing : "--",
@@ -44,9 +43,10 @@ class Sites extends Component {
                 lastRan={lastRan}
                 siteUrl={site.siteUrl}
                 siteName={site.siteName}
+                sitePath={site.sitePath}
                 siteStatus={siteStatus}
                 frequency={frequency}
-                key={site.siteName}
+                key={index}
               />
             );
           })}

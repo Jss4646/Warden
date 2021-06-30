@@ -9,10 +9,11 @@ class SiteDashboard extends Component {
   constructor(props) {
     super(props);
     this.props.clearSiteData();
+    this.state = { isSiteDataLoaded: false };
   }
 
   async componentDidMount() {
-    const params = { siteName: this.props.match.params.siteName };
+    const params = { sitePath: this.props.match.params.sitePath };
 
     const fetchUrl = new URL(`${window.location.origin}/api/get-site`);
     console.log("Getting site");
@@ -35,16 +36,22 @@ class SiteDashboard extends Component {
     if (typeof siteData === "object") {
       this.props.loadSiteData(siteData);
     }
+
+    this.setState({ isSiteDataLoaded: true });
   }
 
   render() {
-    return (
-      <div className="site-dashboard">
-        <PagesSidebar {...this.props} />
-        <PageScreenshots {...this.props} />
-        <OptionsSidebar {...this.props} />
-      </div>
-    );
+    if (this.state.isSiteDataLoaded) {
+      return (
+        <div className="site-dashboard">
+          <PagesSidebar {...this.props} />
+          <PageScreenshots {...this.props} />
+          <OptionsSidebar {...this.props} />
+        </div>
+      );
+    } else {
+      return <div>Loading</div>;
+    }
   }
 }
 
