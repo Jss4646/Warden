@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
+import PagesList from "./pages-list";
 
 class PagesSidebar extends Component {
   async componentDidMount() {
@@ -47,12 +48,13 @@ class PagesSidebar extends Component {
 
   render() {
     const { siteName, siteUrl, siteStatus } = this.props.siteData;
+    console.log(siteStatus);
 
     return (
       <div className="pages-sidebar">
         <div
           className={`pages-sidebar__site-status ${
-            siteStatus === ""
+            siteStatus === "" || !siteStatus
               ? ""
               : siteStatus === "OK"
               ? "pages-sidebar__site-status--ok"
@@ -66,6 +68,7 @@ class PagesSidebar extends Component {
         <a className="pages-sidebar__delete-site" onClick={this.deleteSite}>
           Delete site
         </a>
+        <PagesList {...this.props} />
       </div>
     );
   }

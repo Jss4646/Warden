@@ -41,6 +41,7 @@ const appState = {
 const siteData = {
   siteName: "",
   siteUrl: "",
+  siteStatus: "",
 };
 
 const defaultState = {
