@@ -28,6 +28,7 @@ function siteData(state = [], action) {
 
     case "SET_CURRENT_PAGE":
       stateCopy.currentPage = action.pagePath;
+      return stateCopy;
 
     default:
       return state;
