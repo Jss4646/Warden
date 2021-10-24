@@ -7,7 +7,6 @@ class PagesSidebar extends Component {
     const params = { siteUrl: this.props.siteData.siteUrl };
 
     const fetchUrl = new URL(`${window.location.origin}/api/get-site-status`);
-    console.log("Getting site status");
     const siteData = await fetch(fetchUrl, {
       method: "POST",
       headers: {
@@ -26,11 +25,9 @@ class PagesSidebar extends Component {
   }
 
   deleteSite = async () => {
-    console.log("deleting site");
     const params = { sitePath: this.props.siteData.sitePath };
-
     const fetchUrl = new URL(`${window.location.origin}/api/delete-site`);
-    console.log("Deleting site");
+
     await fetch(fetchUrl, {
       method: "POST",
       headers: {
@@ -48,7 +45,6 @@ class PagesSidebar extends Component {
 
   render() {
     const { siteName, siteUrl, siteStatus } = this.props.siteData;
-    console.log(siteStatus);
 
     return (
       <div className="pages-sidebar">

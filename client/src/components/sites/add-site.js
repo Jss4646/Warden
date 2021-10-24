@@ -50,6 +50,7 @@ class AddSite extends Component {
       siteName: this.state.siteName,
       siteUrl: this.state.siteUrl,
       sitePath,
+      pages: {},
     };
 
     const fetchUrl = new URL(`${window.location.origin}/api/add-site`);

@@ -17,3 +17,25 @@ export function setSiteStatus(siteStatus) {
     siteStatus,
   };
 }
+
+export function addPage(pagePath, page) {
+  return {
+    type: "ADD_PAGE",
+    pagePath,
+    page,
+  };
+}
+
+export function removePage(pagePath) {
+  return {
+    type: "REMOVE_PAGE",
+    pagePath,
+  };
+}
+
+export function setCurrentPage(pagePath) {
+  return {
+    type: "SET_CURRENT_PAGE",
+    pagePath,
+  };
+}

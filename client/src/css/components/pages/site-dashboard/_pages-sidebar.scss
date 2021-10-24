@@ -25,4 +25,76 @@
   .pages-sidebar__site-name {
     margin: 14px 0;
   }
+
+  .pages-sidebar__delete-site {
+    color: $qa-tool-red;
+    text-decoration: underline;
+  }
+}
+
+.pages-list {
+  width: 90%;
+  margin-top: 30px;
+  border-top: solid 1px $qa-tool-light-grey;
+
+  .pages-list__failing-tab {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    color: $qa-tool-grey;
+    border-bottom: solid 1px $qa-tool-light-grey;
+    margin-bottom: 5px;
+  }
+
+  .pages-list__add-page {
+    display: flex;
+    margin-bottom: 5px;
+
+    .pages-list__add-page-input {
+
+    }
+
+    &-button {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      //border-right: .5px;
+    }
+
+    &-input {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
+  .pages-list__pages {
+    height: 500px;
+    overflow: auto;
+    direction: rtl;
+
+    .pages-list__page {
+      display: flex;
+      align-items: flex-end;
+      height: 32px;
+      direction:ltr;
+      cursor: pointer;
+
+      border-bottom: 1px solid $qa-tool-light-grey;
+
+      &:hover {
+        border-bottom-color: $qa-tool-blue-2;
+      }
+
+      .pages-list__page-url {
+        margin-right: auto;
+      }
+
+      .pages-list__page-passing-count {
+        margin-right: 25px;
+      }
+
+      .pages-list__page-menu-button {
+        padding-bottom: 4px;
+      }
+    }
+  }
 }

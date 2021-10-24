@@ -42,6 +42,8 @@ const siteData = {
   siteName: "",
   siteUrl: "",
   siteStatus: "",
+  sitePages: {},
+  currentPage: "",
 };
 
 const defaultState = {
