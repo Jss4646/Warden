@@ -9,7 +9,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup client
-        run:  cd client && npm install && npm run build:css && npm run build
+        run:  cd client && npm install --no-optional && npm run build:css && npm run build
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
