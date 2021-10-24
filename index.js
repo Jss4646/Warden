@@ -10,6 +10,7 @@ const {
   getAllSites,
   deleteSite,
   addSitePage,
+  deleteSitePage,
 } = require("./tools/db-endpoints");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -46,6 +47,9 @@ app.get("/api/get-all-sites", (req, res) => getAllSites(client, req, res));
 app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
 app.post("/api/delete-site", (req, res) => deleteSite(client, req, res));
 app.post("/api/add-site-page", (req, res) => addSitePage(client, req, res));
+app.post("/api/delete-site-page", (req, res) =>
+  deleteSitePage(client, req, res)
+);
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files

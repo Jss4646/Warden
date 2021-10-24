@@ -86,10 +86,33 @@ function addSitePage(client, req, res) {
   });
 }
 
+function deleteSitePage(client, req, res) {
+  client.connect(async (err) => {
+    if (err) throw err;
+    const db = client.db("warden");
+
+    const { sitePath, pagePath } = req.body;
+
+    const pageQuery = {};
+    pageQuery[`pages.${pagePath}`] = 1;
+
+    db.collection("sites")
+      .updateOne({ sitePath }, { $unset: pageQuery })
+      .catch((err) => {
+        console.log(err);
+        res.status(500);
+        res.send(err);
+      });
+
+    res.send("Page deleted");
+  });
+}
+
 module.exports = {
   addSite,
   getSite,
   getAllSites,
   deleteSite,
   addSitePage,
+  deleteSitePage,
 };

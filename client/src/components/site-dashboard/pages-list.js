@@ -4,8 +4,8 @@ import { Button, Dropdown, Input, Menu } from "antd";
 const { Search } = Input;
 const { Item } = Menu;
 
-const menu = (
-  <Menu>
+const menu = (pagePath, handleMenuClick) => (
+  <Menu onClick={(item) => handleMenuClick(item, pagePath)}>
     <Item key={0}>Delete page</Item>
     <Item key={1}>Run comparison</Item>
     <Item key={2}>Generate new baseline</Item>
@@ -44,7 +44,26 @@ class PagesList extends Component {
     });
   };
 
-  removePage = async () => {};
+  removePage = async (pagePath) => {
+    this.props.removePage(pagePath);
+
+    const params = { sitePath: this.props.siteData.sitePath, pagePath };
+    const fetchUrl = new URL(`${window.location.origin}/api/delete-site-page`);
+    await fetch(fetchUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
+  };
+
+  handleMenuClick = (item, pagePath) => {
+    switch (item.key) {
+      case "0":
+        this.removePage(pagePath);
+    }
+  };
 
   render() {
     const { pages } = this.props.siteData;
@@ -80,7 +99,7 @@ class PagesList extends Component {
                 </span>
                 <Dropdown
                   className="pages-list__page-menu-dropdown"
-                  overlay={menu}
+                  overlay={menu(path, this.handleMenuClick)}
                   trigger={["click"]}
                 >
                   {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
