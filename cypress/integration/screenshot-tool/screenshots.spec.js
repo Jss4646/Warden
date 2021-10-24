@@ -1,6 +1,6 @@
 describe("Screenshot tests", () => {
   beforeEach(() => {
-    cy.visit("/screenshot-tool");
+    cy.visit("/");
     cy.resetAppState();
   });
 
