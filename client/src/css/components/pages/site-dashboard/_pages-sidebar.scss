@@ -30,11 +30,18 @@
     color: $qa-tool-red;
     text-decoration: underline;
   }
+
+  .pages-sidebar__buttons {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    column-gap: 10px;
+    margin-top: 20px;
+  }
 }
 
 .pages-list {
   width: 90%;
-  margin-top: 30px;
+  margin-top: 20px;
   border-top: solid 1px $qa-tool-light-grey;
 
   .pages-list__failing-tab {
@@ -70,6 +77,8 @@
     height: 500px;
     overflow: auto;
     direction: rtl;
+    padding: 0 4px;
+    margin-top: 5px;
 
     .pages-list__page {
       display: flex;
@@ -80,11 +89,18 @@
 
       border-bottom: 1px solid $qa-tool-light-grey;
 
+      &--underlined {
+        border-bottom-color: $qa-tool-blue-2;
+        color: $qa-tool-blue-2;
+      }
+
       &:hover {
         border-bottom-color: $qa-tool-blue-2;
       }
 
       .pages-list__page-url {
+        white-space: nowrap;
+        overflow: hidden;
         margin-right: auto;
       }
 
@@ -96,5 +112,10 @@
         padding-bottom: 4px;
       }
     }
+  }
+
+  .pages-list__crawl-site {
+    width: 100%;
+    margin-bottom: 5px;
   }
 }

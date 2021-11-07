@@ -10,10 +10,9 @@ async function crawlSitemap(url, res) {
     .catch(() => false);
 
   if (!isLiveUrl) {
-    const error = "Sitemap doesn't exist";
-    console.log(error);
+    console.log("Sitemap doesn't exist");
     res.status(500);
-    return error;
+    return;
   }
 
   console.log(`Getting sitemap for ${urlOrigin}`);
@@ -34,4 +33,5 @@ async function crawlSitemapEndpoint(req, res) {
 
 module.exports = {
   crawlSitemapEndpoint,
+  crawlSitemap,
 };

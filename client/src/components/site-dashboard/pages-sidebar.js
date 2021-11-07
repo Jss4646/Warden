@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
 import PagesList from "./pages-list";
+import { Button } from "antd";
 
 class PagesSidebar extends Component {
   async componentDidMount() {
@@ -64,6 +65,10 @@ class PagesSidebar extends Component {
         <a className="pages-sidebar__delete-site" onClick={this.deleteSite}>
           Delete site
         </a>
+        <div className="pages-sidebar__buttons">
+          <Button>Run comparison</Button>
+          <Button>Generate baselines</Button>
+        </div>
         <PagesList {...this.props} />
       </div>
     );

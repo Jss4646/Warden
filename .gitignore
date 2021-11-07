@@ -1,4 +1,5 @@
-node_modules
 .idea
-/cypress/videos/
 .env
+node_modules
+/cypress/videos/
+/screenshots

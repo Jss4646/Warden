@@ -1,16 +1,8 @@
 import React, { Component } from "react";
-import { Button, Dropdown, Input, Menu } from "antd";
+import { Button, Input } from "antd";
+import Page from "./page";
 
 const { Search } = Input;
-const { Item } = Menu;
-
-const menu = (pagePath, handleMenuClick) => (
-  <Menu onClick={(item) => handleMenuClick(item, pagePath)}>
-    <Item key={0}>Delete page</Item>
-    <Item key={1}>Run comparison</Item>
-    <Item key={2}>Generate new baseline</Item>
-  </Menu>
-);
 
 class PagesList extends Component {
   state = { addPagePath: "" };
@@ -24,7 +16,7 @@ class PagesList extends Component {
   addPage = async () => {
     const url = new URL(this.props.siteData.siteUrl);
     url.pathname = this.state.addPagePath;
-    const newPage = { url, passingNum: "0/0" };
+    const newPage = { url, passingNum: "0/0", screenshots: {} };
 
     this.props.addPage(url.pathname, newPage);
 
@@ -44,11 +36,12 @@ class PagesList extends Component {
     });
   };
 
-  removePage = async (pagePath) => {
-    this.props.removePage(pagePath);
+  crawlSite = async () => {
+    const { sitePath, siteUrl } = this.props.siteData;
+    console.log(sitePath);
+    const params = { sitePath: sitePath, url: siteUrl };
+    const fetchUrl = new URL(`${window.location.origin}/api/fill-site-pages`);
 
-    const params = { sitePath: this.props.siteData.sitePath, pagePath };
-    const fetchUrl = new URL(`${window.location.origin}/api/delete-site-page`);
     await fetch(fetchUrl, {
       method: "POST",
       headers: {
@@ -56,13 +49,6 @@ class PagesList extends Component {
       },
       body: JSON.stringify(params),
     });
-  };
-
-  handleMenuClick = (item, pagePath) => {
-    switch (item.key) {
-      case "0":
-        this.removePage(pagePath);
-    }
   };
 
   render() {
@@ -87,26 +73,14 @@ class PagesList extends Component {
             onChange={this.setAddPagePath}
           />
         </div>
+        <Button className="pages-list__crawl-site" onClick={this.crawlSite}>
+          Crawl site
+        </Button>
         <Search placeholder="search for page" />
         <div className="pages-list__pages">
           {Object.keys(pages).map((path) => {
             const page = pages[path];
-            return (
-              <div className="pages-list__page" key={path}>
-                <span className="pages-list__page-url">{path}</span>
-                <span className="pages-list__page-passing-count">
-                  {page.passingNum}
-                </span>
-                <Dropdown
-                  className="pages-list__page-menu-dropdown"
-                  overlay={menu(path, this.handleMenuClick)}
-                  trigger={["click"]}
-                >
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a className="pages-list__page-menu-button">...</a>
-                </Dropdown>
-              </div>
-            );
+            return <Page {...this.props} page={page} path={path} key={path} />;
           })}
         </div>
       </div>

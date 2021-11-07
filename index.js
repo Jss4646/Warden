@@ -11,6 +11,7 @@ const {
   deleteSite,
   addSitePage,
   deleteSitePage,
+  fillSitePages,
 } = require("./tools/db-endpoints");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -50,6 +51,7 @@ app.post("/api/add-site-page", (req, res) => addSitePage(client, req, res));
 app.post("/api/delete-site-page", (req, res) =>
   deleteSitePage(client, req, res)
 );
+app.post("/api/fill-site-pages", (req, res) => fillSitePages(client, req, res));
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files

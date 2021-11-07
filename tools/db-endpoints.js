@@ -1,4 +1,5 @@
 const { query } = require("mongodb/lib/core/wireprotocol");
+const { crawlSitemap } = require("./crawl-url");
 
 function addSite(client, req, res) {
   const siteData = req.body;
@@ -108,6 +109,42 @@ function deleteSitePage(client, req, res) {
   });
 }
 
+async function fillSitePages(client, req, res) {
+  console.log(req.body.url);
+  const results = await crawlSitemap(req.body.url, res);
+
+  if (!results) {
+    res.send("No pages found");
+    return;
+  }
+
+  client.connect(async (err) => {
+    if (err) throw err;
+    const db = client.db("warden");
+
+    const urls = results.sites;
+    urls.sort();
+
+    urls.forEach((url) => {
+      url = new URL(url);
+      const query = {};
+
+      query[`pages.${url.pathname}`] = {
+        url,
+        passingNum: "0/0",
+        screenshots: {},
+      };
+
+      db.collection("sites").updateOne(
+        { sitePath: req.body.sitePath },
+        { $set: query }
+      );
+    });
+
+    res.send("Pages added");
+  });
+}
+
 module.exports = {
   addSite,
   getSite,
@@ -115,4 +152,5 @@ module.exports = {
   deleteSite,
   addSitePage,
   deleteSitePage,
+  fillSitePages,
 };
