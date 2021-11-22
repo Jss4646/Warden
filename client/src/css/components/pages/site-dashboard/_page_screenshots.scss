@@ -19,6 +19,8 @@
 }
 
 .dashboard-screenshot-bar {
+  border-bottom: 1px solid $qa-tool-light-grey;
+  padding-bottom: 10px;
 
   .dashboard-screenshot-bar__screenshots {
     display: grid;
@@ -32,6 +34,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    .dashboard-screenshot-bar__screenshots-img {
+      height: 230px;
+      overflow-y: auto;
+
+      img {
+        width: 320px;
+      }
     }
   }
 }

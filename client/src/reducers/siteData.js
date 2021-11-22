@@ -5,9 +5,10 @@ function siteData(state = [], action) {
     case "CLEAR_SITE_DATA":
       return {
         siteName: "",
-        siteUrl: "",
+        url: "",
+        comparisonUrl: "",
         siteStatus: "",
-        sitePages: {},
+        pages: {},
         currentPage: "",
       };
 
@@ -26,8 +27,17 @@ function siteData(state = [], action) {
       delete stateCopy.pages[action.pagePath];
       return stateCopy;
 
+    case "REMOVE_ALL_PAGES":
+      stateCopy.pages = { "/": stateCopy.pages["/"] };
+      return stateCopy;
+
     case "SET_CURRENT_PAGE":
       stateCopy.currentPage = action.pagePath;
+      return stateCopy;
+
+    case "ADD_SCREENSHOTS":
+      stateCopy.pages[action.page].screenshots[action.device] =
+        action.screenshots;
       return stateCopy;
 
     default:

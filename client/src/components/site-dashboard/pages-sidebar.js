@@ -5,7 +5,7 @@ import { Button } from "antd";
 
 class PagesSidebar extends Component {
   async componentDidMount() {
-    const params = { siteUrl: this.props.siteData.siteUrl };
+    const params = { url: this.props.siteData.url };
 
     const fetchUrl = new URL(`${window.location.origin}/api/get-site-status`);
     const siteData = await fetch(fetchUrl, {
@@ -45,7 +45,7 @@ class PagesSidebar extends Component {
   };
 
   render() {
-    const { siteName, siteUrl, siteStatus } = this.props.siteData;
+    const { siteName, url, siteStatus } = this.props.siteData;
 
     return (
       <div className="pages-sidebar">
@@ -58,7 +58,7 @@ class PagesSidebar extends Component {
               : "pages-sidebar__site-status--not-ok"
           }`}
         />
-        <a href={siteUrl} target="_blank" rel="noreferrer">
+        <a href={url} target="_blank" rel="noreferrer">
           <h1 className="pages-sidebar__site-name">{siteName}</h1>
         </a>
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}

@@ -12,6 +12,7 @@ const {
   addSitePage,
   deleteSitePage,
   fillSitePages,
+  deleteAllSitePages,
 } = require("./tools/db-endpoints");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -32,6 +33,7 @@ Sentry.init({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(Sentry.Handlers.requestHandler());
+app.use("/api/screenshots", express.static("screenshots"));
 
 (async () => {
   const cluster = await initialiseCluster();
@@ -52,6 +54,9 @@ app.post("/api/delete-site-page", (req, res) =>
   deleteSitePage(client, req, res)
 );
 app.post("/api/fill-site-pages", (req, res) => fillSitePages(client, req, res));
+app.post("/api/delete-all-site-pages", (req, res) =>
+  deleteAllSitePages(client, req, res)
+);
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files

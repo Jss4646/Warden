@@ -42,8 +42,9 @@ async function initialiseCluster() {
  * @returns {Promise<void>}
  */
 async function takeScreenshot({ page, data: { screenshotData, res } }) {
-  let { url, cookieData, resolution, userAgent } = screenshotData;
+  let { url, cookieData, resolution, userAgent, fileName } = screenshotData;
   console.log(`Setting up page for ${url}`);
+  console.log(screenshotData);
 
   await page
     .setViewport(resolution)
@@ -65,7 +66,10 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
   console.log(`Screenshotting Website: ${url}`);
 
   const screenshot = await page
-    .screenshot({ fullPage: true })
+    .screenshot({
+      fullPage: true,
+      path: `${__dirname}/../screenshots/${fileName}.png`,
+    })
     .catch((err) => sendError("Couldn't take screenshot", err, res));
   console.log(`Screenshot taken: ${url}\n`);
   await page.close();
@@ -82,7 +86,6 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
  * @returns {Promise<void>}
  */
 async function generateScreenshot(req, res, cluster) {
-  console.log("body", req.body);
   cluster.queue({ screenshotData: req.body, res });
 }
 

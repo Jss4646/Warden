@@ -39,3 +39,18 @@ export function setCurrentPage(pagePath) {
     pagePath,
   };
 }
+
+export function removeAllPages() {
+  return {
+    type: "REMOVE_ALL_PAGES",
+  };
+}
+
+export function addScreenshots(page, device, screenshots) {
+  return {
+    type: "ADD_SCREENSHOTS",
+    page,
+    device,
+    screenshots,
+  };
+}

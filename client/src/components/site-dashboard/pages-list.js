@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Button, Input } from "antd";
+import { Button, Empty, Input, Spin } from "antd";
 import Page from "./page";
 
 const { Search } = Input;
 
 class PagesList extends Component {
-  state = { addPagePath: "" };
+  state = { addPagePath: "", loadingPages: false };
 
   setAddPagePath = (event) => {
     const newState = { ...this.state };
@@ -13,8 +13,23 @@ class PagesList extends Component {
     this.setState(newState);
   };
 
+  toggleLoadingPages() {
+    const newState = { ...this.state };
+    newState.loadingPages = !newState.loadingPages;
+    this.setState(newState);
+  }
+
+  addPageClientSide = async (url) => {
+    url = new URL(url);
+    this.props.addPage(url.pathname, {
+      url,
+      passingNum: "0/0",
+      screenshots: {},
+    });
+  };
+
   addPage = async () => {
-    const url = new URL(this.props.siteData.siteUrl);
+    const url = new URL(this.props.siteData.url);
     url.pathname = this.state.addPagePath;
     const newPage = { url, passingNum: "0/0", screenshots: {} };
 
@@ -37,10 +52,34 @@ class PagesList extends Component {
   };
 
   crawlSite = async () => {
-    const { sitePath, siteUrl } = this.props.siteData;
-    console.log(sitePath);
-    const params = { sitePath: sitePath, url: siteUrl };
+    this.toggleLoadingPages();
+    const { sitePath, url } = this.props.siteData;
+    const params = { sitePath: sitePath, url: url };
     const fetchUrl = new URL(`${window.location.origin}/api/fill-site-pages`);
+
+    await fetch(fetchUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    })
+      .then((res) => res.json())
+      .then((urls) => {
+        urls.forEach((url) => {
+          this.addPageClientSide(url);
+        });
+      });
+    this.toggleLoadingPages();
+  };
+
+  removeAllPages = async () => {
+    this.props.removeAllPages();
+    const { sitePath } = this.props.siteData;
+    const params = { sitePath: sitePath };
+    const fetchUrl = new URL(
+      `${window.location.origin}/api/delete-all-site-pages`
+    );
 
     await fetch(fetchUrl, {
       method: "POST",
@@ -53,6 +92,18 @@ class PagesList extends Component {
 
   render() {
     const { pages } = this.props.siteData;
+    let pagesElement;
+    if (this.state.loadingPages) {
+      pagesElement = <Spin />;
+    } else if (Object.keys(pages).length > 0) {
+      pagesElement = Object.keys(pages).map((path) => {
+        const page = pages[path];
+        return <Page {...this.props} page={page} path={path} key={path} />;
+      });
+    } else {
+      pagesElement = <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+    }
+
     return (
       <div className="pages-list">
         <div className="pages-list__failing-tab">
@@ -73,16 +124,14 @@ class PagesList extends Component {
             onChange={this.setAddPagePath}
           />
         </div>
-        <Button className="pages-list__crawl-site" onClick={this.crawlSite}>
-          Crawl site
-        </Button>
-        <Search placeholder="search for page" />
-        <div className="pages-list__pages">
-          {Object.keys(pages).map((path) => {
-            const page = pages[path];
-            return <Page {...this.props} page={page} path={path} key={path} />;
-          })}
+        <div className="pages-list__buttons">
+          <Button className="pages-list__crawl-site" onClick={this.crawlSite}>
+            Crawl site
+          </Button>
+          <Button onClick={this.removeAllPages}>Remove all pages</Button>
         </div>
+        <Search placeholder="search for page" />
+        <div className="pages-list__pages">{pagesElement}</div>
       </div>
     );
   }

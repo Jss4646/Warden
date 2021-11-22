@@ -8,7 +8,8 @@ class AddSite extends Component {
     super(props);
     this.state = {
       siteName: "",
-      siteUrl: "",
+      url: "",
+      comparisonUrl: "",
       errorMessage: "",
       modalShown: false,
     };
@@ -26,9 +27,15 @@ class AddSite extends Component {
 
   updateSiteUrl(event) {
     const newState = { ...this.state };
-    newState.siteUrl = event.target.value;
+    newState.url = event.target.value;
     this.setState(newState);
   }
+
+  updateComparisonUrl = (event) => {
+    const newState = { ...this.state };
+    newState.comparisonUrl = event.target.value;
+    this.setState(newState);
+  };
 
   updateErrorMessage(errorMessage) {
     const newState = { ...this.state };
@@ -39,7 +46,7 @@ class AddSite extends Component {
   async submitSite(event) {
     event.preventDefault();
 
-    if (!validateURL(this.state.siteUrl)) {
+    if (!validateURL(this.state.url)) {
       this.updateErrorMessage("Url is not valid");
       return;
     }
@@ -48,9 +55,13 @@ class AddSite extends Component {
 
     const params = {
       siteName: this.state.siteName,
-      siteUrl: this.state.siteUrl,
+      url: this.state.url,
+      comparisonUrl: this.state.comparisonUrl,
       sitePath,
-      pages: {},
+      pages: {
+        "/": { url: this.state.url, passingNum: "0/0", screenshots: {} },
+      },
+      devices: ["1080p", "iphone-x/xs"],
     };
 
     const fetchUrl = new URL(`${window.location.origin}/api/add-site`);
@@ -81,6 +92,7 @@ class AddSite extends Component {
           <AddSiteModal
             updateSiteName={this.updateSiteName}
             updateSiteUrl={this.updateSiteUrl}
+            updateComparisonUrl={this.updateComparisonUrl}
             submitSite={this.submitSite}
             errorMessage={this.state.errorMessage}
           />
@@ -93,6 +105,7 @@ class AddSite extends Component {
 const AddSiteModal = ({
   updateSiteName,
   updateSiteUrl,
+  updateComparisonUrl,
   submitSite,
   errorMessage,
 }) => (
@@ -105,6 +118,10 @@ const AddSiteModal = ({
       <div className="add-site-modal__site-url">
         <label>Site url:</label>
         <Input onChange={updateSiteUrl} />
+      </div>
+      <div className="add-site-modal__comparison-url">
+        <label>Comparison url:</label>
+        <Input onChange={updateComparisonUrl} />
       </div>
       <div className="add-site-modal__bottom-row">
         <Button className="add-site-modal__submit" onClick={submitSite}>

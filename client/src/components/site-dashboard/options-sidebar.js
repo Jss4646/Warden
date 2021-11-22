@@ -1,18 +1,21 @@
 import React, { Component } from "react";
-import Sidebar from "../global/sidebar";
 import { Collapse } from "antd";
 import AboutSite from "./about-site";
+import SiteConfig from "./site-config";
 
 const { Panel } = Collapse;
 
 class OptionsSidebar extends Component {
   render() {
     return (
-      <Sidebar>
-        <Panel key={1} header="About site" id="about-site">
+      <Collapse defaultActiveKey={["0", "1"]} className="sidebar__accordion">
+        <Panel key={0} header="About site" id="about-site">
           <AboutSite {...this.props} />
         </Panel>
-      </Sidebar>
+        <Panel key={1} header="Site config" id="site-config">
+          <SiteConfig {...this.props} />
+        </Panel>
+      </Collapse>
     );
   }
 }

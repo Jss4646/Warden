@@ -141,7 +141,22 @@ async function fillSitePages(client, req, res) {
       );
     });
 
-    res.send("Pages added");
+    res.send(urls);
+  });
+}
+
+async function deleteAllSitePages(client, req, res) {
+  client.connect(async (err) => {
+    if (err) throw err;
+    const db = client.db("warden");
+    const site = await db
+      .collection("sites")
+      .findOne({ sitePath: req.body.sitePath });
+
+    db.collection("sites").updateOne(
+      { sitePath: req.body.sitePath },
+      { $set: { pages: { "/": { ...site.pages["/"] } } } }
+    );
   });
 }
 
@@ -153,4 +168,5 @@ module.exports = {
   addSitePage,
   deleteSitePage,
   fillSitePages,
+  deleteAllSitePages,
 };

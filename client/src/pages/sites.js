@@ -41,7 +41,7 @@ class Sites extends Component {
             return (
               <SiteCard
                 lastRan={lastRan}
-                siteUrl={site.siteUrl}
+                url={site.url}
                 siteName={site.siteName}
                 sitePath={site.sitePath}
                 siteStatus={siteStatus}

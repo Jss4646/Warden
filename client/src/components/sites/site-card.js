@@ -12,7 +12,7 @@ class SiteCard extends Component {
   };
 
   render() {
-    const { siteName, siteUrl, lastRan, frequency, siteStatus } = this.props;
+    const { siteName, url, lastRan, frequency, siteStatus } = this.props;
 
     return (
       <div className="site-card">
@@ -20,7 +20,7 @@ class SiteCard extends Component {
           <h2 className="site-card__name">{siteName}</h2>
           <a
             className="site-card__site-link"
-            href={siteUrl}
+            href={url}
             target="_blank"
             rel="noreferrer"
           >
@@ -60,7 +60,7 @@ class SiteCard extends Component {
 
 SiteCard.propTypes = {
   siteName: PropTypes.string,
-  siteUrl: PropTypes.string,
+  url: PropTypes.string,
   siteStatus: PropTypes.object,
   lastRan: PropTypes.string,
   frequency: PropTypes.string,

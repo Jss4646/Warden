@@ -30,6 +30,9 @@ class Page extends Component {
     switch (item.key) {
       case "0":
         this.removePage(pagePath);
+        return;
+      default:
+        return;
     }
   };
 
