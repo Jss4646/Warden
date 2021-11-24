@@ -3,105 +3,131 @@ import DashboardScreenshotsBar from "./dashboard-screenshots-bar";
 import { Button, Empty } from "antd";
 import { default as devicesData } from "../../data/devices.json";
 import pixelmatch from "pixelmatch";
-import { PNG } from "pngjs/browser";
 
 class PageScreenshots extends Component {
   runComparison = async () => {
     const { devices, url, comparisonUrl } = this.props.siteData;
-    console.log(devices);
     for (const device of devices) {
       const { height, width, userAgent } = devicesData[device];
-      const imageUrls = {};
-
       const screenshotQueue = [];
 
-      for (let i = 0; i < 2; i++) {
-        const date = new Date();
-        let paramUrl = i === 0 ? url : comparisonUrl;
-        paramUrl = new URL(paramUrl);
+      const baselineFilename = this._createFilename(url);
+      const comparisonFilename = this._createFilename(comparisonUrl);
 
-        let path = paramUrl.pathname === "/" ? "" : `${paramUrl.pathname}-`;
-        path = path.replaceAll("/", "-");
-
-        const fileName = `${
-          paramUrl.host
-        }-${path}${date.getMilliseconds()}-${date.getSeconds()}-${date.getDay()}-${date.getMonth()}-${date.getFullYear()}`;
-
-        if (i === 0) {
-          imageUrls.baseline = fileName;
-        } else {
-          imageUrls.comparison = fileName;
-        }
-
-        const params = {
-          url: paramUrl,
-          resolution: { width, height },
-          userAgent,
-          fileName,
-        };
-
-        screenshotQueue.push(
-          fetch(`${window.location.origin}/api/take-screenshot`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(params),
-            // TODO cancel button
-            // signal: abortSignal,
-          })
-        );
-      }
+      screenshotQueue.push(
+        this._generateScreenshot(
+          url,
+          baselineFilename,
+          { width, height },
+          userAgent
+        ),
+        this._generateScreenshot(
+          comparisonUrl,
+          comparisonFilename,
+          { width, height },
+          userAgent
+        )
+      );
 
       this.props.addScreenshots(new URL(url).pathname, device, {});
 
-      const screenshotResponses = await Promise.all(screenshotQueue);
-      const screenshotBuffers = screenshotResponses.map(async (screenshot) => {
-        const screenshotBlob = await screenshot.blob();
-        const screenshotArray = await screenshotBlob.arrayBuffer();
-
-        return new Uint8ClampedArray(screenshotArray);
-      });
-      let [baselineScreenshot, changedScreenshot] = await Promise.all(
-        screenshotBuffers
-      );
-
-      const fullHeight = baselineScreenshot.length / width / 4;
-
-      // const diffCanvas = document.createElement("canvas");
-      // const diffContext = diffCanvas.getContext("2d");
-      // const imageData = new ImageData(baselineScreenshot, width);
-      // const diff = diffContext.createImageData(imageData);
-      const diffImgArray = new Uint8Array(baselineScreenshot.length);
-      const diff = new PNG(width, fullHeight);
-
-      console.log(baselineScreenshot, changedScreenshot, diffImgArray);
-      const pixelDiff = pixelmatch(
-        baselineScreenshot,
-        baselineScreenshot,
-        diff,
-        width,
-        fullHeight,
-        { threshold: 0.1 }
-      );
-
-      // const diffCanvas = document.createElement("canvas");
-      // const diffContext = diffCanvas.getContext("2d");
-      // diffCanvas.width = width;
-      // diffCanvas.height = fullHeight;
-      // const imageData = new ImageData(diffImgArray, width);
-      // diffContext.putImageData(imageData, 0, 0);
-
-      // diffContext.putImageData(diff, 0, 0);
-      // const dataUrl = diffCanvas.toDataURL();
+      const diffImageUrl = await this._createDiffImage(screenshotQueue);
 
       this.props.addScreenshots(new URL(url).pathname, device, {
-        baseline: `${window.location.origin}/api/screenshots/${imageUrls.baseline}.png`,
-        changed: `${window.location.origin}/api/screenshots/${imageUrls.comparison}.png`,
-        diff: diff,
+        baseline: `${window.location.origin}/api/screenshots/${baselineFilename}.png`,
+        changed: `${window.location.origin}/api/screenshots/${comparisonFilename}.png`,
+        diff: diffImageUrl,
       });
     }
   };
+
+  async _createDiffImage(screenshotQueue) {
+    const screenshotResponses = await Promise.all(screenshotQueue);
+    const screenshotBuffers = screenshotResponses.map(async (screenshot) => {
+      const screenshotBlob = await screenshot.blob();
+      return await createImageBitmap(screenshotBlob);
+    });
+
+    let [baselineScreenshot, changedScreenshot] = await Promise.all(
+      screenshotBuffers
+    );
+    const { width: baselineWidth, height: baselineHeight } = baselineScreenshot;
+
+    const baselineImageData = this._createImageData(
+      baselineScreenshot,
+      baselineWidth,
+      baselineHeight
+    );
+    const changedImageData = this._createImageData(
+      changedScreenshot,
+      baselineWidth,
+      baselineHeight
+    );
+
+    const diffCanvas = document.createElement("canvas");
+    diffCanvas.width = baselineWidth;
+    diffCanvas.height = baselineHeight;
+    const diffContext = diffCanvas.getContext("2d");
+    const diff = diffContext.createImageData(baselineWidth, baselineHeight);
+
+    console.log(baselineScreenshot, changedScreenshot, diff.data);
+    const pixelDiff = pixelmatch(
+      changedImageData.data,
+      baselineImageData.data,
+      diff.data,
+      baselineWidth,
+      baselineHeight,
+      { threshold: 0.1 }
+    );
+
+    console.log(
+      "Difference: ",
+      (pixelDiff / (baselineWidth * baselineHeight)) * 100
+    );
+
+    diffContext.putImageData(diff, 0, 0);
+    const dataUrl = diffCanvas.toDataURL();
+    return dataUrl;
+  }
+
+  _generateScreenshot(url, fileName, resolution, userAgent) {
+    const params = {
+      url,
+      resolution,
+      userAgent,
+      fileName,
+    };
+
+    return fetch(`${window.location.origin}/api/take-screenshot`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+      // TODO cancel button
+      // signal: abortSignal,
+    });
+  }
+
+  _createFilename(url) {
+    const date = new Date();
+    url = new URL(url);
+
+    let path = url.pathname === "/" ? "" : `${url.pathname}-`;
+    path = path.replaceAll("/", "-");
+
+    const fileNameDate = `${date.getMilliseconds()}-${date.getSeconds()}-${date.getDay()}-${date.getMonth()}-${date.getFullYear()}`;
+    return `${url.host}-${path}${fileNameDate}`;
+  }
+
+  _createImageData(screenshot, width, height) {
+    const canvasElement = document.createElement("canvas");
+    canvasElement.width = width;
+    canvasElement.height = height;
+    const context = canvasElement.getContext("2d");
+    context.drawImage(screenshot, 0, 0);
+    return context.getImageData(0, 0, width, height);
+  }
 
   render() {
     const { currentPage, pages } = this.props.siteData;
