@@ -1,4 +1,5 @@
 const { Cluster } = require("puppeteer-cluster");
+const { createDiffImage } = require("./comparison.js");
 
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
@@ -73,7 +74,7 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
     .catch((err) => sendError("Couldn't take screenshot", err, res));
   console.log(`Screenshot taken: ${url}\n`);
   await page.close();
-  res.send(screenshot);
+  return screenshot;
 }
 
 /**
@@ -86,7 +87,28 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
  * @returns {Promise<void>}
  */
 async function generateScreenshot(req, res, cluster) {
-  cluster.queue({ screenshotData: req.body, res });
+  const screenshot = cluster.execute({ screenshotData: req.body, res });
+  res.send(screenshot);
+}
+
+async function compareScreenshots(req, res, cluster) {
+  const { baselineScreenshotData, comparisonScreenshotData } = req.body;
+  const baselineScreenshotPromise = cluster.execute({
+    screenshotData: baselineScreenshotData,
+    res,
+  });
+
+  const comparisonScreenshotPromise = cluster.execute({
+    screenshotData: comparisonScreenshotData,
+    res,
+  });
+
+  const [baselineScreenshot, comparisonScreenshot] = await Promise.all([
+    baselineScreenshotPromise,
+    comparisonScreenshotPromise,
+  ]);
+
+  const diffImage = createDiffImage(baselineScreenshot, comparisonScreenshot);
 }
 
 /**

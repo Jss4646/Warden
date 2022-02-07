@@ -19,6 +19,7 @@ class Sites extends Component {
         return res.text();
       }
     });
+    console.log(`site data: ${siteData}`);
     this.setState({ sites: siteData });
   }
 
