@@ -1,5 +1,6 @@
 const { Cluster } = require("puppeteer-cluster");
 const { createDiffImage } = require("./comparison.js");
+const { addDeviceScreenshots } = require("./db-endpoints");
 
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
@@ -45,7 +46,7 @@ async function initialiseCluster() {
 async function takeScreenshot({ page, data: { screenshotData, res } }) {
   let { url, cookieData, resolution, userAgent, fileName } = screenshotData;
   console.log(`Setting up page for ${url}`);
-  console.log(screenshotData);
+  console.log(url, cookieData, resolution, userAgent, fileName);
 
   await page
     .setViewport(resolution)
@@ -87,12 +88,15 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
  * @returns {Promise<void>}
  */
 async function generateScreenshot(req, res, cluster) {
-  const screenshot = cluster.execute({ screenshotData: req.body, res });
+  const screenshot = await cluster.execute({ screenshotData: req.body, res });
   res.send(screenshot);
 }
 
-async function compareScreenshots(req, res, cluster) {
-  const { baselineScreenshotData, comparisonScreenshotData } = req.body;
+async function compareScreenshots(req, res, cluster, client) {
+  const { baselineScreenshotData, comparisonScreenshotData, sitePath, device } =
+    req.body;
+
+  console.log("Starting to take screenshot");
   const baselineScreenshotPromise = cluster.execute({
     screenshotData: baselineScreenshotData,
     res,
@@ -108,7 +112,29 @@ async function compareScreenshots(req, res, cluster) {
     comparisonScreenshotPromise,
   ]);
 
-  const diffImage = createDiffImage(baselineScreenshot, comparisonScreenshot);
+  console.log("Finished taking screenshots");
+
+  await createDiffImage(
+    baselineScreenshot,
+    comparisonScreenshot,
+    baselineScreenshotData.fileName
+  );
+
+  const parsedUrl = new URL(baselineScreenshotData.url);
+  const screenshots = {
+    baselineScreenshot: `/api/screenshots/${baselineScreenshotData.fileName}.png`,
+    comparisonScreenshot: `/api/screenshots/${comparisonScreenshotData.fileName}.png`,
+    diffImage: `/api/screenshots/${baselineScreenshotData.fileName}-diff.png`,
+  };
+  await addDeviceScreenshots(
+    client,
+    sitePath,
+    parsedUrl.pathname,
+    screenshots,
+    device
+  );
+
+  res.send("Images created");
 }
 
 /**
@@ -127,4 +153,5 @@ function sendError(errMessage, err, res) {
 module.exports = {
   initialiseCluster,
   generateScreenshot,
+  compareScreenshots,
 };

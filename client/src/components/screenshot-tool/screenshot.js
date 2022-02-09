@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Button, Card, Spin } from "antd";
-import * as placeholderImage from "../../data/image.jpeg";
 import cancelSVG from "../../data/undraw_cancel_u1it.svg";
 import brokenSVG from "../../data/undraw_injured_9757.svg";
 
@@ -51,7 +50,6 @@ class Screenshot extends Component {
         cover = (
           <img
             data-cy="screenshot-image"
-            onError={(event) => (event.target.src = placeholderImage.default)}
             className={`screenshot__image ${
               showMenu ? "screenshot__image--blur" : ""
             }`}

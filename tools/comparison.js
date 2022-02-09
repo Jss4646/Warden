@@ -1,54 +1,33 @@
-async function createImageBuffer(image) {
-  const screenshotBlob = await image.blob();
-  return await createImageBitmap(screenshotBlob);
-}
+const fs = require("fs");
+const pixelmatch = require("pixelmatch");
+const PNG = require("pngjs").PNG;
 
-async function createDiffImage(baselineScreenshot, comparisonScreenshot) {
-  const baselineBufferPromise = createImageBuffer(baselineScreenshot);
-  const comparisonBufferPromise = createImageBuffer(comparisonScreenshot);
+async function createDiffImage(baselineBuffer, comparisonBuffer, fileName) {
+  const baselineImage = await PNG.sync.read(baselineBuffer);
+  const comparisonImage = await PNG.sync.read(comparisonBuffer);
+  const height = Math.max(baselineImage.height, comparisonImage.height);
 
-  let [baselineBuffer, comparisonBuffer] = await Promise.all([
-    baselineBufferPromise,
-    comparisonBufferPromise,
-  ]);
+  const diff = new PNG({ width: baselineImage.width, height });
 
-  const { width: baselineWidth, height: baselineHeight } = baselineBuffer;
-
-  const baselineImageData = this._createImageData(
-    baselineBuffer,
-    baselineWidth,
-    baselineHeight
-  );
-  const changedImageData = this._createImageData(
-    comparisonBuffer,
-    baselineWidth,
-    baselineHeight
-  );
-
-  const diffCanvas = document.createElement("canvas");
-  diffCanvas.width = baselineWidth;
-  diffCanvas.height = baselineHeight;
-  const diffContext = diffCanvas.getContext("2d");
-  const diff = diffContext.createImageData(baselineWidth, baselineHeight);
-
-  console.log(baselineBuffer, comparisonBuffer, diff.data);
   const pixelDiff = pixelmatch(
-    changedImageData.data,
-    baselineImageData.data,
+    comparisonImage.data,
+    baselineImage.data,
     diff.data,
-    baselineWidth,
-    baselineHeight,
+    baselineImage.width,
+    height,
     { threshold: 0.1 }
   );
 
   console.log(
     "Difference: ",
-    (pixelDiff / (baselineWidth * baselineHeight)) * 100
+    (pixelDiff / (baselineImage.width * height)) * 100
   );
 
-  diffContext.putImageData(diff, 0, 0);
-  const dataUrl = diffCanvas.toDataURL();
-  return dataUrl;
+  fs.writeFileSync(
+    `${__dirname}/../screenshots/${fileName}-diff.png`,
+    PNG.sync.write(diff)
+  );
+  return diff;
 }
 
 module.exports = {

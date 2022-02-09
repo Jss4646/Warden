@@ -13,11 +13,12 @@ const createScreenshotContainer = (src) => {
 
 class DashboardScreenshotsBar extends Component {
   render() {
-    const { baseline, changed, diff } = this.props.screenshots;
+    const { baselineScreenshot, comparisonScreenshot, diffImage } =
+      this.props.screenshots;
 
-    const baselineImg = createScreenshotContainer(baseline);
-    const changedImg = createScreenshotContainer(changed);
-    const diffImg = createScreenshotContainer(diff);
+    const baselineImg = createScreenshotContainer(baselineScreenshot);
+    const changedImg = createScreenshotContainer(comparisonScreenshot);
+    const diffImg = createScreenshotContainer(diffImage);
 
     return (
       <div className="dashboard-screenshot-bar">

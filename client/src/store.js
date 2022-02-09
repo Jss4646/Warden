@@ -19,7 +19,7 @@ const siteData = {
   siteStatus: "",
   sitePages: {},
   currentPage: "",
-  devices: ["1080p", "iphone-x/xs"],
+  devices: ["1080p"],
 };
 
 const defaultState = {

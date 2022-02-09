@@ -160,6 +160,30 @@ async function deleteAllSitePages(client, req, res) {
   });
 }
 
+async function addDeviceScreenshots(
+  client,
+  sitePath,
+  urlPath,
+  screenshotUrls,
+  device
+) {
+  await new Promise((resolve) => {
+    console.log("Started adding", device);
+    client.connect(async (err) => {
+      if (err) throw err;
+      const db = client.db("warden");
+
+      const query = {};
+
+      query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
+
+      db.collection("sites").updateOne({ sitePath }, { $set: query });
+      console.log("Finished adding");
+      resolve();
+    });
+  });
+}
+
 module.exports = {
   addSite,
   getSite,
@@ -169,4 +193,5 @@ module.exports = {
   deleteSitePage,
   fillSitePages,
   deleteAllSitePages,
+  addDeviceScreenshots,
 };
