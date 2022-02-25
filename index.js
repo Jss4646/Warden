@@ -1,7 +1,8 @@
 const { crawlSitemapEndpoint } = require("./tools/crawl-url");
 const {
   initialiseCluster,
-  generateScreenshot, compareScreenshots,
+  generateScreenshot,
+  compareScreenshots,
 } = require("./tools/screenshot-api");
 
 const {
@@ -40,7 +41,9 @@ app.use("/api/screenshots", express.static("screenshots"));
   app.post("/api/take-screenshot", (req, res) =>
     generateScreenshot(req, res, cluster)
   );
-  app.post("/api/run-comparison", (req, res) => compareScreenshots(req, res, cluster, client) )
+  app.post("/api/run-comparison", (req, res) =>
+    compareScreenshots(req, res, cluster, client)
+  );
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);

@@ -1,32 +1,60 @@
 const fs = require("fs");
 const pixelmatch = require("pixelmatch");
-const PNG = require("pngjs").PNG;
+const sharp = require("sharp");
 
 async function createDiffImage(baselineBuffer, comparisonBuffer, fileName) {
-  const baselineImage = await PNG.sync.read(baselineBuffer);
-  const comparisonImage = await PNG.sync.read(comparisonBuffer);
-  const height = Math.max(baselineImage.height, comparisonImage.height);
+  let baselineImage = sharp(baselineBuffer);
+  let comparisonImage = sharp(comparisonBuffer);
 
-  const diff = new PNG({ width: baselineImage.width, height });
+  let baselineData = await baselineImage.metadata();
+  let comparisonData = await comparisonImage.metadata();
+
+  const height = Math.max(baselineData.height, comparisonData.height);
+
+  const resizedComparisonBuffer = await comparisonImage
+    .resize({
+      width: baselineData.width,
+      height,
+      fit: "contain",
+    })
+    // .png({ compressionLevel: 0 })
+    .toBuffer({ resolveWithObject: true });
+
+  const resizedBaselineBuffer = await baselineImage
+    .resize({
+      width: baselineData.width,
+      height,
+      fit: "contain",
+    })
+    // .png({ compressionLevel: 0 })
+    .toBuffer({ resolveWithObject: true });
+
+  const diff = await sharp({
+    create: {
+      width: baselineData.width,
+      height,
+      channels: 4,
+      background: "white",
+    },
+  })
+    // .png({ compressionLevel: 0 })
+    .toBuffer({ resolveWithObject: true });
 
   const pixelDiff = pixelmatch(
-    comparisonImage.data,
-    baselineImage.data,
-    diff.data,
-    baselineImage.width,
+    resizedBaselineBuffer,
+    resizedComparisonBuffer,
+    diff,
+    baselineData.width,
     height,
     { threshold: 0.1 }
   );
 
   console.log(
     "Difference: ",
-    (pixelDiff / (baselineImage.width * height)) * 100
+    (pixelDiff / (baselineData.width * height)) * 100
   );
 
-  fs.writeFileSync(
-    `${__dirname}/../screenshots/${fileName}-diff.png`,
-    PNG.sync.write(diff)
-  );
+  fs.writeFileSync(`${__dirname}/../screenshots/${fileName}-diff.png`, diff);
   return diff;
 }
 
