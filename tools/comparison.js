@@ -1,6 +1,4 @@
-const fs = require("fs");
 const { imgDiff } = require("img-diff-js");
-// const sharp = require("sharp");
 
 async function createDiffImage(baselineFileName, comparisonFileName) {
   const diffData = await imgDiff({

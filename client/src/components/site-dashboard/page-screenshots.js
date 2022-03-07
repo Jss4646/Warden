@@ -92,12 +92,11 @@ class PageScreenshots extends Component {
           </div>
           {Object.keys(screenshots).map((device) => {
             const comparisonScreenshots = screenshots[device];
-            console.log("screenshots", screenshots);
-            console.log("screenshots src", comparisonScreenshots);
             return (
               <DashboardScreenshotsBar
                 screenshots={comparisonScreenshots}
                 deviceName={device}
+                key={device}
               />
             );
           })}
