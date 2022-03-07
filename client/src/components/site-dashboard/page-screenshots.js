@@ -6,7 +6,6 @@ import { default as devicesData } from "../../data/devices.json";
 class PageScreenshots extends Component {
   runComparison = async () => {
     const { devices, url, comparisonUrl, sitePath } = this.props.siteData;
-    console.log(devices);
     for (const device of devices) {
       const { height, width, userAgent } = devicesData[device];
       const screenshotData = { resolution: { height, width }, userAgent };
@@ -35,9 +34,9 @@ class PageScreenshots extends Component {
       );
 
       this.props.addScreenshots(new URL(url).pathname, device, {
-        baseline: `${window.location.origin}/api/screenshots/${baselineFilename}.png`,
-        changed: `${window.location.origin}/api/screenshots/${comparisonFilename}.png`,
-        diff: `${window.location.origin}/api/screenshots/${baselineFilename}-diff.png`,
+        baselineScreenshot: `${window.location.origin}/api/screenshots/${baselineFilename}.png`,
+        comparisonScreenshot: `${window.location.origin}/api/screenshots/${comparisonFilename}.png`,
+        diffImage: `${window.location.origin}/api/screenshots/${baselineFilename}-diff.png`,
       });
     }
   };
@@ -93,6 +92,8 @@ class PageScreenshots extends Component {
           </div>
           {Object.keys(screenshots).map((device) => {
             const comparisonScreenshots = screenshots[device];
+            console.log("screenshots", screenshots);
+            console.log("screenshots src", comparisonScreenshots);
             return (
               <DashboardScreenshotsBar
                 screenshots={comparisonScreenshots}

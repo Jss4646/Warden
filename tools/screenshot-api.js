@@ -107,17 +107,13 @@ async function compareScreenshots(req, res, cluster, client) {
     res,
   });
 
-  const [baselineScreenshot, comparisonScreenshot] = await Promise.all([
-    baselineScreenshotPromise,
-    comparisonScreenshotPromise,
-  ]);
+  await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
 
   console.log("Finished taking screenshots");
 
   await createDiffImage(
-    baselineScreenshot,
-    comparisonScreenshot,
-    baselineScreenshotData.fileName
+    baselineScreenshotData.fileName,
+    comparisonScreenshotData.fileName
   );
 
   const parsedUrl = new URL(baselineScreenshotData.url);
@@ -126,6 +122,7 @@ async function compareScreenshots(req, res, cluster, client) {
     comparisonScreenshot: `/api/screenshots/${comparisonScreenshotData.fileName}.png`,
     diffImage: `/api/screenshots/${baselineScreenshotData.fileName}-diff.png`,
   };
+
   await addDeviceScreenshots(
     client,
     sitePath,
