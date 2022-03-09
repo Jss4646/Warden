@@ -36,6 +36,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(Sentry.Handlers.requestHandler());
 app.use("/api/screenshots", express.static("screenshots"));
 
+/**
+ * Endpoints that need the puppeteer cluster go in here
+ */
 (async () => {
   const cluster = await initialiseCluster();
   app.post("/api/take-screenshot", (req, res) =>

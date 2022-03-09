@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import { Spin } from "antd";
 
+/**
+ * Creates a loading icon if url isn't present and displays the image if it is
+ *
+ * @param src {String} - image url
+ * @returns {JSX.Element}
+ */
 const createScreenshotContainer = (src) => {
   return src ? (
     <div className="dashboard-screenshot-bar__screenshots-img">
@@ -11,6 +17,9 @@ const createScreenshotContainer = (src) => {
   );
 };
 
+/**
+ * Bar showing the baseline, comparison and difference screenshots
+ */
 class DashboardScreenshotsBar extends Component {
   render() {
     const { baselineScreenshot, comparisonScreenshot, diffImage } =

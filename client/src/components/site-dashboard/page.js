@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Dropdown, Menu } from "antd";
+const { Item } = Menu;
 
+// TODO remove probably
 const menu = (pagePath, handleMenuClick) => (
   <Menu onClick={(item) => handleMenuClick(item, pagePath)}>
     <Item key={0}>Delete page</Item>
@@ -9,9 +11,16 @@ const menu = (pagePath, handleMenuClick) => (
   </Menu>
 );
 
-const { Item } = Menu;
-
+/**
+ * Page displaying screenshots from each device
+ */
 class Page extends Component {
+  /**
+   * Removes a page from the client and db
+   *
+   * @param pagePath {String}
+   * @returns {Promise<void>}
+   */
   removePage = async (pagePath) => {
     this.props.removePage(pagePath);
 
@@ -26,6 +35,7 @@ class Page extends Component {
     });
   };
 
+  // TODO remove probably
   handleMenuClick = (item, pagePath) => {
     switch (item.key) {
       case "0":

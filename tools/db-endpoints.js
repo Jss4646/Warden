@@ -1,11 +1,31 @@
-const { query } = require("mongodb/lib/core/wireprotocol");
 const { crawlSitemap } = require("./crawl-url");
 
-function addSite(client, req, res) {
+/**
+ * Endpoint to add a site to the database
+ *
+ * Example body
+ * {
+ *       siteName {String},
+ *       url {String},
+ *       comparisonUrl {String},
+ *       sitePath {String},
+ *       pages: {
+ *         "/": { url {String}, passingNum: "0/0", screenshots: {} },
+ *       },
+ *       devices: ["1080p", "iphone-x/xs"],
+ *  };
+ *
+ *  pages format covered more under the addPage endpoint
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
+async function addSite(client, req, res) {
   const siteData = req.body;
   console.log(siteData);
 
-  client.connect((err) => {
+  await client.connect((err) => {
     if (err) throw err;
     const db = client.db("warden");
 
@@ -15,13 +35,24 @@ function addSite(client, req, res) {
     });
 
     console.log("done");
+    res.send("complete");
   });
-
-  res.send("complete");
 }
 
-function getSite(client, req, res) {
-  client.connect(async (err) => {
+/**
+ * Endpoint to retrieve site data from db
+ *
+ * Example body
+ * {
+ *     url {String},
+ * }
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
+async function getSite(client, req, res) {
+  await client.connect(async (err) => {
     if (err) throw err;
     const db = client.db("warden");
 
@@ -38,8 +69,15 @@ function getSite(client, req, res) {
   });
 }
 
-function getAllSites(client, req, res) {
-  client.connect(async (err) => {
+/**
+ * Retrieves all sites from db
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
+async function getAllSites(client, req, res) {
+  await client.connect(async (err) => {
     if (err) throw err;
     const db = client.db("warden");
 
@@ -54,6 +92,18 @@ function getAllSites(client, req, res) {
   });
 }
 
+/**
+ * Deletes a site from the db
+ *
+ * Example body
+ * {
+ *     sitePath {String}
+ * }
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
 function deleteSite(client, req, res) {
   client.connect(async (err) => {
     if (err) throw err;
@@ -71,6 +121,23 @@ function deleteSite(client, req, res) {
   });
 }
 
+/**
+ * Adds a page to a site in the db
+ *
+ * {
+ *       sitePath {String},
+ *       pagePath: {String},
+ *       newPage: {
+ *        url {String},
+ *        passingNum {String} EG "0/5", - TODO need to sort how this works
+ *        screenshots {Object} - should be an empty object as this is filled by program
+ *       },
+ *  };
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
 function addSitePage(client, req, res) {
   client.connect(async (err) => {
     if (err) throw err;
@@ -87,8 +154,20 @@ function addSitePage(client, req, res) {
   });
 }
 
-function deleteSitePage(client, req, res) {
-  client.connect(async (err) => {
+/**
+ * deletes a page from a site in the db
+ *
+ * {
+ *     sitePath {String},
+ *     pagePath {String}
+ * }
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
+async function deleteSitePage(client, req, res) {
+  await client.connect(async (err) => {
     if (err) throw err;
     const db = client.db("warden");
 
@@ -109,8 +188,19 @@ function deleteSitePage(client, req, res) {
   });
 }
 
+/**
+ * Crawls the sitemap of a site and add the result to the sites pages list
+ *
+ * {
+ *     sitePath {String},
+ *     url {String},
+ * }
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
 async function fillSitePages(client, req, res) {
-  console.log(req.body.url);
   const results = await crawlSitemap(req.body.url, res);
 
   if (!results) {
@@ -118,7 +208,7 @@ async function fillSitePages(client, req, res) {
     return;
   }
 
-  client.connect(async (err) => {
+  await client.connect(async (err) => {
     if (err) throw err;
     const db = client.db("warden");
 
@@ -145,8 +235,20 @@ async function fillSitePages(client, req, res) {
   });
 }
 
+/**
+ * Deletes all pages from a site in the db
+ *
+ * Example body
+ * {
+ *     sitePath {String},
+ * }
+ *
+ * @param client {MongoClient}
+ * @param req {Request}
+ * @param res {Response}
+ */
 async function deleteAllSitePages(client, req, res) {
-  client.connect(async (err) => {
+  await client.connect(async (err) => {
     if (err) throw err;
     const db = client.db("warden");
     const site = await db
@@ -157,9 +259,20 @@ async function deleteAllSitePages(client, req, res) {
       { sitePath: req.body.sitePath },
       { $set: { pages: { "/": { ...site.pages["/"] } } } }
     );
+
+    res.send("Deleted pages");
   });
 }
 
+/**
+ * Slightly different as this is called in a different screenshot endpoint to add a screenshot to the db
+ *
+ * @param client {MongoClient}
+ * @param sitePath {String}
+ * @param urlPath {String}
+ * @param screenshotUrls {Array.<String>}
+ * @param device {String}
+ */
 async function addDeviceScreenshots(
   client,
   sitePath,
@@ -167,20 +280,17 @@ async function addDeviceScreenshots(
   screenshotUrls,
   device
 ) {
-  await new Promise((resolve) => {
-    console.log("Started adding", device);
-    client.connect(async (err) => {
-      if (err) throw err;
-      const db = client.db("warden");
+  console.log("Started adding", device);
+  return await client.connect((err) => {
+    if (err) throw err;
+    const db = client.db("warden");
 
-      const query = {};
+    const query = {};
 
-      query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
+    query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
 
-      db.collection("sites").updateOne({ sitePath }, { $set: query });
-      console.log("Finished adding");
-      resolve();
-    });
+    db.collection("sites").updateOne({ sitePath }, { $set: query });
+    console.log("Finished adding");
   });
 }
 

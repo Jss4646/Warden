@@ -4,6 +4,13 @@ import { Button, Empty } from "antd";
 import { default as devicesData } from "../../data/devices.json";
 
 class PageScreenshots extends Component {
+  /**
+   * TODO move to separate file
+   * Gets screenshots of both comparison and baseline urls along with the diff image for all devices
+   * on the page then adding the images to state client side
+   *
+   * @returns {Promise<void>}
+   */
   runComparison = async () => {
     const { devices, url, comparisonUrl, sitePath } = this.props.siteData;
     for (const device of devices) {
@@ -41,6 +48,18 @@ class PageScreenshots extends Component {
     }
   };
 
+  /**
+   * TODO Move to separate file
+   * Makes the call to the api to generate the screenshots and diff image
+   *
+   * @param baselineScreenshotData {Object}
+   * @param baselineScreenshotData.
+   * @param comparisonScreenshotData
+   * @param sitePath
+   * @param device
+   * @returns {Promise<Response>}
+   * @private
+   */
   _generateScreenshots(
     baselineScreenshotData,
     comparisonScreenshotData,

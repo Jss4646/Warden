@@ -5,6 +5,9 @@ import SiteConfig from "./site-config";
 
 const { Panel } = Collapse;
 
+/**
+ * Right-hand sidebar showing options for the page / site
+ */
 class OptionsSidebar extends Component {
   render() {
     return (
