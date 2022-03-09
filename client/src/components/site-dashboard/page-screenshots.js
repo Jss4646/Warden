@@ -82,6 +82,14 @@ class PageScreenshots extends Component {
     });
   }
 
+  /**
+   * Creates the file name for the screenshot
+   *
+   * @param url {string}
+   * @param device {string}
+   * @returns {string}
+   * @private
+   */
   _createFilename(url, device) {
     const date = new Date();
     url = new URL(url);

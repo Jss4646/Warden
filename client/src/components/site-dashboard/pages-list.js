@@ -7,6 +7,10 @@ const { Search } = Input;
 class PagesList extends Component {
   state = { addPagePath: "", loadingPages: false };
 
+  /**
+   *
+   * @param event {string}
+   */
   setAddPagePath = (event) => {
     const newState = { ...this.state };
     newState.addPagePath = event.target.value;
