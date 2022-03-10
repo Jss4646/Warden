@@ -8,8 +8,9 @@ class PagesList extends Component {
   state = { addPagePath: "", loadingPages: false };
 
   /**
+   * Updates user inputted new page path
    *
-   * @param event {string}
+   * @param event {Event}
    */
   setAddPagePath = (event) => {
     const newState = { ...this.state };
@@ -17,21 +18,36 @@ class PagesList extends Component {
     this.setState(newState);
   };
 
+  /**
+   * Toggles loading state
+   */
   toggleLoadingPages() {
     const newState = { ...this.state };
     newState.loadingPages = !newState.loadingPages;
     this.setState(newState);
   }
 
+  /**
+   * Adds a page to the client
+   *
+   * @param url {string}
+   * @returns {Promise<void>}
+   */
   addPageClientSide = async (url) => {
-    url = new URL(url);
-    this.props.addPage(url.pathname, {
+    const parsedUrl = new URL(url);
+    this.props.addPage(parsedUrl.pathname, {
       url,
       passingNum: "0/0",
       screenshots: {},
     });
   };
 
+  /**
+   * TODO Move to separate file
+   * Adds a page to the db via the API
+   *
+   * @returns {Promise<void>}
+   */
   addPage = async () => {
     const url = new URL(this.props.siteData.url);
     url.pathname = this.state.addPagePath;
@@ -55,6 +71,12 @@ class PagesList extends Component {
     });
   };
 
+  /**
+   * TODO Move to another file
+   * Crawls the site via the api then adds the pages to the client
+   *
+   * @returns {Promise<void>}
+   */
   crawlSite = async () => {
     this.toggleLoadingPages();
     const { sitePath, url } = this.props.siteData;
@@ -77,6 +99,11 @@ class PagesList extends Component {
     this.toggleLoadingPages();
   };
 
+  /**
+   * Removes all pages from the client and db
+   *
+   * @returns {Promise<void>}
+   */
   removeAllPages = async () => {
     this.props.removeAllPages();
     const { sitePath } = this.props.siteData;
@@ -94,19 +121,28 @@ class PagesList extends Component {
     });
   };
 
-  render() {
+  /**
+   * Gets the pages of a site
+   *
+   * @returns {JSX.Element|JSX.Element[]}
+   */
+  getPages() {
     const { pages } = this.props.siteData;
-    let pagesElement;
+
     if (this.state.loadingPages) {
-      pagesElement = <Spin />;
+      return <Spin />;
     } else if (Object.keys(pages).length > 0) {
-      pagesElement = Object.keys(pages).map((path) => {
+      return Object.keys(pages).map((path) => {
         const page = pages[path];
         return <Page {...this.props} page={page} path={path} key={path} />;
       });
     } else {
-      pagesElement = <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
+  }
+
+  render() {
+    let pagesElement = this.getPages();
 
     return (
       <div className="pages-list">

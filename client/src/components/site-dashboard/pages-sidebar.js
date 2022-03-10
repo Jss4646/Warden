@@ -2,9 +2,19 @@ import React, { Component } from "react";
 import { withRouter } from "react-router";
 import PagesList from "./pages-list";
 import { Button } from "antd";
+import { runPageComparison } from "../../tools/comparison-tools";
 
 class PagesSidebar extends Component {
   async componentDidMount() {
+    await this.getStatus();
+  }
+
+  /**
+   * Gets status of site and updates color of icon depending on result
+   *
+   * @returns {Promise<void>}
+   */
+  async getStatus() {
     const params = { url: this.props.siteData.url };
 
     const fetchUrl = new URL(`${window.location.origin}/api/get-site-status`);
@@ -25,6 +35,11 @@ class PagesSidebar extends Component {
     this.props.setSiteStatus(siteData.siteStatus);
   }
 
+  /**
+   * Deletes the site locally and on the db
+   *
+   * @returns {Promise<void>}
+   */
   deleteSite = async () => {
     const params = { sitePath: this.props.siteData.sitePath };
     const fetchUrl = new URL(`${window.location.origin}/api/delete-site`);
@@ -42,6 +57,29 @@ class PagesSidebar extends Component {
         console.error(res.text());
       }
     });
+  };
+
+  runComparison = () => {
+    const { pages } = this.props.siteData;
+    console.log(pages);
+
+    for (const page in pages) {
+      runPageComparison(this.props.siteData, page, this.props.addScreenshots);
+    }
+  };
+
+  generateBaselines = () => {
+    const { pages } = this.props.siteData;
+    console.log(pages);
+
+    for (const page in pages) {
+      runPageComparison(
+        this.props.siteData,
+        page,
+        this.props.addScreenshots,
+        true
+      );
+    }
   };
 
   render() {
@@ -66,8 +104,8 @@ class PagesSidebar extends Component {
           Delete site
         </a>
         <div className="pages-sidebar__buttons">
-          <Button>Run comparison</Button>
-          <Button>Generate baselines</Button>
+          <Button onClick={this.runComparison}>Run comparison</Button>
+          <Button onClick={this.generateBaselines}>Generate baselines</Button>
         </div>
         <PagesList {...this.props} />
       </div>

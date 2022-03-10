@@ -43,6 +43,12 @@ class AddSite extends Component {
     this.setState(newState);
   }
 
+  /**
+   * Adds a new site to the db and navigates to it
+   *
+   * @param event {Event}
+   * @returns {Promise<void>}
+   */
   async submitSite(event) {
     event.preventDefault();
 

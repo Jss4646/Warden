@@ -1,107 +1,31 @@
 import React, { Component } from "react";
 import DashboardScreenshotsBar from "./dashboard-screenshots-bar";
 import { Button, Empty } from "antd";
-import { default as devicesData } from "../../data/devices.json";
+import { runPageComparison } from "../../tools/comparison-tools";
 
 class PageScreenshots extends Component {
   /**
-   * TODO move to separate file
    * Gets screenshots of both comparison and baseline urls along with the diff image for all devices
    * on the page then adding the images to state client side
    *
    * @returns {Promise<void>}
    */
-  runComparison = async () => {
-    const { devices, url, comparisonUrl, sitePath } = this.props.siteData;
-    for (const device of devices) {
-      const { height, width, userAgent } = devicesData[device];
-      const screenshotData = { resolution: { height, width }, userAgent };
-
-      const baselineFilename = this._createFilename(url, device);
-      const comparisonFilename = this._createFilename(comparisonUrl, device);
-
-      const baselineScreenshotData = {
-        ...screenshotData,
-        url,
-        fileName: baselineFilename,
-      };
-      const comparisonScreenshotData = {
-        ...screenshotData,
-        url: comparisonUrl,
-        fileName: comparisonFilename,
-      };
-
-      this.props.addScreenshots(new URL(url).pathname, device, {});
-
-      await this._generateScreenshots(
-        baselineScreenshotData,
-        comparisonScreenshotData,
-        sitePath,
-        device
-      );
-
-      this.props.addScreenshots(new URL(url).pathname, device, {
-        baselineScreenshot: `${window.location.origin}/api/screenshots/${baselineFilename}.png`,
-        comparisonScreenshot: `${window.location.origin}/api/screenshots/${comparisonFilename}.png`,
-        diffImage: `${window.location.origin}/api/screenshots/${baselineFilename}-diff.png`,
-      });
-    }
+  runComparison = () => {
+    runPageComparison(
+      this.props.siteData,
+      this.props.siteData.currentPage,
+      this.props.addScreenshots
+    );
   };
 
-  /**
-   * TODO Move to separate file
-   * Makes the call to the api to generate the screenshots and diff image
-   *
-   * @param baselineScreenshotData {Object}
-   * @param baselineScreenshotData.
-   * @param comparisonScreenshotData
-   * @param sitePath
-   * @param device
-   * @returns {Promise<Response>}
-   * @private
-   */
-  _generateScreenshots(
-    baselineScreenshotData,
-    comparisonScreenshotData,
-    sitePath,
-    device
-  ) {
-    return fetch(`${window.location.origin}/api/run-comparison`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        baselineScreenshotData,
-        comparisonScreenshotData,
-        sitePath,
-        device,
-      }),
-      // TODO cancel button
-      // signal: abortSignal,
-    });
-  }
-
-  /**
-   * Creates the file name for the screenshot
-   *
-   * @param url {string}
-   * @param device {string}
-   * @returns {string}
-   * @private
-   */
-  _createFilename(url, device) {
-    const date = new Date();
-    url = new URL(url);
-
-    let path = url.pathname === "/" ? "" : `${url.pathname}-`;
-    path = path.replaceAll("/", "-");
-
-    let deviceSanitised = device.replaceAll("/", "-");
-
-    const fileNameDate = `${date.getMilliseconds()}-${date.getSeconds()}-${date.getDay()}-${date.getMonth()}-${date.getFullYear()}-${deviceSanitised}`;
-    return `${url.host}-${path}${fileNameDate}`;
-  }
+  generateBaselines = () => {
+    runPageComparison(
+      this.props.siteData,
+      this.props.siteData.currentPage,
+      this.props.addScreenshots,
+      true
+    );
+  };
 
   render() {
     const { currentPage, pages } = this.props.siteData;
@@ -115,18 +39,20 @@ class PageScreenshots extends Component {
               {this.props.siteData.currentPage}
             </h1>
             <Button onClick={this.runComparison}>Run comparison</Button>
-            <Button>Generate baselines</Button>
+            <Button onClick={this.generateBaselines}>Generate baselines</Button>
           </div>
-          {Object.keys(screenshots).map((device) => {
-            const comparisonScreenshots = screenshots[device];
-            return (
-              <DashboardScreenshotsBar
-                screenshots={comparisonScreenshots}
-                deviceName={device}
-                key={device}
-              />
-            );
-          })}
+          {Object.keys(screenshots)
+            .sort()
+            .map((device) => {
+              const comparisonScreenshots = screenshots[device];
+              return (
+                <DashboardScreenshotsBar
+                  screenshots={comparisonScreenshots}
+                  deviceName={device}
+                  key={device}
+                />
+              );
+            })}
         </div>
       );
     } else {

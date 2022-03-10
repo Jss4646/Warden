@@ -270,7 +270,10 @@ async function deleteAllSitePages(client, req, res) {
  * @param client {MongoClient}
  * @param sitePath {String}
  * @param urlPath {String}
- * @param screenshotUrls {Array.<String>}
+ * @param screenshotUrls {Object}
+ * @param screenshotUrls.baselineScreenshot {string}
+ * @param screenshotUrls.comparisonScreenshot {string}
+ * @param screenshotUrls.diffImage {string}
  * @param device {String}
  */
 async function addDeviceScreenshots(

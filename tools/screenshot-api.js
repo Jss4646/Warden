@@ -45,6 +45,7 @@ async function initialiseCluster() {
  */
 async function takeScreenshot({ page, data: { screenshotData, res } }) {
   let { url, cookieData, resolution, userAgent, fileName } = screenshotData;
+  url = new URL(url);
   console.log(`Setting up page for ${url}`);
   console.log(url, cookieData, resolution, userAgent, fileName);
 
@@ -92,22 +93,40 @@ async function generateScreenshot(req, res, cluster) {
   res.send(screenshot);
 }
 
+/**
+ * The endpoint to generate and compare two screenshots
+ *
+ * @param req {Request}
+ * @param res {Response}
+ * @param cluster {Cluster}
+ * @param client {MongoClient}
+ * @returns {Promise<void>}
+ */
 async function compareScreenshots(req, res, cluster, client) {
-  const { baselineScreenshotData, comparisonScreenshotData, sitePath, device } =
-    req.body;
+  const {
+    baselineScreenshotData,
+    comparisonScreenshotData,
+    sitePath,
+    device,
+    generateBaselines,
+  } = req.body;
 
   console.log("Starting to take screenshot");
-  const baselineScreenshotPromise = cluster.execute({
-    screenshotData: baselineScreenshotData,
-    res,
-  });
-
   const comparisonScreenshotPromise = cluster.execute({
     screenshotData: comparisonScreenshotData,
     res,
   });
 
-  await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
+  if (generateBaselines) {
+    const baselineScreenshotPromise = cluster.execute({
+      screenshotData: baselineScreenshotData,
+      res,
+    });
+
+    await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
+  } else {
+    await comparisonScreenshotPromise;
+  }
 
   console.log("Finished taking screenshots");
 
