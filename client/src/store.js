@@ -19,6 +19,8 @@ const siteData = {
   siteStatus: "",
   sitePages: {},
   currentPage: "",
+  failingPercentage: 5,
+  failingScreenshots: {},
   devices: ["1080p"],
 };
 

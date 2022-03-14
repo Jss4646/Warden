@@ -51,7 +51,7 @@ class PagesList extends Component {
   addPage = async () => {
     const url = new URL(this.props.siteData.url);
     url.pathname = this.state.addPagePath;
-    const newPage = { url, passingNum: "0/0", screenshots: {} };
+    const newPage = { url, passingNum: "0/0", screenshots: {}, failing: false };
 
     this.props.addPage(url.pathname, newPage);
 

@@ -18,7 +18,7 @@ import { default as devicesData } from "../data/devices.json";
  * @param sitePath {string}
  * @param device {string}
  * @param generateBaselines {boolean}
- * @returns {Promise<Response>}
+ * @returns {Promise<string>}
  */
 export async function generateScreenshots(
   baselineScreenshotData,
@@ -27,7 +27,7 @@ export async function generateScreenshots(
   device,
   generateBaselines
 ) {
-  return fetch(`${window.location.origin}/api/run-comparison`, {
+  return await fetch(`${window.location.origin}/api/run-comparison`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export async function generateScreenshots(
     }),
     // TODO cancel button
     // signal: abortSignal,
-  });
+  }).then((res) => res.text());
 }
 
 /**
@@ -111,7 +111,8 @@ export function runPageComparison(
       sitePath,
       device,
       generateBaselines
-    ).then(() => {
+    ).then((percentageDiff) => {
+      console.log(percentageDiff);
       addScreenshots(new URL(fullUrl).pathname, device, {
         baselineScreenshot: `/api/screenshots/${baselineFilename}.png`,
         comparisonScreenshot: `/api/screenshots/${comparisonFilename}.png`,

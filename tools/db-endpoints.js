@@ -297,6 +297,23 @@ async function addDeviceScreenshots(
   });
 }
 
+async function addFailingScreenshot(client, sitePath, urlPath, page, device) {
+  return await client.connect((err) => {
+    if (err) throw err;
+    const db = client.db("warden");
+
+    const failingQuery = {};
+    failingQuery[`pages.${urlPath}.screenshots.${device}.failing`] = true;
+
+    db.collection("sites").updateOne({ sitePath }, { $set: failingQuery });
+
+    let failingScreenshotsQuery;
+    failingScreenshotsQuery[`failingScreenshots.${page}`] = db
+      .constructor("sites")
+      .updateOne({ sitePath }, { $addToSet: {} });
+  });
+}
+
 module.exports = {
   addSite,
   getSite,

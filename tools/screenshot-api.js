@@ -1,6 +1,6 @@
 const { Cluster } = require("puppeteer-cluster");
-const { createDiffImage } = require("./comparison.js");
 const { addDeviceScreenshots } = require("./db-endpoints");
+const { imgDiff } = require("img-diff-js");
 
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
@@ -130,10 +130,14 @@ async function compareScreenshots(req, res, cluster, client) {
 
   console.log("Finished taking screenshots");
 
-  await createDiffImage(
-    baselineScreenshotData.fileName,
-    comparisonScreenshotData.fileName
-  );
+  const diffData = await imgDiff({
+    actualFilename: `${__dirname}/../screenshots/${baselineScreenshotData.fileName}.png`,
+    expectedFilename: `${__dirname}/../screenshots/${comparisonScreenshotData.fileName}.png`,
+    diffFilename: `${__dirname}/../screenshots/${baselineScreenshotData.fileName}-diff.png`,
+  });
+
+  const { width, height, diffCount } = diffData;
+  const percentageDiff = (diffCount / (width * height)) * 100;
 
   const parsedUrl = new URL(baselineScreenshotData.url);
   const screenshots = {
@@ -150,7 +154,7 @@ async function compareScreenshots(req, res, cluster, client) {
     device
   );
 
-  res.send("Images created");
+  res.send(percentageDiff.toString());
 }
 
 /**

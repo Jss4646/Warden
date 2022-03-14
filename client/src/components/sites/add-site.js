@@ -65,8 +65,15 @@ class AddSite extends Component {
       comparisonUrl: this.state.comparisonUrl,
       sitePath,
       pages: {
-        "/": { url: this.state.url, passingNum: "0/0", screenshots: {} },
+        "/": {
+          url: this.state.url,
+          passingNum: "0/0",
+          screenshots: {},
+          failing: false,
+        },
       },
+      failingPercentage: 5,
+      failingScreenshots: { "/": ["desktop 1080", "iPhone"] },
       devices: ["1080p", "iphone-x/xs"],
     };
 
