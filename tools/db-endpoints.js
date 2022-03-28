@@ -297,7 +297,17 @@ async function addDeviceScreenshots(
   });
 }
 
-async function addFailingScreenshot(client, sitePath, urlPath, page, device) {
+/**
+ * Adds failing screenshot to db
+ *
+ * @param client {MongoClient}
+ * @param sitePath {string}
+ * @param urlPath {string}
+ * @param page {string}
+ * @param device {string}
+ * @returns {Promise<*>}
+ */
+async function addFailingScreenshot(client, sitePath, urlPath, device) {
   return await client.connect((err) => {
     if (err) throw err;
     const db = client.db("warden");
@@ -307,10 +317,25 @@ async function addFailingScreenshot(client, sitePath, urlPath, page, device) {
 
     db.collection("sites").updateOne({ sitePath }, { $set: failingQuery });
 
-    let failingScreenshotsQuery;
-    failingScreenshotsQuery[`failingScreenshots.${page}`] = db
-      .constructor("sites")
-      .updateOne({ sitePath }, { $addToSet: {} });
+    let failingScreenshotsQuery = {};
+    failingScreenshotsQuery[`failingScreenshots.${urlPath}`] = device;
+
+    db.constructor("sites").updateOne(
+      { sitePath },
+      { $addToSet: { failingScreenshotsQuery } }
+    );
+  });
+}
+
+function getFailingThreshold(client, sitePath) {
+  return new Promise((res) => {
+    client.connect(async (err) => {
+      if (err) throw err;
+      const db = client.db("warden");
+
+      const site = await db.collection("sites").findOne({ sitePath });
+      res(site.failingPercentage);
+    });
   });
 }
 
@@ -324,4 +349,6 @@ module.exports = {
   fillSitePages,
   deleteAllSitePages,
   addDeviceScreenshots,
+  addFailingScreenshot,
+  getFailingThreshold,
 };

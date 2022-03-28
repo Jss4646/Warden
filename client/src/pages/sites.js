@@ -24,13 +24,15 @@ class Sites extends Component {
   }
 
   render() {
+    const sites = this.state?.sites;
+
     return (
       <div className="sites">
         <div className="sites__options">
           <AddSite />
         </div>
         <div className="sites__cards">
-          {this.state.sites.map((site, index) => {
+          {sites?.map((site, index) => {
             const lastRan = site.lastRan ? site.lastRan : "Never";
             const siteStatus = {
               passing: site.passing ? site.passing : "--",

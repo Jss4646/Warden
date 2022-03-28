@@ -72,7 +72,10 @@ export function runPageComparison(
     console.log(pages[page].screenshots[device]);
     const currentScreenshots = pages[page].screenshots[device];
     const { height, width, userAgent } = devicesData[device];
-    const screenshotData = { resolution: { height, width }, userAgent };
+    const screenshotData = {
+      resolution: { height, width },
+      userAgent,
+    };
 
     generateBaselines =
       currentScreenshots?.baselineScreenshot === undefined || generateBaselines;
@@ -102,6 +105,9 @@ export function runPageComparison(
       url: fullComparisonUrl,
       fileName: comparisonFilename,
     };
+
+    console.log("Baseline", baselineScreenshotData);
+    console.log("Comparison", comparisonScreenshotData);
 
     addScreenshots(new URL(fullUrl).pathname, device, {});
 

@@ -1,5 +1,9 @@
 const { Cluster } = require("puppeteer-cluster");
-const { addDeviceScreenshots } = require("./db-endpoints");
+const {
+  addDeviceScreenshots,
+  getFailingThreshold,
+  addFailingScreenshot,
+} = require("./db-endpoints");
 const { imgDiff } = require("img-diff-js");
 
 /**
@@ -138,12 +142,22 @@ async function compareScreenshots(req, res, cluster, client) {
 
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
+  const failingThreshold = await getFailingThreshold(client, sitePath);
+  const failed = percentageDiff > failingThreshold;
+  console.log("Failing threshold", failingThreshold);
+
+  if (failed) {
+    const pathname = new URL(baselineScreenshotData.url).pathname;
+
+    await addFailingScreenshot(client, sitePath, pathname, device);
+  }
 
   const parsedUrl = new URL(baselineScreenshotData.url);
   const screenshots = {
     baselineScreenshot: `/api/screenshots/${baselineScreenshotData.fileName}.png`,
     comparisonScreenshot: `/api/screenshots/${comparisonScreenshotData.fileName}.png`,
     diffImage: `/api/screenshots/${baselineScreenshotData.fileName}-diff.png`,
+    failing: false,
   };
 
   await addDeviceScreenshots(
@@ -154,7 +168,7 @@ async function compareScreenshots(req, res, cluster, client) {
     device
   );
 
-  res.send(percentageDiff.toString());
+  res.send(!failed);
 }
 
 /**

@@ -69,7 +69,6 @@ class AddSite extends Component {
           url: this.state.url,
           passingNum: "0/0",
           screenshots: {},
-          failing: false,
         },
       },
       failingPercentage: 5,
