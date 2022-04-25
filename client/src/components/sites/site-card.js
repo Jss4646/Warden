@@ -38,10 +38,6 @@ class SiteCard extends Component {
             <h3>Passing</h3>
             <h3>{siteStatus.passing}</h3>
           </div>
-          <div className="site-card__status site-card__status--difference">
-            <h3>Difference</h3>
-            <h3>{siteStatus.difference}</h3>
-          </div>
           <div className="site-card__status site-card__status--failing">
             <h3>Failing</h3>
             <h3>{siteStatus.failing}</h3>

@@ -40,30 +40,7 @@ function siteData(state = [], action) {
         action.screenshots;
       return stateCopy;
 
-    // case "ADD_FAILING_SCREENSHOT":
-    //   if (!stateCopy.failingScreenshots[action.page]) {
-    //     stateCopy.failingScreenshots[action.page] = [];
-    //   }
-    //
-    //   const failingScreenshotExists = stateCopy.failingScreenshots[
-    //       action.page
-    //       ].find((device) => device === action.device);
-    //
-    //   if (failingScreenshotExists) {
-    //     return stateCopy;
-    //   }
-    //
-    //   if (action.failed) {
-    //     stateCopy.failingScreenshots[action.page].push(action.device);
-    //     return stateCopy
-    //   }
-    //
-    //   stateCopy.pages[action.page].screenshots[action.device].failing = action.failed;
-    //   return stateCopy;
-
     case "SET_IS_SCREENSHOT_FAILING":
-      console.log("here");
-
       if (!stateCopy.failingScreenshots[action.page]) {
         stateCopy.failingScreenshots[action.page] = [];
       }

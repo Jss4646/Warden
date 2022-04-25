@@ -35,14 +35,21 @@ class Sites extends Component {
           {sites?.map((site, index) => {
             const lastRan = site.lastRan ? site.lastRan : "Never";
 
-            const numOfFailing = site.failingScreenshots.map(
-              (site) => site.length
+            const totalScreenshots =
+              Object.keys(site.pages).length * site.devices.length;
+
+            const numOfFailing = Object.keys(site.failingScreenshots).reduce(
+              (prev_num, page) =>
+                prev_num + site.failingScreenshots[page].length,
+              0
             );
 
+            console.log(numOfFailing);
+
             const siteStatus = {
-              passing: site.passing ? site.passing : "--",
+              passing: totalScreenshots - numOfFailing,
               difference: site.difference ? site.difference : "--",
-              failing: site.failing ? site.failing : "--",
+              failing: numOfFailing,
             };
             const frequency = site.frequency ? site.frequency : "Not set";
 

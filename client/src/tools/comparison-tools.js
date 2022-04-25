@@ -94,11 +94,17 @@ export async function runPageComparison(
         url: fullUrl,
         fileName: baselineFilename,
       };
+
+      addScreenshots(new URL(fullUrl).pathname, device, {});
     } else {
       baselineScreenshotData = {
         fileName: baselineFilename,
         url: fullUrl,
       };
+
+      addScreenshots(new URL(fullUrl).pathname, device, {
+        baselineScreenshot: `/api/screenshots/${baselineFilename}.png`,
+      });
     }
 
     const comparisonScreenshotData = {
@@ -106,8 +112,6 @@ export async function runPageComparison(
       url: fullComparisonUrl,
       fileName: comparisonFilename,
     };
-
-    addScreenshots(new URL(fullUrl).pathname, device, {});
 
     generateScreenshots(
       baselineScreenshotData,
