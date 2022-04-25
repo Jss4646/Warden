@@ -54,3 +54,12 @@ export function addScreenshots(page, device, screenshots) {
     screenshots,
   };
 }
+
+export function setIsScreenshotFailing(page, device, failed) {
+  return {
+    type: "SET_IS_SCREENSHOT_FAILING",
+    page,
+    device,
+    failed,
+  };
+}

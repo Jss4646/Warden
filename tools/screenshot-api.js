@@ -51,7 +51,6 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
   let { url, cookieData, resolution, userAgent, fileName } = screenshotData;
   url = new URL(url);
   console.log(`Setting up page for ${url}`);
-  console.log(url, cookieData, resolution, userAgent, fileName);
 
   await page
     .setViewport(resolution)
@@ -103,10 +102,10 @@ async function generateScreenshot(req, res, cluster) {
  * @param req {Request}
  * @param res {Response}
  * @param cluster {Cluster}
- * @param client {MongoClient}
+ * @param db {Db}
  * @returns {Promise<void>}
  */
-async function compareScreenshots(req, res, cluster, client) {
+async function compareScreenshots(req, res, cluster, db) {
   const {
     baselineScreenshotData,
     comparisonScreenshotData,
@@ -142,15 +141,9 @@ async function compareScreenshots(req, res, cluster, client) {
 
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
-  const failingThreshold = await getFailingThreshold(client, sitePath);
+  const failingThreshold = await getFailingThreshold(db, sitePath);
   const failed = percentageDiff > failingThreshold;
   console.log("Failing threshold", failingThreshold);
-
-  if (failed) {
-    const pathname = new URL(baselineScreenshotData.url).pathname;
-
-    await addFailingScreenshot(client, sitePath, pathname, device);
-  }
 
   const parsedUrl = new URL(baselineScreenshotData.url);
   const screenshots = {
@@ -161,14 +154,20 @@ async function compareScreenshots(req, res, cluster, client) {
   };
 
   await addDeviceScreenshots(
-    client,
+    db,
     sitePath,
     parsedUrl.pathname,
     screenshots,
     device
   );
 
-  res.send(!failed);
+  console.log(`Did screenshot fail ${failed}`);
+  if (failed) {
+    const pathname = new URL(baselineScreenshotData.url).pathname;
+    await addFailingScreenshot(db, sitePath, pathname, device);
+  }
+
+  res.send(failed);
 }
 
 /**

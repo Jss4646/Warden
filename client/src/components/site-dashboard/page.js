@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Dropdown, Menu } from "antd";
+
 const { Item } = Menu;
 
 // TODO remove probably
@@ -47,8 +48,17 @@ class Page extends Component {
   };
 
   render() {
-    const { path, page, siteData } = this.props;
-    const { currentPage } = siteData;
+    const { path, siteData } = this.props;
+    const { currentPage, failingScreenshots, devices } = siteData;
+
+    let passingString;
+
+    if (failingScreenshots[path]) {
+      const passingNum = failingScreenshots[path].length - devices.length;
+      passingString = `${passingNum}/${devices.length}`;
+    } else {
+      passingString = `${devices.length}/${devices.length}`;
+    }
 
     return (
       <div
@@ -58,9 +68,7 @@ class Page extends Component {
         onClick={() => this.props.setCurrentPage(path)}
       >
         <span className="pages-list__page-url">{path}</span>
-        <span className="pages-list__page-passing-count">
-          {page.passingNum}
-        </span>
+        <span className="pages-list__page-passing-count">{passingString}</span>
         <Dropdown
           className="pages-list__page-menu-dropdown"
           overlay={menu(path, this.handleMenuClick)}

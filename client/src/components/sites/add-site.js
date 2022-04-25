@@ -72,7 +72,7 @@ class AddSite extends Component {
         },
       },
       failingPercentage: 5,
-      failingScreenshots: { "/": ["desktop 1080", "iPhone"] },
+      failingScreenshots: {},
       devices: ["1080p", "iphone-x/xs"],
     };
 

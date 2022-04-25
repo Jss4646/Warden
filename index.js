@@ -45,25 +45,28 @@ app.use("/api/screenshots", express.static("screenshots"));
     generateScreenshot(req, res, cluster)
   );
   app.post("/api/run-comparison", (req, res) =>
-    compareScreenshots(req, res, cluster, client)
+    compareScreenshots(req, res, cluster, db)
+  );
+
+  await client.connect((err) => {
+    if (err) throw err;
+  });
+  const db = await client.db("warden");
+
+  app.post("/api/add-site", (req, res) => addSite(db, req, res));
+  app.post("/api/get-site", (req, res) => getSite(db, req, res));
+  app.get("/api/get-all-sites", (req, res) => getAllSites(db, req, res));
+  app.post("/api/delete-site", (req, res) => deleteSite(db, req, res));
+  app.post("/api/add-site-page", (req, res) => addSitePage(db, req, res));
+  app.post("/api/delete-site-page", (req, res) => deleteSitePage(db, req, res));
+  app.post("/api/fill-site-pages", (req, res) => fillSitePages(db, req, res));
+  app.post("/api/delete-all-site-pages", (req, res) =>
+    deleteAllSitePages(db, req, res)
   );
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
-
-app.post("/api/add-site", (req, res) => addSite(client, req, res));
-app.post("/api/get-site", (req, res) => getSite(client, req, res));
-app.get("/api/get-all-sites", (req, res) => getAllSites(client, req, res));
 app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
-app.post("/api/delete-site", (req, res) => deleteSite(client, req, res));
-app.post("/api/add-site-page", (req, res) => addSitePage(client, req, res));
-app.post("/api/delete-site-page", (req, res) =>
-  deleteSitePage(client, req, res)
-);
-app.post("/api/fill-site-pages", (req, res) => fillSitePages(client, req, res));
-app.post("/api/delete-all-site-pages", (req, res) =>
-  deleteAllSitePages(client, req, res)
-);
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files

@@ -41,7 +41,7 @@ export async function generateScreenshots(
     }),
     // TODO cancel button
     // signal: abortSignal,
-  }).then((res) => res.text());
+  }).then((res) => res.json());
 }
 
 /**
@@ -55,12 +55,14 @@ export async function generateScreenshots(
  * @param siteData.pages {Object}
  * @param page {string}
  * @param addScreenshots {function}
+ * @param setIsScreenshotFailing {function}
  * @param [generateBaselines] {boolean}
  */
-export function runPageComparison(
+export async function runPageComparison(
   siteData,
   page,
   addScreenshots,
+  setIsScreenshotFailing,
   generateBaselines = false
 ) {
   const { devices, url, comparisonUrl, sitePath, pages } = siteData;
@@ -69,7 +71,6 @@ export function runPageComparison(
   const fullComparisonUrl = `${comparisonUrl}${page}`;
 
   for (const device of devices) {
-    console.log(pages[page].screenshots[device]);
     const currentScreenshots = pages[page].screenshots[device];
     const { height, width, userAgent } = devicesData[device];
     const screenshotData = {
@@ -106,9 +107,6 @@ export function runPageComparison(
       fileName: comparisonFilename,
     };
 
-    console.log("Baseline", baselineScreenshotData);
-    console.log("Comparison", comparisonScreenshotData);
-
     addScreenshots(new URL(fullUrl).pathname, device, {});
 
     generateScreenshots(
@@ -117,13 +115,15 @@ export function runPageComparison(
       sitePath,
       device,
       generateBaselines
-    ).then((percentageDiff) => {
-      console.log(percentageDiff);
-      addScreenshots(new URL(fullUrl).pathname, device, {
+    ).then((screenshotFailed) => {
+      addScreenshots(page, device, {
         baselineScreenshot: `/api/screenshots/${baselineFilename}.png`,
         comparisonScreenshot: `/api/screenshots/${comparisonFilename}.png`,
         diffImage: `/api/screenshots/${baselineFilename}-diff.png`,
       });
+
+      console.log("Screenshot failed: ", screenshotFailed);
+      setIsScreenshotFailing(page, device, screenshotFailed);
     });
   }
 }

@@ -17,26 +17,20 @@ const { crawlSitemap } = require("./crawl-url");
  *
  *  pages format covered more under the addPage endpoint
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-async function addSite(client, req, res) {
+async function addSite(db, req, res) {
   const siteData = req.body;
   console.log(siteData);
 
-  await client.connect((err) => {
+  db.collection("sites").insertOne(siteData, (err) => {
     if (err) throw err;
-    const db = client.db("warden");
-
-    db.collection("sites").insertOne(siteData, (err) => {
-      if (err) throw err;
-      client.close();
-    });
-
-    console.log("done");
-    res.send("complete");
   });
+
+  console.log("done");
+  res.send("complete");
 }
 
 /**
@@ -47,49 +41,39 @@ async function addSite(client, req, res) {
  *     url {String},
  * }
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-async function getSite(client, req, res) {
-  await client.connect(async (err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+async function getSite(db, req, res) {
+  const result = await db
+    .collection("sites")
+    .findOne({ sitePath: req.body.sitePath });
 
-    const result = await db
-      .collection("sites")
-      .findOne({ sitePath: req.body.sitePath });
-
-    if (result) {
-      res.send(result);
-    } else {
-      res.status(500);
-      res.send("Site not found");
-    }
-  });
+  if (result) {
+    res.send(result);
+  } else {
+    res.status(500);
+    res.send("Site not found");
+  }
 }
 
 /**
  * Retrieves all sites from db
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-async function getAllSites(client, req, res) {
-  await client.connect(async (err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+async function getAllSites(db, req, res) {
+  const results = await db.collection("sites").find().toArray();
 
-    const results = await db.collection("sites").find().toArray();
-
-    if (results) {
-      res.send(results);
-    } else {
-      res.status(500);
-      res.send("No sites found");
-    }
-  });
+  if (results) {
+    res.send(results);
+  } else {
+    res.status(500);
+    res.send("No sites found");
+  }
 }
 
 /**
@@ -100,25 +84,20 @@ async function getAllSites(client, req, res) {
  *     sitePath {String}
  * }
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-function deleteSite(client, req, res) {
-  client.connect(async (err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+async function deleteSite(db, req, res) {
+  await db
+    .collection("sites")
+    .deleteOne({ sitePath: req.body.sitePath })
+    .catch((err) => {
+      res.status(500);
+      res.send(err);
+    });
 
-    await db
-      .collection("sites")
-      .deleteOne({ sitePath: req.body.sitePath })
-      .catch((err) => {
-        res.status(500);
-        res.send(err);
-      });
-
-    res.send("Site deleted");
-  });
+  res.send("Site deleted");
 }
 
 /**
@@ -134,24 +113,19 @@ function deleteSite(client, req, res) {
  *       },
  *  };
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-function addSitePage(client, req, res) {
-  client.connect(async (err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+async function addSitePage(db, req, res) {
+  const query = {};
+  query[`pages.${req.body.pagePath}`] = req.body.newPage;
 
-    const query = {};
-    query[`pages.${req.body.pagePath}`] = req.body.newPage;
+  await db
+    .collection("sites")
+    .updateOne({ sitePath: req.body.sitePath }, { $set: query });
 
-    await db
-      .collection("sites")
-      .updateOne({ sitePath: req.body.sitePath }, { $set: query });
-
-    res.send("Page added");
-  });
+  res.send("Page added");
 }
 
 /**
@@ -162,30 +136,25 @@ function addSitePage(client, req, res) {
  *     pagePath {String}
  * }
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-async function deleteSitePage(client, req, res) {
-  await client.connect(async (err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+async function deleteSitePage(db, req, res) {
+  const { sitePath, pagePath } = req.body;
 
-    const { sitePath, pagePath } = req.body;
+  const pageQuery = {};
+  pageQuery[`pages.${pagePath}`] = 1;
 
-    const pageQuery = {};
-    pageQuery[`pages.${pagePath}`] = 1;
+  db.collection("sites")
+    .updateOne({ sitePath }, { $unset: pageQuery })
+    .catch((err) => {
+      console.log(err);
+      res.status(500);
+      res.send(err);
+    });
 
-    db.collection("sites")
-      .updateOne({ sitePath }, { $unset: pageQuery })
-      .catch((err) => {
-        console.log(err);
-        res.status(500);
-        res.send(err);
-      });
-
-    res.send("Page deleted");
-  });
+  res.send("Page deleted");
 }
 
 /**
@@ -196,11 +165,11 @@ async function deleteSitePage(client, req, res) {
  *     url {String},
  * }
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-async function fillSitePages(client, req, res) {
+async function fillSitePages(db, req, res) {
   const results = await crawlSitemap(req.body.url, res);
 
   if (!results) {
@@ -208,31 +177,26 @@ async function fillSitePages(client, req, res) {
     return;
   }
 
-  await client.connect(async (err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+  const urls = results.sites;
+  urls.sort();
 
-    const urls = results.sites;
-    urls.sort();
+  urls.forEach((url) => {
+    url = new URL(url);
+    const query = {};
 
-    urls.forEach((url) => {
-      url = new URL(url);
-      const query = {};
+    query[`pages.${url.pathname}`] = {
+      url,
+      passingNum: "0/0",
+      screenshots: {},
+    };
 
-      query[`pages.${url.pathname}`] = {
-        url,
-        passingNum: "0/0",
-        screenshots: {},
-      };
-
-      db.collection("sites").updateOne(
-        { sitePath: req.body.sitePath },
-        { $set: query }
-      );
-    });
-
-    res.send(urls);
+    db.collection("sites").updateOne(
+      { sitePath: req.body.sitePath },
+      { $set: query }
+    );
   });
+
+  res.send(urls);
 }
 
 /**
@@ -243,31 +207,29 @@ async function fillSitePages(client, req, res) {
  *     sitePath {String},
  * }
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
-async function deleteAllSitePages(client, req, res) {
-  await client.connect(async (err) => {
-    if (err) throw err;
-    const db = client.db("warden");
-    const site = await db
-      .collection("sites")
-      .findOne({ sitePath: req.body.sitePath });
+async function deleteAllSitePages(db, req, res) {
+  const site = await db
+    .collection("sites")
+    .findOne({ sitePath: req.body.sitePath });
 
-    db.collection("sites").updateOne(
+  await db
+    .collection("sites")
+    .updateOne(
       { sitePath: req.body.sitePath },
       { $set: { pages: { "/": { ...site.pages["/"] } } } }
     );
 
-    res.send("Deleted pages");
-  });
+  res.send("Deleted pages");
 }
 
 /**
  * Slightly different as this is called in a different screenshot endpoint to add a screenshot to the db
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param sitePath {String}
  * @param urlPath {String}
  * @param screenshotUrls {Object}
@@ -277,66 +239,55 @@ async function deleteAllSitePages(client, req, res) {
  * @param device {String}
  */
 async function addDeviceScreenshots(
-  client,
+  db,
   sitePath,
   urlPath,
   screenshotUrls,
   device
 ) {
   console.log("Started adding", device);
-  return await client.connect((err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+  const query = {};
 
-    const query = {};
+  query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
 
-    query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
-
-    db.collection("sites").updateOne({ sitePath }, { $set: query });
-    console.log("Finished adding");
-  });
+  await db.collection("sites").updateOne({ sitePath }, { $set: query });
+  console.log("Finished adding");
 }
 
 /**
  * Adds failing screenshot to db
  *
- * @param client {MongoClient}
+ * @param db {Db}
  * @param sitePath {string}
  * @param urlPath {string}
  * @param page {string}
  * @param device {string}
  * @returns {Promise<*>}
  */
-async function addFailingScreenshot(client, sitePath, urlPath, device) {
-  return await client.connect((err) => {
-    if (err) throw err;
-    const db = client.db("warden");
+async function addFailingScreenshot(db, sitePath, urlPath, device) {
+  console.log(`Adding failing screenshot: ${urlPath} : ${device}`);
 
-    const failingQuery = {};
-    failingQuery[`pages.${urlPath}.screenshots.${device}.failing`] = true;
+  const failingQuery = {};
+  failingQuery[`pages.${urlPath}.screenshots.${device}.failing`] = true;
 
-    db.collection("sites").updateOne({ sitePath }, { $set: failingQuery });
+  await db
+    .collection("sites")
+    .updateOne({ sitePath }, { $set: failingQuery })
+    .then(console.log);
 
-    let failingScreenshotsQuery = {};
-    failingScreenshotsQuery[`failingScreenshots.${urlPath}`] = device;
+  let failingScreenshotsQuery = {};
+  failingScreenshotsQuery[`failingScreenshots.${urlPath}`] = device;
 
-    db.constructor("sites").updateOne(
-      { sitePath },
-      { $addToSet: { failingScreenshotsQuery } }
-    );
-  });
+  await db
+    .collection("sites")
+    .updateOne({ sitePath }, { $addToSet: failingScreenshotsQuery });
+
+  console.log("Finished adding failed screenshot");
 }
 
-function getFailingThreshold(client, sitePath) {
-  return new Promise((res) => {
-    client.connect(async (err) => {
-      if (err) throw err;
-      const db = client.db("warden");
-
-      const site = await db.collection("sites").findOne({ sitePath });
-      res(site.failingPercentage);
-    });
-  });
+async function getFailingThreshold(db, sitePath) {
+  const site = await db.collection("sites").findOne({ sitePath });
+  return site.failingPercentage;
 }
 
 module.exports = {

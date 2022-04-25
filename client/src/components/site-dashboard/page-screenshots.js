@@ -14,7 +14,8 @@ class PageScreenshots extends Component {
     runPageComparison(
       this.props.siteData,
       this.props.siteData.currentPage,
-      this.props.addScreenshots
+      this.props.addScreenshots,
+      this.props.setIsScreenshotFailing
     );
   };
 
@@ -23,13 +24,57 @@ class PageScreenshots extends Component {
       this.props.siteData,
       this.props.siteData.currentPage,
       this.props.addScreenshots,
+      this.props.setIsScreenshotFailing,
       true
     );
   };
 
+  generateScreenshotBars(screenshots, devices) {
+    return Object.keys(screenshots)
+      .sort()
+      .map((device) => {
+        if (devices) {
+          if (!devices.includes(device)) return "";
+        }
+
+        const comparisonScreenshots = screenshots[device];
+        return (
+          <DashboardScreenshotsBar
+            screenshots={comparisonScreenshots}
+            deviceName={device}
+            key={device}
+          />
+        );
+      });
+  }
+
   render() {
-    const { currentPage, pages } = this.props.siteData;
+    const { currentPage, pages, failingScreenshots } = this.props.siteData;
     const screenshots = pages[currentPage]?.screenshots;
+
+    if (currentPage === "failing") {
+      return (
+        <div className="page-screenshots">
+          <div className="page-screenshots__buttons-bar">
+            <h1 className="dashboard-screenshot-bar__current-page-title">
+              Failing Screenshots
+            </h1>
+          </div>
+          {Object.keys(failingScreenshots)
+            .sort()
+            .map((site) => {
+              const screenshots = pages[site].screenshots;
+              const screenshotBar = this.generateScreenshotBars(
+                screenshots,
+                failingScreenshots[site]
+              );
+
+              screenshotBar.unshift(<h2>{site}</h2>);
+              return screenshotBar;
+            })}
+        </div>
+      );
+    }
 
     if (currentPage) {
       return (
@@ -41,23 +86,12 @@ class PageScreenshots extends Component {
             <Button onClick={this.runComparison}>Run comparison</Button>
             <Button onClick={this.generateBaselines}>Generate baselines</Button>
           </div>
-          {Object.keys(screenshots)
-            .sort()
-            .map((device) => {
-              const comparisonScreenshots = screenshots[device];
-              return (
-                <DashboardScreenshotsBar
-                  screenshots={comparisonScreenshots}
-                  deviceName={device}
-                  key={device}
-                />
-              );
-            })}
+          {this.generateScreenshotBars(screenshots)}
         </div>
       );
-    } else {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
+
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
   }
 }
 

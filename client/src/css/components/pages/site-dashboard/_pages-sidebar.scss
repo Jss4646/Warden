@@ -51,6 +51,16 @@
     color: $qa-tool-grey;
     border-bottom: solid 1px $qa-tool-light-grey;
     margin-bottom: 5px;
+
+    &--selected {
+      color: $qa-tool-blue-2;
+      border-bottom-color: $qa-tool-blue-2;
+    }
+
+    &:hover {
+      border-bottom-color: $qa-tool-blue-2;
+      cursor: pointer;
+    }
   }
 
   .pages-list__add-page {

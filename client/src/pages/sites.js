@@ -19,7 +19,7 @@ class Sites extends Component {
         return res.text();
       }
     });
-    console.log(`site data: ${siteData}`);
+    console.log("site data:", siteData);
     this.setState({ sites: siteData });
   }
 
@@ -34,6 +34,11 @@ class Sites extends Component {
         <div className="sites__cards">
           {sites?.map((site, index) => {
             const lastRan = site.lastRan ? site.lastRan : "Never";
+
+            const numOfFailing = site.failingScreenshots.map(
+              (site) => site.length
+            );
+
             const siteStatus = {
               passing: site.passing ? site.passing : "--",
               difference: site.difference ? site.difference : "--",

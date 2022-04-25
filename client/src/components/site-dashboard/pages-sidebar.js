@@ -64,7 +64,12 @@ class PagesSidebar extends Component {
     console.log(pages);
 
     for (const page in pages) {
-      runPageComparison(this.props.siteData, page, this.props.addScreenshots);
+      runPageComparison(
+        this.props.siteData,
+        page,
+        this.props.addScreenshots,
+        this.props.setIsScreenshotFailing
+      );
     }
   };
 
@@ -77,6 +82,7 @@ class PagesSidebar extends Component {
         this.props.siteData,
         page,
         this.props.addScreenshots,
+        this.props.setIsScreenshotFailing,
         true
       );
     }

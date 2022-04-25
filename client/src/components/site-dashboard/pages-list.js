@@ -141,14 +141,33 @@ class PagesList extends Component {
     }
   }
 
+  calculateNumOfFailing() {
+    const { failingScreenshots } = this.props.siteData;
+    let numOfFailing = 0;
+
+    for (const screenshot in failingScreenshots) {
+      numOfFailing += failingScreenshots[screenshot].length;
+    }
+
+    return numOfFailing;
+  }
+
   render() {
     let pagesElement = this.getPages();
 
+    const failingTabActiveClass =
+      this.props.siteData.currentPage === "failing"
+        ? "pages-list__failing-tab--selected"
+        : "";
+
     return (
       <div className="pages-list">
-        <div className="pages-list__failing-tab">
+        <div
+          className={`pages-list__failing-tab ${failingTabActiveClass}`}
+          onClick={() => this.props.setCurrentPage("failing")}
+        >
           <span className="pages-list__failing-text">Failing: </span>
-          <span>0</span>
+          <span>{this.calculateNumOfFailing()}</span>
         </div>
         <div className="pages-list__add-page">
           <Button
