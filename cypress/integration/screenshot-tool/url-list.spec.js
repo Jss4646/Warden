@@ -3,7 +3,7 @@ describe("URL List Tests", () => {
   const invalidUrl = "Invalid Url";
 
   beforeEach(() => {
-    cy.visit("/screenshot-tool");
+    cy.visit("/");
     cy.resetAppState();
     cy.get("#url-list-dropdown").click();
   });

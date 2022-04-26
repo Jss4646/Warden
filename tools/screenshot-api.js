@@ -1,4 +1,10 @@
 const { Cluster } = require("puppeteer-cluster");
+const {
+  addDeviceScreenshots,
+  getFailingThreshold,
+  addFailingScreenshot,
+} = require("./db-endpoints");
+const { imgDiff } = require("img-diff-js");
 
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
@@ -42,7 +48,8 @@ async function initialiseCluster() {
  * @returns {Promise<void>}
  */
 async function takeScreenshot({ page, data: { screenshotData, res } }) {
-  let { url, cookieData, resolution, userAgent } = screenshotData;
+  let { url, cookieData, resolution, userAgent, fileName } = screenshotData;
+  url = new URL(url);
   console.log(`Setting up page for ${url}`);
 
   await page
@@ -65,11 +72,14 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
   console.log(`Screenshotting Website: ${url}`);
 
   const screenshot = await page
-    .screenshot({ fullPage: true })
+    .screenshot({
+      fullPage: true,
+      path: `${__dirname}/../screenshots/${fileName}.png`,
+    })
     .catch((err) => sendError("Couldn't take screenshot", err, res));
   console.log(`Screenshot taken: ${url}\n`);
   await page.close();
-  res.send(screenshot);
+  return screenshot;
 }
 
 /**
@@ -82,8 +92,82 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
  * @returns {Promise<void>}
  */
 async function generateScreenshot(req, res, cluster) {
-  console.log("body", req.body);
-  cluster.queue({ screenshotData: req.body, res });
+  const screenshot = await cluster.execute({ screenshotData: req.body, res });
+  res.send(screenshot);
+}
+
+/**
+ * The endpoint to generate and compare two screenshots
+ *
+ * @param req {Request}
+ * @param res {Response}
+ * @param cluster {Cluster}
+ * @param db {Db}
+ * @returns {Promise<void>}
+ */
+async function compareScreenshots(req, res, cluster, db) {
+  const {
+    baselineScreenshotData,
+    comparisonScreenshotData,
+    sitePath,
+    device,
+    generateBaselines,
+  } = req.body;
+
+  console.log("Starting to take screenshot");
+  const comparisonScreenshotPromise = cluster.execute({
+    screenshotData: comparisonScreenshotData,
+    res,
+  });
+
+  if (generateBaselines) {
+    const baselineScreenshotPromise = cluster.execute({
+      screenshotData: baselineScreenshotData,
+      res,
+    });
+
+    await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
+  } else {
+    await comparisonScreenshotPromise;
+  }
+
+  console.log("Finished taking screenshots");
+
+  const diffData = await imgDiff({
+    actualFilename: `${__dirname}/../screenshots/${baselineScreenshotData.fileName}.png`,
+    expectedFilename: `${__dirname}/../screenshots/${comparisonScreenshotData.fileName}.png`,
+    diffFilename: `${__dirname}/../screenshots/${baselineScreenshotData.fileName}-diff.png`,
+  });
+
+  const { width, height, diffCount } = diffData;
+  const percentageDiff = (diffCount / (width * height)) * 100;
+  const failingThreshold = await getFailingThreshold(db, sitePath);
+  const failed = percentageDiff > failingThreshold;
+  console.log("Failing threshold", failingThreshold);
+
+  const parsedUrl = new URL(baselineScreenshotData.url);
+  const screenshots = {
+    baselineScreenshot: `/api/screenshots/${baselineScreenshotData.fileName}.png`,
+    comparisonScreenshot: `/api/screenshots/${comparisonScreenshotData.fileName}.png`,
+    diffImage: `/api/screenshots/${baselineScreenshotData.fileName}-diff.png`,
+    failing: false,
+  };
+
+  await addDeviceScreenshots(
+    db,
+    sitePath,
+    parsedUrl.pathname,
+    screenshots,
+    device
+  );
+
+  console.log(`Did screenshot fail ${failed}`);
+  if (failed) {
+    const pathname = new URL(baselineScreenshotData.url).pathname;
+    await addFailingScreenshot(db, sitePath, pathname, device);
+  }
+
+  res.send(failed);
 }
 
 /**
@@ -102,4 +186,5 @@ function sendError(errMessage, err, res) {
 module.exports = {
   initialiseCluster,
   generateScreenshot,
+  compareScreenshots,
 };

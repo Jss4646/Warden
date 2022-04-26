@@ -8,10 +8,9 @@ import "./css/index.css";
 import "antd/dist/antd.css";
 
 import NavBar from "./components/nav-bar/nav-bar";
-// import Home from "./pages/home";
-import AutomatedTests from "./pages/automated-tests";
 import ScreenshotTool from "./pages/screenshot-tool";
-import SeoTools from "./pages/seo-tools";
+import Sites from "./pages/sites";
+import SiteDashboard from "./pages/site-dashboard";
 
 import store from "./store";
 
@@ -20,9 +19,8 @@ const Router = () => (
     <BrowserRouter>
       <NavBar />
       <Route exact path="/" component={ScreenshotTool} />
-      <Route exact path="/automated-tests" component={AutomatedTests} />
-      <Route exact path="/screenshot-tool" component={ScreenshotTool} />
-      <Route exact path="/seo-tools" component={SeoTools} />
+      <Route exact path="/sites" component={Sites} />
+      <Route exact path="/sites/:sitePath" component={SiteDashboard} />
     </BrowserRouter>
   </Provider>
 );

@@ -4,12 +4,12 @@ on: [push, repository_dispatch]
 
 jobs:
   cypress-run:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup client
-        run:  cd client && npm install && npm run build:css && npm run build
+        run:  cd client && npm install --no-optional && npm run build:css && npm run build
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

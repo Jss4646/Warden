@@ -1,0 +1,6 @@
+Screenshot creation
+Comparison implementation
+Failing tab
+Screenshot taking settings (TBD)
+Code cleanup
+Cypress tests

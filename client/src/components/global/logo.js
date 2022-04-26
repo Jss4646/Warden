@@ -7,7 +7,7 @@ import React from "react";
 const Logo = () => {
   return (
     <h1 className="logo">
-      <span>QA</span> Tools
+      <span>W</span>ARDEN
     </h1>
   );
 };

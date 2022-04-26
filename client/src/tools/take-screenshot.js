@@ -18,13 +18,20 @@ const takeScreenshot = async (url, props) => {
     const parsedUrl = new URL(url);
     const abortController = new AbortController();
     const abortSignal = abortController.signal;
+    const date = new Date();
+    let path = parsedUrl.pathname === "/" ? "" : `${parsedUrl.pathname}-`;
+    path = path.replaceAll("/", "-");
+    const fileName = `${
+      parsedUrl.host
+    }-${path}${date.getMilliseconds()}-${date.getSeconds()}-${date.getDay()}-${date.getMonth()}-${date.getFullYear()}`;
+    console.log(fileName);
 
     const screenshotData = {
       deviceName: name,
       image: "",
       id: screenshotId,
       url: parsedUrl,
-      startTime: new Date().getTime(),
+      startTime: date.getTime(),
       endTime: 0,
       state: "running",
       abortController,
@@ -32,6 +39,7 @@ const takeScreenshot = async (url, props) => {
 
     const params = {
       url: parsedUrl,
+      fileName,
       userAgent: userAgent,
       resolution: { width, height },
       id: screenshotId,
