@@ -3,7 +3,7 @@ const {
   addDeviceScreenshots,
   getFailingThreshold,
   addFailingScreenshot,
-} = require("./db-endpoints");
+} = require("./database-calls");
 const { imgDiff } = require("img-diff-js");
 
 /**

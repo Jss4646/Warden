@@ -16,7 +16,7 @@ const {
   deleteAllSitePages,
   updateBaselineUrl,
   updateComparisonUrl,
-} = require("./tools/db-endpoints");
+} = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
 const express = require("express");
