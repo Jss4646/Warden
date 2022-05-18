@@ -34,9 +34,9 @@ class PagesList extends Component {
    * @returns {Promise<void>}
    */
   addPageClientSide = async (url) => {
-    const parsedUrl = new URL(url);
+    const parsedUrl = new URL(url)
     this.props.addPage(parsedUrl.pathname, {
-      url,
+      url: url.toString(),
       passingNum: "0/0",
       screenshots: {},
     });
@@ -51,7 +51,7 @@ class PagesList extends Component {
   addPage = async () => {
     const url = new URL(this.props.siteData.url);
     url.pathname = this.state.addPagePath;
-    const newPage = { url, passingNum: "0/0", screenshots: {}, failing: false };
+    const newPage = { url: url.toString(), passingNum: "0/0", screenshots: {}, failing: false };
 
     this.props.addPage(url.pathname, newPage);
 

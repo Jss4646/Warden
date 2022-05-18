@@ -69,8 +69,8 @@ class PageScreenshots extends Component {
                 failingScreenshots[site]
               );
 
-              screenshotBar.unshift(<h2>{site}</h2>);
-              return screenshotBar;
+
+              return (<div key={site}><h2>{site}</h2>{screenshotBar}</div>);
             })}
         </div>
       );

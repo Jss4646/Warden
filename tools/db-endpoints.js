@@ -290,6 +290,24 @@ async function getFailingThreshold(db, sitePath) {
   return site.failingPercentage;
 }
 
+async function updateBaselineUrl(db, req, res) {
+  const { url, sitePath } = req.body;
+
+  console.log(
+    await db.collection("sites").updateOne({ sitePath }, { $set: { url } })
+  );
+  res.send(true);
+}
+
+async function updateComparisonUrl(db, req, res) {
+  const { url, sitePath } = req.body;
+
+  await db
+    .collection("sites")
+    .updateOne({ sitePath }, { $set: { comparisonUrl: url } });
+  res.send(true);
+}
+
 module.exports = {
   addSite,
   getSite,
@@ -302,4 +320,6 @@ module.exports = {
   addDeviceScreenshots,
   addFailingScreenshot,
   getFailingThreshold,
+  updateBaselineUrl,
+  updateComparisonUrl,
 };

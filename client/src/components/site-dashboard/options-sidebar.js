@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Collapse } from "antd";
 import AboutSite from "./about-site";
-import SiteConfig from "./site-config";
+import SiteUrls from "./site-urls";
 
 const { Panel } = Collapse;
 
@@ -15,8 +15,8 @@ class OptionsSidebar extends Component {
         <Panel key={0} header="About site" id="about-site">
           <AboutSite {...this.props} />
         </Panel>
-        <Panel key={1} header="Site config" id="site-config">
-          <SiteConfig {...this.props} />
+        <Panel key={1} header="Site urls" id="site-urls">
+          <SiteUrls {...this.props} />
         </Panel>
       </Collapse>
     );

@@ -54,7 +54,7 @@ class Page extends Component {
     let passingString;
 
     if (failingScreenshots[path]) {
-      const passingNum = failingScreenshots[path].length - devices.length;
+      const passingNum =  devices.length - failingScreenshots[path].length;
       passingString = `${passingNum}/${devices.length}`;
     } else {
       passingString = `${devices.length}/${devices.length}`;

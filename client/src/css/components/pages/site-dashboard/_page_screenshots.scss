@@ -30,7 +30,7 @@
 
   .dashboard-screenshot-bar__screenshots {
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(3, 1fr);
     column-gap: 15px;
     justify-items: center;
     overflow-x: auto;

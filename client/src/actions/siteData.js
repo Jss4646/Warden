@@ -63,3 +63,17 @@ export function setIsScreenshotFailing(page, device, failed) {
     failed,
   };
 }
+
+export function setBaselineUrl(url) {
+  return {
+    type: "SET_BASELINE_URL",
+    url,
+  };
+}
+
+export function setComparisonUrl(url) {
+  return {
+    type: "SET_COMPARISON_URL",
+    url,
+  };
+}

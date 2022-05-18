@@ -49,7 +49,6 @@ async function initialiseCluster() {
  */
 async function takeScreenshot({ page, data: { screenshotData, res } }) {
   let { url, cookieData, resolution, userAgent, fileName } = screenshotData;
-  url = new URL(url);
   console.log(`Setting up page for ${url}`);
 
   await page
@@ -66,7 +65,7 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
       .catch((err) => sendError("Couldn't set cookies", err, res));
 
   await page
-    .goto(url.toString(), { timeout: 120000 })
+    .goto(url, { timeout: 120000 })
     .catch((err) => sendError("Couldn't navigate to page", err, res));
 
   console.log(`Screenshotting Website: ${url}`);

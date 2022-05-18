@@ -1,0 +1,14 @@
+.site-urls {
+  display: flex;
+  flex-direction: column;
+
+  &__save-button {
+    width: 126px;
+    margin-top: 14px;
+  }
+
+  &__status-text {
+    margin-left: 6px;
+    color: $qa-tool-grey;
+  }
+}

@@ -14,6 +14,8 @@ const {
   deleteSitePage,
   fillSitePages,
   deleteAllSitePages,
+  updateBaselineUrl,
+  updateComparisonUrl,
 } = require("./tools/db-endpoints");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -62,6 +64,12 @@ app.use("/api/screenshots", express.static("screenshots"));
   app.post("/api/fill-site-pages", (req, res) => fillSitePages(db, req, res));
   app.post("/api/delete-all-site-pages", (req, res) =>
     deleteAllSitePages(db, req, res)
+  );
+  app.post("/api/update-baseline-url", (req, res) =>
+    updateBaselineUrl(db, req, res)
+  );
+  app.post("/api/update-comparison-url", (req, res) =>
+    updateComparisonUrl(db, req, res)
   );
 })();
 

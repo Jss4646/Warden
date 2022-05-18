@@ -62,6 +62,14 @@ function siteData(state = [], action) {
 
       return stateCopy;
 
+    case "SET_BASELINE_URL":
+      stateCopy.url = action.url;
+      return stateCopy;
+
+    case "SET_COMPARISON_URL":
+      stateCopy.comparisonUrl = action.url;
+      return stateCopy;
+
     default:
       return state;
   }

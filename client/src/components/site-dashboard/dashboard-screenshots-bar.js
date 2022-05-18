@@ -42,7 +42,9 @@ class DashboardScreenshotsBar extends Component {
           className={`dashboard-screenshot-bar__screenshots ${failingClass}`}
         >
           <div className="dashboard-screenshot-bar__screenshot">
+          <a href={'#'}>
             <h3>Baseline</h3>
+          </a>
             {baselineImg}
           </div>
           <div className="dashboard-screenshot-bar__screenshot">
