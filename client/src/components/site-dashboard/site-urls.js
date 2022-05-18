@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Button, Input } from "antd";
 
 class SiteUrls extends Component {
-  state = { statusText: "asdsad" };
+  state = { statusText: "" };
 
   updateStatusText(newText) {
     const stateCopy = { ...this.state };
