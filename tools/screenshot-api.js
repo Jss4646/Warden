@@ -98,20 +98,20 @@ async function generateScreenshot(req, res, cluster) {
 /**
  * The endpoint to generate and compare two screenshots
  *
- * @param req {Request}
+ * @param page {Object}
  * @param res {Response}
  * @param cluster {Cluster}
  * @param db {Db}
  * @returns {Promise<void>}
  */
-async function compareScreenshots(req, res, cluster, db) {
+async function compareScreenshots(page, cluster, res, db) {
   const {
     baselineScreenshotData,
     comparisonScreenshotData,
     sitePath,
     device,
     generateBaselines,
-  } = req.body;
+  } = page;
 
   console.log("Starting to take screenshot");
   const comparisonScreenshotPromise = cluster.execute({
@@ -169,6 +169,15 @@ async function compareScreenshots(req, res, cluster, db) {
   res.send(failed);
 }
 
+function runComparison(req, res, cluster, db) {
+  const {pages} = req.body;
+
+  pages.forEach(page => {
+    compareScreenshots(page, cluster, res, db)
+  })
+
+}
+
 /**
  * Sends an error to the client with a given error message
  *
@@ -185,5 +194,5 @@ function sendError(errMessage, err, res) {
 module.exports = {
   initialiseCluster,
   generateScreenshot,
-  compareScreenshots,
+  runComparison,
 };

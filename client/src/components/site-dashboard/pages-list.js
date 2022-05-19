@@ -189,7 +189,7 @@ class PagesList extends Component {
           </Button>
           <Button onClick={this.removeAllPages}>Remove all pages</Button>
         </div>
-        <Search placeholder="search for page" />
+        <Search placeholder="search for page" disabled={true}/>
         <div className="pages-list__pages">{pagesElement}</div>
       </div>
     );

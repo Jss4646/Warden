@@ -2,7 +2,7 @@ const { crawlSitemapEndpoint } = require("./tools/crawl-url");
 const {
   initialiseCluster,
   generateScreenshot,
-  compareScreenshots,
+  runComparison,
 } = require("./tools/screenshot-api");
 
 const {
@@ -47,7 +47,7 @@ app.use("/api/screenshots", express.static("screenshots"));
     generateScreenshot(req, res, cluster)
   );
   app.post("/api/run-comparison", (req, res) =>
-    compareScreenshots(req, res, cluster, db)
+      runComparison(req, res, cluster, db)
   );
 
   await client.connect((err) => {
