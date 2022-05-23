@@ -101,7 +101,6 @@ async function compareScreenshots(
   cluster,
   db
 ) {
-  console.log(screenshotData);
   const {
     baselineUrl,
     baselineFileName,
