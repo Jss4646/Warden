@@ -67,16 +67,14 @@ class AddSite extends Component {
       pages: {
         "/": {
           url: this.state.url,
-          passingNum: "0/0",
           screenshots: {},
         },
       },
       failingPercentage: 5,
-      failingScreenshots: {},
       devices: ["1080p", "iphone-x/xs"],
     };
 
-    const fetchUrl = new URL(`${window.location.origin}/api/add-site`);
+    const fetchUrl = `${window.location.origin}/api/add-site`;
     await fetch(fetchUrl, {
       method: "POST",
       headers: {

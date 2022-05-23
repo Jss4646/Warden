@@ -30,7 +30,7 @@ const takeScreenshot = async (url, props) => {
       deviceName: name,
       image: "",
       id: screenshotId,
-      url: parsedUrl,
+      url: parsedUrl.toString(),
       startTime: date.getTime(),
       endTime: 0,
       state: "running",

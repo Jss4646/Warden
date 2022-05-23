@@ -34,7 +34,7 @@ class PagesList extends Component {
    * @returns {Promise<void>}
    */
   addPageClientSide = async (url) => {
-    const parsedUrl = new URL(url)
+    const parsedUrl = new URL(url);
     this.props.addPage(parsedUrl.pathname, {
       url: url.toString(),
       passingNum: "0/0",
@@ -51,7 +51,12 @@ class PagesList extends Component {
   addPage = async () => {
     const url = new URL(this.props.siteData.url);
     url.pathname = this.state.addPagePath;
-    const newPage = { url: url.toString(), passingNum: "0/0", screenshots: {}, failing: false };
+    const newPage = {
+      url: url.toString(),
+      passingNum: "0/0",
+      screenshots: {},
+      failing: false,
+    };
 
     this.props.addPage(url.pathname, newPage);
 
@@ -105,7 +110,6 @@ class PagesList extends Component {
    * @returns {Promise<void>}
    */
   removeAllPages = async () => {
-    this.props.removeAllPages();
     const { sitePath } = this.props.siteData;
     const params = { sitePath: sitePath };
     const fetchUrl = new URL(
@@ -120,6 +124,22 @@ class PagesList extends Component {
       body: JSON.stringify(params),
     });
   };
+
+  // TODO merge all loops over pages
+  calculateFailing(pages) {
+    return Object.keys(pages).reduce((sum, site) => {
+      const screenshots = pages[site].screenshots;
+
+      Object.keys(screenshots).forEach((device) => {
+        const screenshot = screenshots[device];
+        if (screenshot.failing) {
+          sum += 1;
+        }
+      }, 0);
+
+      return sum;
+    }, 0);
+  }
 
   /**
    * Gets the pages of a site
@@ -141,17 +161,6 @@ class PagesList extends Component {
     }
   }
 
-  calculateNumOfFailing() {
-    const { failingScreenshots } = this.props.siteData;
-    let numOfFailing = 0;
-
-    for (const screenshot in failingScreenshots) {
-      numOfFailing += failingScreenshots[screenshot].length;
-    }
-
-    return numOfFailing;
-  }
-
   render() {
     let pagesElement = this.getPages();
 
@@ -167,7 +176,7 @@ class PagesList extends Component {
           onClick={() => this.props.setCurrentPage("failing")}
         >
           <span className="pages-list__failing-text">Failing: </span>
-          <span>{this.calculateNumOfFailing()}</span>
+          <span>{this.calculateFailing(this.props.siteData.pages)}</span>
         </div>
         <div className="pages-list__add-page">
           <Button
@@ -189,7 +198,7 @@ class PagesList extends Component {
           </Button>
           <Button onClick={this.removeAllPages}>Remove all pages</Button>
         </div>
-        <Search placeholder="search for page" disabled={true}/>
+        <Search placeholder="search for page" disabled={true} />
         <div className="pages-list__pages">{pagesElement}</div>
       </div>
     );

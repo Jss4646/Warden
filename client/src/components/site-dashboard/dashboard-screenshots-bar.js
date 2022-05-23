@@ -5,10 +5,11 @@ import { Spin } from "antd";
  * Creates a loading icon if url isn't present and displays the image if it is
  *
  * @param src {String} - image url
+ * @param loading {boolean}
  * @returns {JSX.Element}
  */
-const createScreenshotContainer = (src) => {
-  return src ? (
+const createScreenshotContainer = (src, loading) => {
+  return src && !loading ? (
     <div className="dashboard-screenshot-bar__screenshots-img">
       <img src={src} alt="Screenshot" />
     </div>
@@ -22,12 +23,17 @@ const createScreenshotContainer = (src) => {
  */
 class DashboardScreenshotsBar extends Component {
   render() {
-    const { baselineScreenshot, comparisonScreenshot, diffImage, failing } =
-      this.props.screenshots;
+    const {
+      baselineScreenshot,
+      comparisonScreenshot,
+      diffImage,
+      failing,
+      loading,
+    } = this.props.screenshots;
 
-    const baselineImg = createScreenshotContainer(baselineScreenshot);
-    const changedImg = createScreenshotContainer(comparisonScreenshot);
-    const diffImg = createScreenshotContainer(diffImage);
+    const baselineImg = createScreenshotContainer(baselineScreenshot, loading);
+    const changedImg = createScreenshotContainer(comparisonScreenshot, loading);
+    const diffImg = createScreenshotContainer(diffImage, loading);
 
     let failingClass = failing
       ? "dashboard-screenshot-bar__screenshots--failing"

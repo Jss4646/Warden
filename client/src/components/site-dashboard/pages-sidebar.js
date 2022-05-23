@@ -88,8 +88,23 @@ class PagesSidebar extends Component {
     }
   };
 
+  calculateNumInQueue(pages) {
+    return Object.keys(pages).reduce((sum, site) => {
+      const screenshots = pages[site].screenshots;
+
+      Object.keys(screenshots).forEach((device) => {
+        const screenshot = screenshots[device];
+        sum += screenshot.loading;
+      }, 0);
+
+      return sum;
+    }, 0);
+  }
+
   render() {
-    const { siteName, url, siteStatus } = this.props.siteData;
+    const { siteName, url, siteStatus, pages } = this.props.siteData;
+
+    const numInQueue = this.calculateNumInQueue(pages);
 
     return (
       <div className="pages-sidebar">
@@ -113,6 +128,9 @@ class PagesSidebar extends Component {
           <Button onClick={this.runComparison}>Run comparison</Button>
           <Button onClick={this.generateBaselines}>Generate baselines</Button>
         </div>
+        <span className="pages-sidebar__comparison-text">
+          Comparisons in queue: {numInQueue}
+        </span>
         <PagesList {...this.props} />
       </div>
     );

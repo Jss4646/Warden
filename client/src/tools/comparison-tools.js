@@ -13,35 +13,23 @@ import { default as devicesData } from "../data/devices.json";
 /**
  * Makes the call to the api to generate the screenshots and diff image
  *
- * @param baselineScreenshotData {screenshotData}
- * @param comparisonScreenshotData {screenshotData}
- * @param sitePath {string}
- * @param device {string}
+ * @param pagesRequestData {Array[screenshotData]}
  * @param generateBaselines {boolean}
  * @returns {Promise<string>}
  */
-export async function generateScreenshots(
-  baselineScreenshotData,
-  comparisonScreenshotData,
-  sitePath,
-  device,
-  generateBaselines
-) {
-  return await fetch(`${window.location.origin}/api/run-comparison`, {
+export function generateScreenshots(pagesRequestData, generateBaselines) {
+  fetch(`${window.location.origin}/api/run-comparison`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      baselineScreenshotData,
-      comparisonScreenshotData,
-      sitePath,
-      device,
+      pages: pagesRequestData,
       generateBaselines,
     }),
     // TODO cancel button
     // signal: abortSignal,
-  }).then((res) => res.json());
+  });
 }
 
 /**
@@ -52,19 +40,21 @@ export async function generateScreenshots(
  * @param siteData.url {string}
  * @param siteData.comparisonUrl {string}
  * @param siteData.sitePath {string}
- * @param siteData.pages {Object}
- * @param page {string}
+ * @param siteData.screenshotPages {Object}
+ * @param page {Array[string]}
  * @param addScreenshots {function}
  * @param setIsScreenshotFailing {function}
  * @param [generateBaselines] {boolean}
  */
-export async function runPageComparison(
+export function runPageComparison(
   siteData,
   page,
   addScreenshots,
   setIsScreenshotFailing,
   generateBaselines = false
 ) {
+  const pagesRequestData = [];
+
   const { devices, url, comparisonUrl, sitePath, pages } = siteData;
 
   const fullUrl = `${url}${page}`;
@@ -73,63 +63,40 @@ export async function runPageComparison(
   for (const device of devices) {
     const currentScreenshots = pages[page].screenshots[device];
     const { height, width, userAgent } = devicesData[device];
-    const screenshotData = {
-      resolution: { height, width },
-      userAgent,
-    };
 
     generateBaselines =
       currentScreenshots?.baselineScreenshot === undefined || generateBaselines;
 
-    const baselineFilename = generateBaselines
+    const baselineFileName = generateBaselines
       ? createFilename(fullUrl, device)
       : currentScreenshots.baselineScreenshot.slice(17, -4);
-    const comparisonFilename = createFilename(fullComparisonUrl, device);
+    const comparisonFileName = createFilename(fullComparisonUrl, device);
 
-    let baselineScreenshotData;
+    let screenshotData = {
+      resolution: { height, width },
+      userAgent,
+      comparisonUrl: fullComparisonUrl,
+      comparisonFileName,
+      baselineUrl: fullUrl,
+      baselineFileName,
+      sitePath,
+      device,
+    };
+
+    console.log(screenshotData);
 
     if (generateBaselines) {
-      baselineScreenshotData = {
-        ...screenshotData,
-        url: fullUrl,
-        fileName: baselineFilename,
-      };
-
       addScreenshots(new URL(fullUrl).pathname, device, {});
     } else {
-      baselineScreenshotData = {
-        fileName: baselineFilename,
-        url: fullUrl,
-      };
-
       addScreenshots(new URL(fullUrl).pathname, device, {
-        baselineScreenshot: `/api/screenshots/${baselineFilename}.png`,
+        baselineScreenshot: `/api/screenshots/${baselineFileName}.png`,
       });
     }
 
-    const comparisonScreenshotData = {
-      ...screenshotData,
-      url: fullComparisonUrl,
-      fileName: comparisonFilename,
-    };
-
-    generateScreenshots(
-      baselineScreenshotData,
-      comparisonScreenshotData,
-      sitePath,
-      device,
-      generateBaselines
-    ).then((screenshotFailed) => {
-      addScreenshots(page, device, {
-        baselineScreenshot: `/api/screenshots/${baselineFilename}.png`,
-        comparisonScreenshot: `/api/screenshots/${comparisonFilename}.png`,
-        diffImage: `/api/screenshots/${baselineFilename}-diff.png`,
-      });
-
-      console.log("Screenshot failed: ", screenshotFailed);
-      setIsScreenshotFailing(page, device, screenshotFailed);
-    });
+    pagesRequestData.push(screenshotData);
   }
+
+  generateScreenshots(pagesRequestData, generateBaselines);
 }
 
 /**

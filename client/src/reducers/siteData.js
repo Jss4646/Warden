@@ -40,26 +40,8 @@ function siteData(state = [], action) {
         action.screenshots;
       return stateCopy;
 
-    case "SET_IS_SCREENSHOT_FAILING":
-      if (!stateCopy.failingScreenshots[action.page]) {
-        stateCopy.failingScreenshots[action.page] = [];
-      }
-
-      const failingScreenshotExists = stateCopy.failingScreenshots[
-        action.page
-      ].find((device) => device === action.device);
-
-      if (!failingScreenshotExists && action.failed) {
-        stateCopy.failingScreenshots[action.page].push(action.device);
-      } else if (failingScreenshotExists && !action.failed) {
-        stateCopy.failingScreenshots[action.page].filter(
-          (device) => device !== action.device
-        );
-      }
-
-      stateCopy.pages[action.page].screenshots[action.device].failing =
-        action.failed;
-
+    case "SET_ALL_SCREENSHOTS":
+      stateCopy.pages = action.pages;
       return stateCopy;
 
     case "SET_BASELINE_URL":
@@ -68,6 +50,14 @@ function siteData(state = [], action) {
 
     case "SET_COMPARISON_URL":
       stateCopy.comparisonUrl = action.url;
+      return stateCopy;
+
+    case "SET_NUM_OF_FAILING":
+      stateCopy.numOfFailing = action.numOfFailing;
+      return stateCopy;
+
+    case "SET_NUM_IN_QUEUE":
+      stateCopy.numInQueue = action.numInQueue;
       return stateCopy;
 
     default:

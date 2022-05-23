@@ -10,7 +10,7 @@ class Sites extends Component {
   }
 
   async componentDidMount() {
-    const fetchUrl = new URL(`${window.location.origin}/api/get-all-sites`);
+    const fetchUrl = `${window.location.origin}/api/get-all-sites`;
     console.log("Getting site");
     const siteData = await fetch(fetchUrl).then((res) => {
       if (res.status === 200) {
@@ -38,9 +38,17 @@ class Sites extends Component {
             const totalScreenshots =
               Object.keys(site.pages).length * site.devices.length;
 
-            const numOfFailing = Object.keys(site.failingScreenshots).reduce(
-              (prev_num, page) =>
-                prev_num + site.failingScreenshots[page].length,
+            const numOfFailing = Object.keys(site.pages).reduce(
+              (prev_num, page) => {
+                const screenshots = site.pages[page].screenshots;
+                const numOfFailing = Object.keys(screenshots).reduce(
+                  (prev_num, device) => {
+                    return prev_num + screenshots[device].failing;
+                  },
+                  0
+                );
+                return prev_num + numOfFailing;
+              },
               0
             );
 

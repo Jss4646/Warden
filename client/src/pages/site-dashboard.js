@@ -4,6 +4,7 @@ import bindComponentToState from "../tools/bindComponentToState";
 import PagesSidebar from "../components/site-dashboard/pages-sidebar";
 import PageScreenshots from "../components/site-dashboard/page-screenshots";
 import OptionsSidebar from "../components/site-dashboard/options-sidebar";
+import { wsInit } from "../tools/websocket-client";
 
 class SiteDashboard extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class SiteDashboard extends Component {
   }
 
   async componentDidMount() {
+    wsInit(this.props.setAllScreenshots);
     const params = { sitePath: this.props.match.params.sitePath };
 
     const fetchUrl = new URL(`${window.location.origin}/api/get-site`);

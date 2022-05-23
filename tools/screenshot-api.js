@@ -2,7 +2,7 @@ const { Cluster } = require("puppeteer-cluster");
 const {
   addDeviceScreenshots,
   getFailingThreshold,
-  addFailingScreenshot,
+  updateScreenshotLoading,
 } = require("./database-calls");
 const { imgDiff } = require("img-diff-js");
 
@@ -17,6 +17,7 @@ async function initialiseCluster() {
     maxConcurrency: 5,
     retryLimit: 1,
     timeout: 500000,
+    // monitor: true,
     puppeteerOptions: {
       args: [
         "--no-sandbox",
@@ -38,45 +39,35 @@ async function initialiseCluster() {
  * Sets up a headless browser to take a screenshot of a given website
  *
  * @param page - Puppeteer cluster page
- * @param {Object} screenshotData - Data used to setup page for screenshot
- * @param {string} screenshotData.url - The url of the page to be screenshotted
- * @param {String} screenshotData.cookieData - Cookies to be passed to the browser before loading the page
- * @param {{width: number, height: number}} screenshotData.resolution - The resolution of the browser
- * @param {String} screenshotData.userAgent - The user agent to be passed to the browser before loading the page
+ * @param {string} url - The url of the page to be screenshotted
+ * @param {String} cookieData - Cookies to be passed to the browser before loading the page
+ * @param {{width: number, height: number}} resolution - The resolution of the browser
+ * @param {String} userAgent - The user agent to be passed to the browser before loading the page
  * @param res - response object used by express
  *
  * @returns {Promise<void>}
  */
-async function takeScreenshot({ page, data: { screenshotData, res } }) {
-  let { url, cookieData, resolution, userAgent, fileName } = screenshotData;
-  console.log(`Setting up page for ${url}`);
+async function takeScreenshot({
+  page,
+  data: { url, cookieData, resolution, userAgent, fileName },
+}) {
+  await page.setViewport(resolution);
+  // .catch((err) => sendError("Couldn't set viewport", err, res));
 
-  await page
-    .setViewport(resolution)
-    .catch((err) => sendError("Couldn't set viewport", err, res));
+  await page.setUserAgent(userAgent.toString());
+  // .catch((err) => sendError("Couldn't set user agent", err, res));
 
-  await page
-    .setUserAgent(userAgent.toString())
-    .catch((err) => sendError("Couldn't set user agent", err, res));
+  if (cookieData) await page.setCookie(...cookieData);
+  // .catch((err) => sendError("Couldn't set cookies", err, res));
 
-  if (cookieData)
-    await page
-      .setCookie(...cookieData)
-      .catch((err) => sendError("Couldn't set cookies", err, res));
+  await page.goto(url, { timeout: 120000 });
+  // .catch((err) => sendError("Couldn't navigate to page", err, res));
 
-  await page
-    .goto(url, { timeout: 120000 })
-    .catch((err) => sendError("Couldn't navigate to page", err, res));
-
-  console.log(`Screenshotting Website: ${url}`);
-
-  const screenshot = await page
-    .screenshot({
-      fullPage: true,
-      path: `${__dirname}/../screenshots/${fileName}.png`,
-    })
-    .catch((err) => sendError("Couldn't take screenshot", err, res));
-  console.log(`Screenshot taken: ${url}\n`);
+  const screenshot = await page.screenshot({
+    fullPage: true,
+    path: `${__dirname}/../screenshots/${fileName}.png`,
+  });
+  // .catch((err) => sendError("Couldn't take screenshot", err, res));
   await page.close();
   return screenshot;
 }
@@ -91,38 +82,55 @@ async function takeScreenshot({ page, data: { screenshotData, res } }) {
  * @returns {Promise<void>}
  */
 async function generateScreenshot(req, res, cluster) {
-  const screenshot = await cluster.execute({ screenshotData: req.body, res });
+  const screenshot = await cluster.execute({ screenshotData: req.body });
   res.send(screenshot);
 }
 
 /**
  * The endpoint to generate and compare two screenshots
  *
- * @param page {Object}
- * @param res {Response}
+ * @param screenshotData {Object}
+ * @param generateBaselines {boolean}
  * @param cluster {Cluster}
  * @param db {Db}
  * @returns {Promise<void>}
  */
-async function compareScreenshots(page, cluster, res, db) {
+async function compareScreenshots(
+  screenshotData,
+  generateBaselines,
+  cluster,
+  db
+) {
+  console.log(screenshotData);
   const {
-    baselineScreenshotData,
-    comparisonScreenshotData,
+    baselineUrl,
+    baselineFileName,
+    comparisonUrl,
+    comparisonFileName,
+    cookieData,
+    resolution,
+    userAgent,
     sitePath,
     device,
-    generateBaselines,
-  } = page;
+  } = screenshotData;
 
-  console.log("Starting to take screenshot");
+  const parsedUrl = new URL(baselineUrl);
+  console.log("Updating screenshots");
+  await updateScreenshotLoading(db, sitePath, parsedUrl.pathname, device, true);
+
+  const defaultData = { cookieData, resolution, userAgent };
+
   const comparisonScreenshotPromise = cluster.execute({
-    screenshotData: comparisonScreenshotData,
-    res,
+    url: comparisonUrl,
+    fileName: comparisonFileName,
+    ...defaultData,
   });
 
   if (generateBaselines) {
     const baselineScreenshotPromise = cluster.execute({
-      screenshotData: baselineScreenshotData,
-      res,
+      url: baselineUrl,
+      fileName: baselineFileName,
+      ...defaultData,
     });
 
     await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
@@ -130,12 +138,10 @@ async function compareScreenshots(page, cluster, res, db) {
     await comparisonScreenshotPromise;
   }
 
-  console.log("Finished taking screenshots");
-
   const diffData = await imgDiff({
-    actualFilename: `${__dirname}/../screenshots/${baselineScreenshotData.fileName}.png`,
-    expectedFilename: `${__dirname}/../screenshots/${comparisonScreenshotData.fileName}.png`,
-    diffFilename: `${__dirname}/../screenshots/${baselineScreenshotData.fileName}-diff.png`,
+    actualFilename: `${__dirname}/../screenshots/${baselineFileName}.png`,
+    expectedFilename: `${__dirname}/../screenshots/${comparisonFileName}.png`,
+    diffFilename: `${__dirname}/../screenshots/${baselineFileName}-diff.png`,
   });
 
   const { width, height, diffCount } = diffData;
@@ -144,13 +150,16 @@ async function compareScreenshots(page, cluster, res, db) {
   const failed = percentageDiff > failingThreshold;
   console.log("Failing threshold", failingThreshold);
 
-  const parsedUrl = new URL(baselineScreenshotData.url);
+  console.log(baselineUrl);
   const screenshots = {
-    baselineScreenshot: `/api/screenshots/${baselineScreenshotData.fileName}.png`,
-    comparisonScreenshot: `/api/screenshots/${comparisonScreenshotData.fileName}.png`,
-    diffImage: `/api/screenshots/${baselineScreenshotData.fileName}-diff.png`,
-    failing: false,
+    baselineScreenshot: `/api/screenshots/${baselineFileName}.png`,
+    comparisonScreenshot: `/api/screenshots/${comparisonFileName}.png`,
+    diffImage: `/api/screenshots/${baselineFileName}-diff.png`,
+    failing: failed,
+    loading: false,
   };
+
+  console.log("Finished comparing screenshots");
 
   await addDeviceScreenshots(
     db,
@@ -159,23 +168,21 @@ async function compareScreenshots(page, cluster, res, db) {
     screenshots,
     device
   );
-
-  console.log(`Did screenshot fail ${failed}`);
-  if (failed) {
-    const pathname = new URL(baselineScreenshotData.url).pathname;
-    await addFailingScreenshot(db, sitePath, pathname, device);
-  }
-
-  res.send(failed);
+  await updateScreenshotLoading(
+    db,
+    sitePath,
+    parsedUrl.pathname,
+    device,
+    false
+  );
 }
 
 function runComparison(req, res, cluster, db) {
-  const {pages} = req.body;
+  const { pages: screenshots, generateBaselines } = req.body;
 
-  pages.forEach(page => {
-    compareScreenshots(page, cluster, res, db)
-  })
-
+  screenshots.forEach(async (screenshot) => {
+    compareScreenshots(screenshot, generateBaselines, cluster, db);
+  });
 }
 
 /**

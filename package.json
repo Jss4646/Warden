@@ -39,7 +39,9 @@
     "puppeteer-cluster": "^0.22.0",
     "serve": "^11.3.2",
     "sharp": "^0.30.1",
-    "sitemapper": "^3.1.10"
+    "sitemapper": "^3.1.10",
+    "uuid": "^8.3.2",
+    "ws": "^8.6.0"
   },
   "devDependencies": {
     "cypress": "^7.1.0",

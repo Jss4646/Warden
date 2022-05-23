@@ -4,6 +4,14 @@ import { Button, Empty } from "antd";
 import { runPageComparison } from "../../tools/comparison-tools";
 
 class PageScreenshots extends Component {
+  numOfFailing = 0;
+  numInQueue = 0;
+
+  componentDidMount() {
+    this.props.setNumOfFailing(this.numOfFailing);
+    this.props.setNumInQueue(this.numInQueue);
+  }
+
   /**
    * Gets screenshots of both comparison and baseline urls along with the diff image for all devices
    * on the page then adding the images to state client side
@@ -29,28 +37,53 @@ class PageScreenshots extends Component {
     );
   };
 
-  generateScreenshotBars(screenshots, devices) {
-    return Object.keys(screenshots)
-      .sort()
-      .map((device) => {
-        if (devices) {
-          if (!devices.includes(device)) return "";
-        }
+  generateScreenshotBars(page, hidePassing) {
+    return Object.keys(page).map((device) => {
+      const screenshots = page[device];
 
-        const comparisonScreenshots = screenshots[device];
+      if (screenshots.failing) {
+        this.numOfFailing += 1;
+      }
+
+      if (screenshots.loading) {
+        this.numOfFailing += 1;
+      }
+
+      if (screenshots.failing || !hidePassing) {
         return (
           <DashboardScreenshotsBar
-            screenshots={comparisonScreenshots}
+            screenshots={screenshots}
             deviceName={device}
             key={device}
           />
         );
-      });
+      }
+
+      return "";
+    });
   }
 
   render() {
-    const { currentPage, pages, failingScreenshots } = this.props.siteData;
+    this.numOfFailing = 0;
+    const { currentPage, pages } = this.props.siteData;
     const screenshots = pages[currentPage]?.screenshots;
+
+    const failingScreenshots = Object.keys(pages)
+      .sort()
+      .map((site) => {
+        const screenshots = pages[site].screenshots;
+        const screenshotBars = this.generateScreenshotBars(screenshots, true);
+        if (screenshotBars.length > 0) {
+          return (
+            <div key={site}>
+              <h2>{site}</h2>
+              {screenshotBars}
+            </div>
+          );
+        } else {
+          return "";
+        }
+      });
 
     if (currentPage === "failing") {
       return (
@@ -60,18 +93,7 @@ class PageScreenshots extends Component {
               Failing Screenshots
             </h1>
           </div>
-          {Object.keys(failingScreenshots)
-            .sort()
-            .map((site) => {
-              const screenshots = pages[site].screenshots;
-              const screenshotBar = this.generateScreenshotBars(
-                screenshots,
-                failingScreenshots[site]
-              );
-
-
-              return (<div key={site}><h2>{site}</h2>{screenshotBar}</div>);
-            })}
+          {failingScreenshots}
         </div>
       );
     }

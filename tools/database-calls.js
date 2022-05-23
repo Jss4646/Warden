@@ -1,4 +1,5 @@
 const { crawlSitemap } = require("./crawl-url");
+const { broadcastData } = require("./websocket-server");
 
 /**
  * Endpoint to add a site to the database
@@ -185,8 +186,7 @@ async function fillSitePages(db, req, res) {
     const query = {};
 
     query[`pages.${url.pathname}`] = {
-      url,
-      passingNum: "0/0",
+      url: url.toString(),
       screenshots: {},
     };
 
@@ -195,6 +195,12 @@ async function fillSitePages(db, req, res) {
       { $set: query }
     );
   });
+
+  const site = await db
+    .collection("sites")
+    .findOne({ sitePath: req.body.sitePath });
+
+  broadcastData("UPDATE_SCREENSHOTS", site.pages);
 
   res.send(urls);
 }
@@ -216,13 +222,16 @@ async function deleteAllSitePages(db, req, res) {
     .collection("sites")
     .findOne({ sitePath: req.body.sitePath });
 
-  await db
-    .collection("sites")
-    .updateOne(
-      { sitePath: req.body.sitePath },
-      { $set: { pages: { "/": { ...site.pages["/"] } } } }
-    );
+  const blankPages = { "/": { url: site.pages["/"].url, screenshots: {} } };
 
+  await db.collection("sites").updateOne(
+    { sitePath: req.body.sitePath },
+    {
+      $set: { pages: blankPages },
+    }
+  );
+
+  broadcastData("UPDATE_SCREENSHOTS", blankPages);
   res.send("Deleted pages");
 }
 
@@ -251,38 +260,36 @@ async function addDeviceScreenshots(
   query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
 
   await db.collection("sites").updateOne({ sitePath }, { $set: query });
+
   console.log("Finished adding");
+
+  const site = await db.collection("sites").findOne({ sitePath });
+  broadcastData("UPDATE_SCREENSHOTS", site.pages);
 }
 
-/**
- * Adds failing screenshot to db
- *
- * @param db {Db}
- * @param sitePath {string}
- * @param urlPath {string}
- * @param page {string}
- * @param device {string}
- * @returns {Promise<*>}
- */
-async function addFailingScreenshot(db, sitePath, urlPath, device) {
-  console.log(`Adding failing screenshot: ${urlPath} : ${device}`);
+async function updateScreenshotLoading(db, sitePath, urlPath, device, loading) {
+  const query = {};
+  let site = await db.collection("sites").findOne({ sitePath });
+  console.log(site.pages, sitePath);
+  const screenshots = site.pages[urlPath].screenshots[device];
 
-  const failingQuery = {};
-  failingQuery[`pages.${urlPath}.screenshots.${device}.failing`] = true;
+  if (loading) {
+    query[`pages.${urlPath}.screenshots.${device}`] = {
+      ...screenshots,
+      loading,
+      failing: false,
+    };
+  } else {
+    query[`pages.${urlPath}.screenshots.${device}`] = {
+      ...screenshots,
+      loading,
+    };
+  }
 
-  await db
-    .collection("sites")
-    .updateOne({ sitePath }, { $set: failingQuery })
-    .then(console.log);
+  await db.collection("sites").updateOne({ sitePath }, { $set: query });
 
-  let failingScreenshotsQuery = {};
-  failingScreenshotsQuery[`failingScreenshots.${urlPath}`] = device;
-
-  await db
-    .collection("sites")
-    .updateOne({ sitePath }, { $addToSet: failingScreenshotsQuery });
-
-  console.log("Finished adding failed screenshot");
+  site = await db.collection("sites").findOne({ sitePath });
+  broadcastData("UPDATE_SCREENSHOTS", site.pages);
 }
 
 async function getFailingThreshold(db, sitePath) {
@@ -318,8 +325,8 @@ module.exports = {
   fillSitePages,
   deleteAllSitePages,
   addDeviceScreenshots,
-  addFailingScreenshot,
   getFailingThreshold,
   updateBaselineUrl,
   updateComparisonUrl,
+  updateScreenshotLoading,
 };

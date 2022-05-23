@@ -27,16 +27,15 @@ class Page extends Component {
 
   render() {
     const { path, siteData } = this.props;
-    const { currentPage, failingScreenshots, devices } = siteData;
+    const { currentPage, pages } = siteData;
 
-    let passingString;
-
-    if (failingScreenshots[path]) {
-      const passingNum =  devices.length - failingScreenshots[path].length;
-      passingString = `${passingNum}/${devices.length}`;
-    } else {
-      passingString = `${devices.length}/${devices.length}`;
-    }
+    const screenshots = pages[path].screenshots;
+    const numOfFailing = Object.keys(screenshots).reduce(
+      (sum, key) => sum + !screenshots[key].failing,
+      0
+    );
+    const totalScreenshots = Object.keys(screenshots).length;
+    let passingString = `${numOfFailing}/${totalScreenshots}`;
 
     return (
       <div

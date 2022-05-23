@@ -55,12 +55,10 @@ export function addScreenshots(page, device, screenshots) {
   };
 }
 
-export function setIsScreenshotFailing(page, device, failed) {
+export function setAllScreenshots(pages) {
   return {
-    type: "SET_IS_SCREENSHOT_FAILING",
-    page,
-    device,
-    failed,
+    type: "SET_ALL_SCREENSHOTS",
+    pages,
   };
 }
 
@@ -75,5 +73,19 @@ export function setComparisonUrl(url) {
   return {
     type: "SET_COMPARISON_URL",
     url,
+  };
+}
+
+export function setNumOfFailing(numOfFailing) {
+  return {
+    type: "SET_NUM_OF_FAILING",
+    numOfFailing,
+  };
+}
+
+export function setNumInQueue(numInQueue) {
+  return {
+    type: "SET_NUM_IN_QUEUE",
+    numInQueue,
   };
 }
