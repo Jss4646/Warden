@@ -1,4 +1,4 @@
-const socketUrl = process.env?.NODE_ENV === "development" ? 'ws://localhost:8080' : 'ws://localhost:80/ws';
+const socketUrl = process.env?.NODE_ENV === "development" ? `ws://${window.location.hostname}:8080` : `ws://${window.location.hostname}:80/ws`;
 console.log(socketUrl)
 const socket = new WebSocket(socketUrl);
 
