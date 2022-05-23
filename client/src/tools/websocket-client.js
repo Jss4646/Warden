@@ -1,4 +1,6 @@
-const socket = new WebSocket(`ws://${window.location.hostname}:8080/`);
+const socketUrl = process.env?.NODE_ENV === "development" ? 'ws://localhost:8080' : 'ws://localhost:80/ws';
+console.log(socketUrl)
+const socket = new WebSocket(socketUrl);
 
 export function wsInit(setAllScreenshots) {
   socket.addEventListener("message", (event) => {
