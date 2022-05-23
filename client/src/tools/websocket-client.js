@@ -1,4 +1,4 @@
-const socket = new WebSocket(`ws://${window.location.hostname}:8080`);
+const socket = new WebSocket(`ws://${window.location.host}:8080/ws`);
 
 export function wsInit(setAllScreenshots) {
   socket.addEventListener("message", (event) => {
