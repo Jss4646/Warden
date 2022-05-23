@@ -94,7 +94,9 @@ class PagesSidebar extends Component {
 
       Object.keys(screenshots).forEach((device) => {
         const screenshot = screenshots[device];
-        sum += screenshot.loading;
+        if (screenshot.loading) {
+          sum += 1;
+        }
       }, 0);
 
       return sum;
