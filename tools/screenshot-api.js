@@ -72,6 +72,11 @@ async function takeScreenshot({
     path: `${__dirname}/../screenshots/${fileName}.png`,
   });
   // .catch((err) => sendError("Couldn't take screenshot", err, res));
+
+  await sharp(screenshot)
+    .webp({ quality: 50, effort: 6 })
+    .toFile(`${__dirname}/../screenshots/${fileName}.webp`);
+
   await page.close();
   return screenshot;
 }
@@ -147,13 +152,23 @@ async function compareScreenshots(
     diffFilename: `${__dirname}/../screenshots/${baselineFileName}-diff.png`,
   });
 
+  const diffFile = await fs.readFileSync(
+    `${__dirname}/../screenshots/${baselineFileName}-diff.png`
+  );
+
+  console.log(diffFile);
+
+  await sharp(diffFile)
+    .webp({ quality: 50, effort: 6 })
+    .toFile(`${__dirname}/../screenshots/${baselineFileName}-diff.webp`)
+    .catch(console.log);
+
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
   const failingThreshold = await getFailingThreshold(db, sitePath);
   const failed = percentageDiff > failingThreshold;
   console.log("Failing threshold", failingThreshold);
 
-  console.log(baselineUrl);
   const screenshots = {
     baselineScreenshot: `/api/screenshots/${baselineFileName}.webp`,
     comparisonScreenshot: `/api/screenshots/${comparisonFileName}.webp`,
@@ -188,26 +203,6 @@ function runComparison(req, res, cluster, db) {
   });
 }
 
-async function sendScreenshot(req, res) {
-  let filename = req.params.filename;
-  const fileType = filename.split(".").at(-1);
-
-  if (fileType === "webp") {
-    filename = `${filename.substring(0, filename.length - 5)}.png`;
-    console.log(filename);
-  }
-
-  const root = path.join(__dirname, "../screenshots");
-  const filePath = `${root}/${filename}`;
-
-  let screenshot = await fsPromises.readFile(filePath);
-
-  if (fileType === "webp") {
-    screenshot = await sharp(screenshot).webp({ quality: 80 }).toBuffer();
-  }
-  res.send(screenshot);
-}
-
 /**
  * Sends an error to the client with a given error message
  *
@@ -225,5 +220,4 @@ module.exports = {
   initialiseCluster,
   generateScreenshot,
   runComparison,
-  sendScreenshot,
 };

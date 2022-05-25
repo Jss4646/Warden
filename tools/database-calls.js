@@ -270,7 +270,6 @@ async function addDeviceScreenshots(
 async function updateScreenshotLoading(db, sitePath, urlPath, device, loading) {
   const query = {};
   let site = await db.collection("sites").findOne({ sitePath });
-  console.log(site.pages, sitePath);
   const screenshots = site.pages[urlPath].screenshots[device];
 
   if (loading) {
@@ -300,9 +299,7 @@ async function getFailingThreshold(db, sitePath) {
 async function updateBaselineUrl(db, req, res) {
   const { url, sitePath } = req.body;
 
-  console.log(
-    await db.collection("sites").updateOne({ sitePath }, { $set: { url } })
-  );
+  await db.collection("sites").updateOne({ sitePath }, { $set: { url } });
   res.send(true);
 }
 

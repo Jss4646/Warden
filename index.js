@@ -3,7 +3,6 @@ const {
   initialiseCluster,
   generateScreenshot,
   runComparison,
-  sendScreenshot,
 } = require("./tools/screenshot-api");
 
 const {
@@ -40,7 +39,7 @@ initWebSocket();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(Sentry.Handlers.requestHandler());
-// app.use("/api/screenshots", express.static("screenshots"));
+app.use("/api/screenshots", express.static("screenshots"));
 
 /**
  * Endpoints that need the puppeteer cluster go in here
@@ -79,7 +78,6 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
 app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
-app.get("/api/screenshots/:filename", sendScreenshot);
 
 if (process.env.NODE_ENV === "production") {
   // Serve any static files
