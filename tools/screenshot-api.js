@@ -5,6 +5,10 @@ const {
   updateScreenshotLoading,
 } = require("./database-calls");
 const { imgDiff } = require("img-diff-js");
+const path = require("path");
+const sharp = require("sharp");
+const fsPromises = require("fs/promises");
+const fs = require("fs");
 
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
@@ -151,9 +155,9 @@ async function compareScreenshots(
 
   console.log(baselineUrl);
   const screenshots = {
-    baselineScreenshot: `/api/screenshots/${baselineFileName}.png`,
-    comparisonScreenshot: `/api/screenshots/${comparisonFileName}.png`,
-    diffImage: `/api/screenshots/${baselineFileName}-diff.png`,
+    baselineScreenshot: `/api/screenshots/${baselineFileName}.webp`,
+    comparisonScreenshot: `/api/screenshots/${comparisonFileName}.webp`,
+    diffImage: `/api/screenshots/${baselineFileName}-diff.webp`,
     failing: failed,
     loading: false,
   };
@@ -184,6 +188,26 @@ function runComparison(req, res, cluster, db) {
   });
 }
 
+async function sendScreenshot(req, res) {
+  let filename = req.params.filename;
+  const fileType = filename.split(".").at(-1);
+
+  if (fileType === "webp") {
+    filename = `${filename.substring(0, filename.length - 5)}.png`;
+    console.log(filename);
+  }
+
+  const root = path.join(__dirname, "../screenshots");
+  const filePath = `${root}/${filename}`;
+
+  let screenshot = await fsPromises.readFile(filePath);
+
+  if (fileType === "webp") {
+    screenshot = await sharp(screenshot).webp({ quality: 80 }).toBuffer();
+  }
+  res.send(screenshot);
+}
+
 /**
  * Sends an error to the client with a given error message
  *
@@ -201,4 +225,5 @@ module.exports = {
   initialiseCluster,
   generateScreenshot,
   runComparison,
+  sendScreenshot,
 };
