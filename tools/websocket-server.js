@@ -9,9 +9,9 @@ function initWebSocket() {
   });
 }
 
-function broadcastData(action, data) {
+function broadcastData(action, data, sitePath) {
   wss.clients.forEach((id, client) =>
-    client.send(JSON.stringify({ action, data }))
+    client.send(JSON.stringify({ action, data, sitePath }))
   );
 }
 

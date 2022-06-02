@@ -24,6 +24,7 @@ const { broadcastData } = require("./websocket-server");
  */
 async function addSite(db, req, res) {
   const siteData = req.body;
+  console.log(siteData);
 
   db.collection("sites").insertOne(siteData, (err) => {
     if (err) throw err;
@@ -199,7 +200,7 @@ async function fillSitePages(db, req, res) {
     .collection("sites")
     .findOne({ sitePath: req.body.sitePath });
 
-  broadcastData("UPDATE_SCREENSHOTS", site.pages);
+  broadcastData("UPDATE_SCREENSHOTS", site.pages, req.body.sitePath);
 
   res.send(urls);
 }
@@ -230,7 +231,7 @@ async function deleteAllSitePages(db, req, res) {
     }
   );
 
-  broadcastData("UPDATE_SCREENSHOTS", blankPages);
+  broadcastData("UPDATE_SCREENSHOTS", blankPages, req.body.sitePath);
   res.send("Deleted pages");
 }
 
@@ -253,13 +254,15 @@ async function addDeviceScreenshots(
   screenshotUrls,
   device
 ) {
+  console.log("Started adding", device);
   const query = {};
 
   query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
   await db.collection("sites").updateOne({ sitePath }, { $set: query });
+  console.log("Finished adding");
   const site = await db.collection("sites").findOne({ sitePath });
 
-  broadcastData("UPDATE_SCREENSHOTS", site.pages);
+  broadcastData("UPDATE_SCREENSHOTS", site.pages, sitePath);
 }
 
 async function updateScreenshotLoading(db, sitePath, urlPath, device, loading) {
@@ -283,7 +286,7 @@ async function updateScreenshotLoading(db, sitePath, urlPath, device, loading) {
   await db.collection("sites").updateOne({ sitePath }, { $set: query });
 
   site = await db.collection("sites").findOne({ sitePath });
-  broadcastData("UPDATE_SCREENSHOTS", site.pages);
+  broadcastData("UPDATE_SCREENSHOTS", site.pages, sitePath);
 }
 
 async function getFailingThreshold(db, sitePath) {
@@ -307,6 +310,25 @@ async function updateComparisonUrl(db, req, res) {
   res.send(true);
 }
 
+async function abortRunningScreenshots(db) {
+  const sites = await db.collection("sites").find().toArray()
+  for ( let site of sites ) {
+    const pages = site.pages
+
+
+    console.log('wow')
+    Object.keys(pages).forEach(pageKey => {
+      const screenshots = pages[pageKey].screenshots;
+      Object.keys(screenshots).forEach(device => {
+        screenshots[device].loading = false;
+        console.log('wow')
+      })
+    })
+
+    await db.collection("sites").updateOne({sitePath: site.sitePath}, {$set: {pages}})
+  }
+}
+
 module.exports = {
   addSite,
   getSite,
@@ -321,4 +343,5 @@ module.exports = {
   updateBaselineUrl,
   updateComparisonUrl,
   updateScreenshotLoading,
+  abortRunningScreenshots,
 };

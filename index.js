@@ -23,6 +23,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const Sentry = require("@sentry/node");
 const { initWebSocket } = require("./tools/websocket-server");
+const {teardown} = require("./tools/teardown");
 
 const MongoClient = require("mongodb").MongoClient;
 const client = new MongoClient("mongodb://localhost:27017");
@@ -41,6 +42,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(Sentry.Handlers.requestHandler());
 app.use("/api/screenshots", express.static("screenshots"));
 
+let db;
+
 /**
  * Endpoints that need the puppeteer cluster go in here
  */
@@ -56,7 +59,7 @@ app.use("/api/screenshots", express.static("screenshots"));
   await client.connect((err) => {
     if (err) throw err;
   });
-  const db = await client.db("warden");
+  db = await client.db("warden");
 
   app.post("/api/add-site", (req, res) => addSite(db, req, res));
   app.post("/api/get-site", (req, res) => getSite(db, req, res));
@@ -74,6 +77,8 @@ app.use("/api/screenshots", express.static("screenshots"));
   app.post("/api/update-comparison-url", (req, res) =>
     updateComparisonUrl(db, req, res)
   );
+
+
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
@@ -90,13 +95,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const server = app.listen(port, () => console.log(`Listening on port ${port}`));
-
-const exit = () => {
-  server.close( ( error ) => {
-    if ( error ) console.error( 'failed to terminate the express app gracefully, attempting to terminate forcefully...', error )
-    process.exit();
-  } );
-}
-
-process.on('SIGTERM', exit );
-process.on('SIGHUP', exit );
+process.on('SIGINT', () => teardown(server, db) );
+process.on('SIGTERM', () => teardown(server, db) );
+process.on('SIGHUP', () => teardown(server, db) );

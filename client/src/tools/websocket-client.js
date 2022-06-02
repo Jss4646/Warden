@@ -26,10 +26,15 @@ export function wsInit(setAllScreenshots) {
           console.log(response.data);
           return;
 
-        case "UPDATE_SCREENSHOTS":
-          console.log(response.data);
-          setAllScreenshots(response.data);
+      case "UPDATE_SCREENSHOTS":
+        const path = window.location.pathname.split('/')
+        const sitePath = path[path.length - 1];
+        if (response.sitePath !== sitePath) {
           return;
+        }
+        console.log(response.data);
+        setAllScreenshots(response.data);
+        return;
 
         default:
           return;
