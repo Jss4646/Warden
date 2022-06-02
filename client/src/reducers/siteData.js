@@ -60,6 +60,10 @@ function siteData(state = [], action) {
       stateCopy.numInQueue = action.numInQueue;
       return stateCopy;
 
+    case "SET_COOKIES":
+      stateCopy.cookies = action.cookies;
+      return stateCopy;
+
     default:
       return state;
   }

@@ -33,7 +33,7 @@ export function generateScreenshots(pagesRequestData, generateBaselines) {
 }
 
 /**
- * Generates comparison screenshots for a given paeg
+ * Generates comparison screenshots for a given page
  *
  * @param siteData {Object}
  * @param siteData.devices {Array.<string>}
@@ -55,7 +55,9 @@ export function runPageComparison(
 ) {
   const pagesRequestData = [];
 
-  const { devices, url, comparisonUrl, sitePath, pages } = siteData;
+  console.log(siteData)
+  const { devices, url, comparisonUrl, sitePath, pages, cookies } = siteData;
+
 
   const fullUrl = `${url}${page}`;
   const fullComparisonUrl = `${comparisonUrl}${page}`;
@@ -72,6 +74,12 @@ export function runPageComparison(
       : currentScreenshots.baselineScreenshot.slice(17, -4);
     const comparisonFileName = createFilename(fullComparisonUrl, device);
 
+    let parsedCookies = '';
+
+    if (cookies) {
+      parsedCookies = cookies.replaceAll('\n', '')
+    }
+
     let screenshotData = {
       resolution: { height, width },
       userAgent,
@@ -81,6 +89,7 @@ export function runPageComparison(
       baselineFileName,
       sitePath,
       device,
+      cookieData: parsedCookies,
     };
 
     console.log(screenshotData);

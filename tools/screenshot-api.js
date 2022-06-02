@@ -61,7 +61,10 @@ async function takeScreenshot({
   await page.setUserAgent(userAgent.toString());
   // .catch((err) => sendError("Couldn't set user agent", err, res));
 
-  if (cookieData) await page.setCookie(...cookieData);
+  if (cookieData) {
+    const parsedCookieData = JSON.parse(cookieData);
+    await page.setCookie(...parsedCookieData);
+  }
   // .catch((err) => sendError("Couldn't set cookies", err, res));
 
   await page.goto(url, { timeout: 120000 });
@@ -123,7 +126,6 @@ async function compareScreenshots(
   } = screenshotData;
 
   const parsedUrl = new URL(baselineUrl);
-  console.log("Updating screenshots");
   await updateScreenshotLoading(db, sitePath, parsedUrl.pathname, device, true);
 
   const defaultData = { cookieData, resolution, userAgent };
@@ -156,8 +158,6 @@ async function compareScreenshots(
     `${__dirname}/../screenshots/${baselineFileName}-diff.png`
   );
 
-  console.log(diffFile);
-
   await sharp(diffFile)
     .webp({ quality: 50, effort: 6 })
     .toFile(`${__dirname}/../screenshots/${baselineFileName}-diff.webp`)
@@ -167,7 +167,6 @@ async function compareScreenshots(
   const percentageDiff = (diffCount / (width * height)) * 100;
   const failingThreshold = await getFailingThreshold(db, sitePath);
   const failed = percentageDiff > failingThreshold;
-  console.log("Failing threshold", failingThreshold);
 
   const screenshots = {
     baselineScreenshot: `/api/screenshots/${baselineFileName}.webp`,
@@ -176,8 +175,6 @@ async function compareScreenshots(
     failing: failed,
     loading: false,
   };
-
-  console.log("Finished comparing screenshots");
 
   await addDeviceScreenshots(
     db,

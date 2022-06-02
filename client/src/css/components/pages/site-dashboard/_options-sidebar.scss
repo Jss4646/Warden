@@ -12,3 +12,29 @@
     color: $qa-tool-grey;
   }
 }
+
+.cookies {
+  resize: none;
+  width: 100%;
+  height: 150px;
+
+  &--valid {
+    border-color: $qa-tool-green;
+  }
+
+  &--not-valid {
+    border-color: $qa-tool-red;
+  }
+
+  &:focus-visible {
+    outline: none !important;
+
+    &--valid {
+      border-color: $qa-tool-green;
+    }
+
+    &--not-valid {
+      border-color: $qa-tool-red;
+    }
+  }
+}
