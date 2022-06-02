@@ -89,4 +89,14 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+const server = app.listen(port, () => console.log(`Listening on port ${port}`));
+
+const exit = () => {
+  server.close( ( error ) => {
+    if ( error ) console.error( 'failed to terminate the express app gracefully, attempting to terminate forcefully...', error )
+    process.exit();
+  } );
+}
+
+process.on('SIGTERM', exit );
+process.on('SIGHUP', exit );
