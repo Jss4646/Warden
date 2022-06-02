@@ -6,10 +6,21 @@ class Cookies extends Component {
         this.setCookies = this.setCookies.bind(this)
     }
 
+    /**
+     * Updates state for cookies
+     *
+     * @param event
+     */
     setCookies(event) {
         this.props.setCookies(event.target.value);
     }
 
+    /**
+     * Validates that the inputted cookies are JSON
+     *
+     * @param {string} cookies
+     * @returns {boolean}
+     */
     validateInput(cookies) {
         try {
             JSON.parse(cookies)
@@ -20,6 +31,13 @@ class Cookies extends Component {
         return true;
     }
 
+    /**
+     * Generates the class for the textarea to update color
+     * depending on if cookies is in a valid format
+     *
+     * @param {string} cookies
+     * @returns {string|undefined}
+     */
     generateCookieClass(cookies) {
         if (!cookies) {
             return;
