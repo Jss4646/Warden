@@ -12,6 +12,11 @@ export function wsInit(setAllScreenshots) {
         return;
 
       case "UPDATE_SCREENSHOTS":
+        const path = window.location.pathname.split('/')
+        const sitePath = path[path.length - 1];
+        if (response.sitePath !== sitePath) {
+          return;
+        }
         console.log(response.data);
         setAllScreenshots(response.data);
         return;
