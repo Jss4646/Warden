@@ -198,7 +198,9 @@ async function compareScreenshots(
 function runComparison(req, res, cluster, db) {
   const { pages: screenshots, generateBaselines } = req.body;
 
-  screenshots.forEach(async (screenshot) => {
+  res.send('running')
+
+  screenshots.forEach((screenshot) => {
     compareScreenshots(screenshot, generateBaselines, cluster, db);
   });
 }
