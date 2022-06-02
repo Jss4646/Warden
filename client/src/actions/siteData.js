@@ -89,3 +89,10 @@ export function setNumInQueue(numInQueue) {
     numInQueue,
   };
 }
+
+export function setCookies(cookies) {
+  return {
+    type: "SET_COOKIES",
+    cookies,
+  }
+}

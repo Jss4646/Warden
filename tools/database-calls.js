@@ -24,7 +24,6 @@ const { broadcastData } = require("./websocket-server");
  */
 async function addSite(db, req, res) {
   const siteData = req.body;
-  console.log(siteData);
 
   db.collection("sites").insertOne(siteData, (err) => {
     if (err) throw err;
@@ -254,16 +253,12 @@ async function addDeviceScreenshots(
   screenshotUrls,
   device
 ) {
-  console.log("Started adding", device);
   const query = {};
 
   query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
-
   await db.collection("sites").updateOne({ sitePath }, { $set: query });
-
-  console.log("Finished adding");
-
   const site = await db.collection("sites").findOne({ sitePath });
+
   broadcastData("UPDATE_SCREENSHOTS", site.pages);
 }
 
