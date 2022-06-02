@@ -9,7 +9,7 @@ class Cookies extends Component {
     /**
      * Updates state for cookies
      *
-     * @param event
+     * @param {Event} event
      */
     setCookies(event) {
         this.props.setCookies(event.target.value);
