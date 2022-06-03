@@ -315,13 +315,18 @@ async function abortRunningScreenshots(db) {
   for ( let site of sites ) {
     const pages = site.pages
 
-
-    console.log('wow')
     Object.keys(pages).forEach(pageKey => {
       const screenshots = pages[pageKey].screenshots;
       Object.keys(screenshots).forEach(device => {
-        screenshots[device].loading = false;
-        console.log('wow')
+        let screenshot = screenshots[device];
+
+        if (!screenshot.baselineScreenshot || !screenshot.comparisonScreenshot) {
+          delete screenshots[device]
+          return;
+        }
+
+        screenshot.loading = false;
+        console.log(screenshot)
       })
     })
 

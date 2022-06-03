@@ -9,13 +9,15 @@ import { Spin } from "antd";
  * @returns {JSX.Element}
  */
 const createScreenshotContainer = (src, loading) => {
-  return src && !loading ? (
-    <div className="dashboard-screenshot-bar__screenshots-img">
-      <img src={src} alt="Screenshot" />
-    </div>
-  ) : (
-    <Spin />
-  );
+  if (loading) {
+    return <Spin />
+  }
+
+  return (
+      <div className="dashboard-screenshot-bar__screenshots-img">
+        <img src={src} alt="Screenshot" />
+      </div>
+  )
 };
 
 /**
