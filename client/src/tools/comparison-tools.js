@@ -55,9 +55,11 @@ export function runPageComparison(
 ) {
   const pagesRequestData = [];
 
-  console.log(siteData)
   const { devices, url, comparisonUrl, sitePath, pages, cookies } = siteData;
 
+  if (cookies && !validateCookies(cookies)) {
+    return;
+  }
 
   const fullUrl = `${url}${page}`;
   const fullComparisonUrl = `${comparisonUrl}${page}`;
@@ -74,10 +76,10 @@ export function runPageComparison(
       : currentScreenshots.baselineScreenshot.slice(17, -4);
     const comparisonFileName = createFilename(fullComparisonUrl, device);
 
-    let parsedCookies = '';
+    let parsedCookies = "";
 
     if (cookies) {
-      parsedCookies = cookies.replaceAll('\n', '')
+      parsedCookies = cookies.replaceAll("\n", "");
     }
 
     let screenshotData = {
@@ -126,4 +128,20 @@ export function createFilename(url, device) {
 
   const fileNameDate = `${date.getMilliseconds()}-${date.getSeconds()}-${date.getDay()}-${date.getMonth()}-${date.getFullYear()}-${deviceSanitised}`;
   return `${parsedUrl.host}-${path}${fileNameDate}`;
+}
+
+/**
+ * Validates that the inputted cookies are JSON
+ *
+ * @param {string} cookies
+ * @returns {boolean}
+ */
+export function validateCookies(cookies) {
+  try {
+    JSON.parse(cookies);
+  } catch (e) {
+    return false;
+  }
+
+  return true;
 }

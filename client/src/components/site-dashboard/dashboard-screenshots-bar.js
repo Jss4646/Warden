@@ -10,14 +10,14 @@ import { Spin } from "antd";
  */
 const createScreenshotContainer = (src, loading) => {
   if (loading) {
-    return <Spin />
+    return <Spin />;
   }
 
   return (
-      <div className="dashboard-screenshot-bar__screenshots-img">
-        <img src={src} alt="Screenshot" />
-      </div>
-  )
+    <div className="dashboard-screenshot-bar__screenshots-img">
+      <img src={src} alt="Screenshot" />
+    </div>
+  );
 };
 
 /**

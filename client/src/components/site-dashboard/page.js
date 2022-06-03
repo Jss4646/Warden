@@ -30,12 +30,18 @@ class Page extends Component {
     const { currentPage, pages } = siteData;
 
     const screenshots = pages[path].screenshots;
-    const numOfFailing = Object.keys(screenshots).reduce(
-      (sum, key) => sum + !screenshots[key].failing,
-      0
-    );
-    const totalScreenshots = Object.keys(screenshots).length;
-    let passingString = `${numOfFailing}/${totalScreenshots}`;
+    const passing = Object.keys(screenshots).reduce((sum, key) => {
+      const screenshot = screenshots[key];
+
+      if (screenshot.loading) {
+        return 0;
+      }
+      return sum + !screenshots[key].failing;
+    }, 0);
+    const totalScreenshots = Object.keys(screenshots).filter(
+      (device) => !screenshots[device].loading
+    ).length;
+    let passingString = `${passing}/${totalScreenshots}`;
 
     return (
       <div
