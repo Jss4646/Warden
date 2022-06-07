@@ -116,6 +116,8 @@ class PagesList extends Component {
       `${window.location.origin}/api/delete-all-site-pages`
     );
 
+    this.props.setCurrentPage("");
+
     await fetch(fetchUrl, {
       method: "POST",
       headers: {

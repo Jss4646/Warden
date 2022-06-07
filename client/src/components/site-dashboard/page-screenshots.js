@@ -38,6 +38,10 @@ class PageScreenshots extends Component {
   };
 
   generateScreenshotBars(page, hidePassing) {
+    if (!page) {
+      return "";
+    }
+
     return Object.keys(page).map((device) => {
       const screenshots = page[device];
 

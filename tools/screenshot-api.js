@@ -5,9 +5,7 @@ const {
   updateScreenshotLoading,
 } = require("./database-calls");
 const { imgDiff } = require("img-diff-js");
-const path = require("path");
 const sharp = require("sharp");
-const fsPromises = require("fs/promises");
 const fs = require("fs");
 
 /**
@@ -18,7 +16,7 @@ const fs = require("fs");
 async function initialiseCluster() {
   const cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
-    maxConcurrency: 5,
+    maxConcurrency: 4,
     retryLimit: 1,
     timeout: 500000,
     // monitor: true,
@@ -55,6 +53,7 @@ async function takeScreenshot({
   page,
   data: { url, cookieData, resolution, userAgent, fileName },
 }) {
+  console.log(`Taking screenshot at ${url}`);
   await page.setViewport(resolution);
   // .catch((err) => sendError("Couldn't set viewport", err, res));
 
@@ -67,8 +66,23 @@ async function takeScreenshot({
   }
   // .catch((err) => sendError("Couldn't set cookies", err, res));
 
-  await page.goto(url, { timeout: 120000 });
+  await page.goto(url, { timeout: 120000, waitUntil: "networkidle0" });
   // .catch((err) => sendError("Couldn't navigate to page", err, res));
+
+  await page.evaluate(async () => {
+    document.body.scrollIntoView(false);
+
+    const selectors = Array.from(document.querySelectorAll("img"));
+    await Promise.all(
+      selectors.map((img) => {
+        if (img.complete) return;
+        return new Promise((resolve, reject) => {
+          img.addEventListener("load", resolve);
+          img.addEventListener("error", reject);
+        });
+      })
+    );
+  });
 
   const screenshot = await page.screenshot({
     fullPage: true,
@@ -81,6 +95,7 @@ async function takeScreenshot({
     .toFile(`${__dirname}/../screenshots/${fileName}.webp`);
 
   await page.close();
+  console.log(`Finished taking and converting screenshot at ${url}`);
   return screenshot;
 }
 
@@ -199,7 +214,7 @@ function runComparison(req, res, cluster, db) {
     compareScreenshots(screenshot, generateBaselines, cluster, db);
   });
 
-  res.send('running')
+  res.send("running");
 }
 
 /**

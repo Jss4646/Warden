@@ -4,7 +4,7 @@ const wss = new WebSocketServer({ port: 8080 });
 
 function initWebSocket() {
   wss.on("connection", (ws) => {
-    console.log("connected")
+    console.log("connected");
     ws.send(JSON.stringify({ action: "CONNECTION", data: "connected" }));
   });
 }

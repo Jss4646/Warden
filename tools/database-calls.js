@@ -311,26 +311,30 @@ async function updateComparisonUrl(db, req, res) {
 }
 
 async function abortRunningScreenshots(db) {
-  const sites = await db.collection("sites").find().toArray()
-  for ( let site of sites ) {
-    const pages = site.pages
+  const sites = await db.collection("sites").find().toArray();
+  for (let site of sites) {
+    const pages = site.pages;
 
-    Object.keys(pages).forEach(pageKey => {
+    Object.keys(pages).forEach((pageKey) => {
       const screenshots = pages[pageKey].screenshots;
-      Object.keys(screenshots).forEach(device => {
+      Object.keys(screenshots).forEach((device) => {
         let screenshot = screenshots[device];
 
-        if (!screenshot.baselineScreenshot || !screenshot.comparisonScreenshot) {
-          delete screenshots[device]
+        if (
+          !screenshot.baselineScreenshot ||
+          !screenshot.comparisonScreenshot
+        ) {
+          delete screenshots[device];
           return;
         }
 
         screenshot.loading = false;
-        console.log(screenshot)
-      })
-    })
+      });
+    });
 
-    await db.collection("sites").updateOne({sitePath: site.sitePath}, {$set: {pages}})
+    await db
+      .collection("sites")
+      .updateOne({ sitePath: site.sitePath }, { $set: { pages } });
   }
 }
 
