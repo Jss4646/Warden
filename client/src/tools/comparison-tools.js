@@ -55,11 +55,14 @@ export function runPageComparison(
 ) {
   const pagesRequestData = [];
 
-  const { devices, url, comparisonUrl, sitePath, pages, cookies } = siteData;
+  let { devices, url, comparisonUrl, sitePath, pages, cookies } = siteData;
 
   if (cookies && !validateCookies(cookies)) {
     return;
   }
+
+  url = url.slice(0, -1);
+  comparisonUrl = comparisonUrl.slice(0, -1);
 
   const fullUrl = `${url}${page}`;
   const fullComparisonUrl = `${comparisonUrl}${page}`;
@@ -92,6 +95,7 @@ export function runPageComparison(
       sitePath,
       device,
       cookieData: parsedCookies,
+      id: pages[page]._id,
     };
 
     console.log(screenshotData);

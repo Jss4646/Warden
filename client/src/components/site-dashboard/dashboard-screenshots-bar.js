@@ -15,7 +15,11 @@ const createScreenshotContainer = (src, loading) => {
 
   return (
     <div className="dashboard-screenshot-bar__screenshots-img">
-      <img src={src} alt="Screenshot" />
+      <img
+        src={src}
+        onError={(e) => (e.target.src = e.target.src.replace(".webp", ".png"))}
+        alt="Screenshot"
+      />
     </div>
   );
 };

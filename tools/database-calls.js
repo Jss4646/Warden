@@ -1,5 +1,7 @@
 const { crawlSitemap } = require("./crawl-url");
 const { broadcastData } = require("./websocket-server");
+const { ObjectId } = require("mongodb");
+const logger = require("./logger");
 
 /**
  * Endpoint to add a site to the database
@@ -10,11 +12,9 @@ const { broadcastData } = require("./websocket-server");
  *       url {String},
  *       comparisonUrl {String},
  *       sitePath {String},
- *       pages: {
- *         "/": { url {String}, passingNum: "0/0", screenshots: {} },
- *       },
- *       devices: ["1080p", "iphone-x/xs"],
- *  };
+ *       devices {Array<String>},
+ *       failingPercentage {Number},
+ *  }
  *
  *  pages format covered more under the addPage endpoint
  *
@@ -23,15 +23,41 @@ const { broadcastData } = require("./websocket-server");
  * @param res {Response}
  */
 async function addSite(db, req, res) {
-  const siteData = req.body;
-  console.log(siteData);
+  const { siteName, url, comparisonUrl, sitePath, devices, failingPercentage } =
+    req.body;
 
-  db.collection("sites").insertOne(siteData, (err) => {
-    if (err) throw err;
-  });
+  const site = {
+    siteName,
+    url,
+    comparisonUrl,
+    sitePath,
+    devices,
+    failingPercentage,
+  };
 
-  console.log("done");
-  res.send("complete");
+  const page = {
+    sitePath,
+    pagePath: "/",
+    url,
+    screenshots: {},
+    failing: false,
+  };
+
+  const { insertedId } = await db.collection("pages").insertOne(page);
+  await db.collection("sites").insertOne(site);
+
+  res.send(insertedId);
+}
+
+async function getSitePages(sitePath, db) {
+  let pages = await db.collection("pages").find({ sitePath }).toArray();
+
+  pages = pages.reduce((acc, page) => {
+    acc[page.pagePath] = page;
+    return acc;
+  }, {});
+
+  return pages;
 }
 
 /**
@@ -47,16 +73,18 @@ async function addSite(db, req, res) {
  * @param res {Response}
  */
 async function getSite(db, req, res) {
-  const result = await db
+  const site = await db
     .collection("sites")
     .findOne({ sitePath: req.body.sitePath });
 
-  if (result) {
-    res.send(result);
-  } else {
+  if (!site) {
     res.status(500);
     res.send("Site not found");
+    return;
   }
+
+  site.pages = await getSitePages(site.sitePath, db);
+  res.send(site);
 }
 
 /**
@@ -67,14 +95,22 @@ async function getSite(db, req, res) {
  * @param res {Response}
  */
 async function getAllSites(db, req, res) {
+  logger.log("info", "Getting all sites");
   const results = await db.collection("sites").find().toArray();
 
-  if (results) {
-    res.send(results);
-  } else {
+  logger.log("debug", `Found ${results.length} sites`);
+
+  for (const site of results) {
+    site.pages = await getSitePages(site.sitePath, db);
+  }
+
+  if (!results) {
     res.status(500);
     res.send("No sites found");
   }
+
+  res.send(results);
+  logger.log("info", "Sent all sites");
 }
 
 /**
@@ -107,34 +143,35 @@ async function deleteSite(db, req, res) {
  * {
  *       sitePath {String},
  *       pagePath: {String},
- *       newPage: {
- *        url {String},
- *        passingNum {String} EG "0/5", - TODO need to sort how this works
- *        screenshots {Object} - should be an empty object as this is filled by program
- *       },
- *  };
+ *       url {String},
+ *       screenshots {Object} - should be an empty object as this is filled by program
+ *       failing {Boolean}
+ *  }
  *
  * @param db {Db}
  * @param req {Request}
  * @param res {Response}
  */
 async function addSitePage(db, req, res) {
-  const query = {};
-  query[`pages.${req.body.pagePath}`] = req.body.newPage;
+  const { sitePath, pagePath, url, screenshots, failing } = req.body;
 
-  await db
-    .collection("sites")
-    .updateOne({ sitePath: req.body.sitePath }, { $set: query });
+  const page = {
+    sitePath,
+    pagePath,
+    url,
+    screenshots,
+    failing,
+  };
 
-  res.send("Page added");
+  const { insertedId } = await db.collection("pages").insertOne(page);
+  res.send(insertedId);
 }
 
 /**
  * deletes a page from a site in the db
  *
  * {
- *     sitePath {String},
- *     pagePath {String}
+ *    pageId {String},
  * }
  *
  * @param db {Db}
@@ -142,19 +179,8 @@ async function addSitePage(db, req, res) {
  * @param res {Response}
  */
 async function deleteSitePage(db, req, res) {
-  const { sitePath, pagePath } = req.body;
-
-  const pageQuery = {};
-  pageQuery[`pages.${pagePath}`] = 1;
-
-  db.collection("sites")
-    .updateOne({ sitePath }, { $unset: pageQuery })
-    .catch((err) => {
-      console.log(err);
-      res.status(500);
-      res.send(err);
-    });
-
+  const { pageId } = req.body;
+  await db.collection("pages").deleteOne({ _id: ObjectId(pageId) });
   res.send("Page deleted");
 }
 
@@ -183,24 +209,21 @@ async function fillSitePages(db, req, res) {
 
   urls.forEach((url) => {
     url = new URL(url);
-    const query = {};
-
-    query[`pages.${url.pathname}`] = {
-      url: url.toString(),
+    const page = {
+      sitePath: req.body.sitePath,
+      pagePath: url.pathname,
+      url: url.href,
       screenshots: {},
+      failing: false,
     };
-
-    db.collection("sites").updateOne(
-      { sitePath: req.body.sitePath },
-      { $set: query }
-    );
+    db.collection("pages").insertOne(page);
   });
 
-  const site = await db
-    .collection("sites")
-    .findOne({ sitePath: req.body.sitePath });
-
-  broadcastData("UPDATE_SCREENSHOTS", site.pages, req.body.sitePath);
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    getSitePages(req.body.sitePath, db),
+    req.body.sitePath
+  );
 
   res.send(urls);
 }
@@ -218,20 +241,15 @@ async function fillSitePages(db, req, res) {
  * @param res {Response}
  */
 async function deleteAllSitePages(db, req, res) {
-  const site = await db
-    .collection("sites")
-    .findOne({ sitePath: req.body.sitePath });
+  await db
+    .collection("pages")
+    .deleteMany({ sitePath: req.body.sitePath, pagePath: { $ne: "/" } });
 
-  const blankPages = { "/": { url: site.pages["/"].url, screenshots: {} } };
-
-  await db.collection("sites").updateOne(
-    { sitePath: req.body.sitePath },
-    {
-      $set: { pages: blankPages },
-    }
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(req.body.sitePath, db),
+    req.body.sitePath
   );
-
-  broadcastData("UPDATE_SCREENSHOTS", blankPages, req.body.sitePath);
   res.send("Deleted pages");
 }
 
@@ -239,61 +257,73 @@ async function deleteAllSitePages(db, req, res) {
  * Slightly different as this is called in a different screenshot endpoint to add a screenshot to the db
  *
  * @param db {Db}
- * @param sitePath {String}
- * @param urlPath {String}
+ * @param pageId {String}
  * @param screenshotUrls {Object}
  * @param screenshotUrls.baselineScreenshot {string}
  * @param screenshotUrls.comparisonScreenshot {string}
  * @param screenshotUrls.diffImage {string}
  * @param device {String}
  */
-async function addDeviceScreenshots(
-  db,
-  sitePath,
-  urlPath,
-  screenshotUrls,
-  device
-) {
-  console.log("Started adding", device);
-  const query = {};
-
-  query[`pages.${urlPath}.screenshots.${device}`] = screenshotUrls;
-  await db.collection("sites").updateOne({ sitePath }, { $set: query });
-  console.log("Finished adding");
-  const site = await db.collection("sites").findOne({ sitePath });
-
-  broadcastData("UPDATE_SCREENSHOTS", site.pages, sitePath);
+async function addDeviceScreenshots(db, pageId, screenshotUrls, device) {
+  await db
+    .collection("pages")
+    .updateOne(
+      { _id: ObjectId(pageId) },
+      {
+        $set: {
+          [`screenshots.${device}`]: screenshotUrls,
+        },
+      }
+    )
+    .catch((err) => {
+      logger.log("error", err);
+    });
 }
 
-async function updateScreenshotLoading(db, sitePath, urlPath, device, loading) {
-  const query = {};
-  let site = await db.collection("sites").findOne({ sitePath });
-  const screenshots = site.pages[urlPath].screenshots[device];
-
+/**
+ * Updates the loading state of a screenshot in the db
+ *
+ * @param db {Db}
+ * @param id {String} - the id of the page in the db
+ * @param device {String} - the device the screenshot is for
+ * @param loading {Boolean} - the loading state of the screenshot
+ * @returns {Promise<void>}
+ */
+async function updateScreenshotLoading(db, id, device, loading) {
   if (loading) {
-    query[`pages.${urlPath}.screenshots.${device}`] = {
-      ...screenshots,
-      loading,
-      failing: false,
-    };
-  } else {
-    query[`pages.${urlPath}.screenshots.${device}`] = {
-      ...screenshots,
-      loading,
-    };
+    await db
+      .collection("pages")
+      .updateOne({ _id: ObjectId(id) }, { $set: { failing: false } });
   }
 
-  await db.collection("sites").updateOne({ sitePath }, { $set: query });
-
-  site = await db.collection("sites").findOne({ sitePath });
-  broadcastData("UPDATE_SCREENSHOTS", site.pages, sitePath);
+  await db
+    .collection("pages")
+    .updateOne(
+      { _id: ObjectId(id) },
+      { $set: { [`screenshots.${device}.loading`]: loading } }
+    );
 }
 
+/**
+ * Gets the failing threshold for a site
+ *
+ * @param db {Db}
+ * @param sitePath {String}
+ * @returns {Promise<number|*>}
+ */
 async function getFailingThreshold(db, sitePath) {
   const site = await db.collection("sites").findOne({ sitePath });
   return site.failingPercentage;
 }
 
+/**
+ * Updates the baseline url of a site
+ *
+ * @param db {Db}
+ * @param req {Request}
+ * @param res {Response}
+ * @returns {Promise<void>}
+ */
 async function updateBaselineUrl(db, req, res) {
   const { url, sitePath } = req.body;
 
@@ -301,6 +331,14 @@ async function updateBaselineUrl(db, req, res) {
   res.send(true);
 }
 
+/**
+ * Updates the comparison url of a site
+ *
+ * @param db {Db}
+ * @param req {Request}
+ * @param res {Response}
+ * @returns {Promise<void>}
+ */
 async function updateComparisonUrl(db, req, res) {
   const { url, sitePath } = req.body;
 
@@ -310,32 +348,28 @@ async function updateComparisonUrl(db, req, res) {
   res.send(true);
 }
 
+/**
+ * Aborts all running screenshots
+ *
+ * @param db {Db}
+ * @returns {Promise<void>}
+ */
 async function abortRunningScreenshots(db) {
-  const sites = await db.collection("sites").find().toArray();
-  for (let site of sites) {
-    const pages = site.pages;
+  logger.log("info", "Aborting all running screenshots");
+  const pages = await db.collection("pages").find().toArray();
 
-    Object.keys(pages).forEach((pageKey) => {
-      const screenshots = pages[pageKey].screenshots;
-      Object.keys(screenshots).forEach((device) => {
-        let screenshot = screenshots[device];
-
-        if (
-          !screenshot.baselineScreenshot ||
-          !screenshot.comparisonScreenshot
-        ) {
-          delete screenshots[device];
-          return;
-        }
-
-        screenshot.loading = false;
-      });
-    });
-
-    await db
-      .collection("sites")
-      .updateOne({ sitePath: site.sitePath }, { $set: { pages } });
+  for (let page of pages) {
+    for (let device in page.screenshots) {
+      await db
+        .collection("pages")
+        .updateOne(
+          { _id: ObjectId(page._id) },
+          { $set: { [`screenshots.${device}.loading`]: false } }
+        );
+    }
   }
+
+  logger.log("info", "Finished aborting all running screenshots");
 }
 
 module.exports = {
@@ -353,4 +387,5 @@ module.exports = {
   updateComparisonUrl,
   updateScreenshotLoading,
   abortRunningScreenshots,
+  getSitePages,
 };

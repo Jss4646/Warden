@@ -1,5 +1,6 @@
 const Sitemapper = require("sitemapper");
 const fetch = require("node-fetch");
+const logger = require("./logger");
 
 /**
  *
@@ -15,12 +16,12 @@ async function crawlSitemap(url, res) {
     .catch(() => false);
 
   if (!isLiveUrl) {
-    console.log("Sitemap doesn't exist");
+    logger.log("error", `${sitemapUrl} is not a live url`);
     res.status(500);
     return "Sitemap doesn't exist";
   }
 
-  console.log(`Getting sitemap for ${urlOrigin}`);
+  logger.log("info", `Getting sitemap for ${urlOrigin}`);
   const sitemap = new Sitemapper({ url: sitemapUrl });
 
   const urls = await sitemap
@@ -28,7 +29,7 @@ async function crawlSitemap(url, res) {
     .then((urls) => urls)
     .catch((error) => console.log(error));
 
-  console.log("Finished crawling");
+  logger.log("info", "Finished crawling");
   return urls;
 }
 

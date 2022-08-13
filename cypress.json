@@ -1,8 +1,7 @@
 {
-  "baseUrl": "http://localhost:3000",
+  "baseUrl": "http://10.24.23.38:3000",
   "chromeWebSecurity": false,
-  "video": false,
   "viewportWidth": 1920,
   "viewportHeight": 1080,
-  "projectId": "iX1xZO"
+  "projectId": "warden"
 }

@@ -53,7 +53,6 @@ class PagesList extends Component {
     url.pathname = this.state.addPagePath;
     const newPage = {
       url: url.toString(),
-      passingNum: "0/0",
       screenshots: {},
       failing: false,
     };
@@ -62,7 +61,7 @@ class PagesList extends Component {
 
     const params = {
       sitePath: this.props.siteData.sitePath,
-      newPage,
+      ...newPage,
       pagePath: url.pathname,
     };
 

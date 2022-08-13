@@ -1,11 +1,14 @@
 const { WebSocketServer } = require("ws");
+const logger = require("./logger");
 
 const wss = new WebSocketServer({ port: 8080 });
 
 function initWebSocket() {
   wss.on("connection", (ws) => {
-    console.log("connected");
+    logger.log("debug", "New client connected with id");
     ws.send(JSON.stringify({ action: "CONNECTION", data: "connected" }));
+
+    logger.log("debug", `Currently have ${wss.clients.size} clients`);
   });
 }
 
