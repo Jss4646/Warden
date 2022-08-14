@@ -22,7 +22,7 @@ async function initialiseCluster() {
     maxConcurrency: 4,
     retryLimit: 1,
     timeout: 500000,
-    // monitor: true,
+    monitor: true,
     puppeteerOptions: {
       args: [
         "--no-sandbox",
@@ -36,7 +36,7 @@ async function initialiseCluster() {
     },
   });
 
-  await cluster.task(takeScreenshot);
+  await cluster.task(await takeScreenshot).catch((err) => logger.log(err));
   return cluster;
 }
 
@@ -61,23 +61,25 @@ async function takeScreenshot({
     "debug",
     `Setting resolution to ${resolution.width}x${resolution.height}`
   );
-  await page.setViewport(resolution);
-  // .catch((err) => sendError("Couldn't set viewport", err, res));
+  await page.setViewport(resolution).catch((err) => logger.log("error", err));
 
   logger.log({ level: "debug", message: `Setting user agent to ${userAgent}` });
-  await page.setUserAgent(userAgent.toString());
-  // .catch((err) => sendError("Couldn't set user agent", err, res));
+  await page
+    .setUserAgent(userAgent.toString())
+    .catch((err) => logger.log("error", err));
 
   if (cookieData) {
     logger.log("debug", `Setting cookies to: `, cookieData);
     const parsedCookieData = JSON.parse(cookieData);
-    await page.setCookie(...parsedCookieData);
+    await page
+      .setCookie(...parsedCookieData)
+      .catch((err) => logger.log("error", err));
   }
-  // .catch((err) => sendError("Couldn't set cookies", err, res));
 
   logger.log("debug", `Loading page at ${url}`);
-  await page.goto(url, { timeout: 120000, waitUntil: "networkidle0" });
-  // .catch((err) => sendError("Couldn't navigate to page", err, res));
+  await page
+    .goto(url, { timeout: 120000, waitUntil: "networkidle0" })
+    .catch((err) => logger.log("error", err));
 
   // logger.log("debug", "Waiting for images to load");
   // await page.evaluate(async () => {
@@ -96,11 +98,12 @@ async function takeScreenshot({
   // });
 
   logger.log("debug", `Taking screenshot with filename ${fileName}`);
-  const screenshot = await page.screenshot({
-    fullPage: true,
-    path: `${__dirname}/../screenshots/${fileName}.png`,
-  });
-  // .catch((err) => sendError("Couldn't take screenshot", err, res));
+  const screenshot = await page
+    .screenshot({
+      fullPage: true,
+      path: `${__dirname}/../screenshots/${fileName}.png`,
+    })
+    .catch((err) => logger.log("error", err));
 
   logger.log("debug", "Converting screenshot to webp");
   await sharp(screenshot)
