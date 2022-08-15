@@ -19,6 +19,7 @@ const createScreenshotContainer = (src, loading) => {
         src={src}
         onError={(e) => (e.target.src = e.target.src.replace(".webp", ".png"))}
         alt="Screenshot"
+        loading="lazy"
       />
     </div>
   );
