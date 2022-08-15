@@ -19,25 +19,23 @@ class SiteDashboard extends Component {
 
     const fetchUrl = new URL(`${window.location.origin}/api/get-site`);
     console.log("Getting site");
-    const siteData = await fetch(fetchUrl, {
+    let siteData = await fetch(fetchUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(params),
     }).then((res) => {
-      if (res.status === 200) {
-        return res.json();
-      } else {
+      if (res.status !== 200) {
         this.props.history.push("/sites");
         return res.text();
       }
+
+      return res.json();
     });
 
     console.log("got site", siteData);
-    if (typeof siteData === "object") {
-      this.props.loadSiteData(siteData);
-    }
+    this.props.loadSiteData(siteData);
 
     this.setState({ isSiteDataLoaded: true });
   }

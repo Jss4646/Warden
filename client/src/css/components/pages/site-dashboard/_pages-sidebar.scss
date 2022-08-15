@@ -3,6 +3,7 @@
   flex-direction: column;
   align-items: center;
   border-right: 1px solid $qa-tool-light-grey;
+  max-height: 100%;
 
   .pages-sidebar__site-status {
     width: 14px;
@@ -47,6 +48,7 @@
   width: 90%;
   margin-top: 20px;
   border-top: solid 1px $qa-tool-light-grey;
+  height: 70%;
 
   .pages-list__failing-tab {
     display: flex;
@@ -88,7 +90,7 @@
   }
 
   .pages-list__pages {
-    height: 500px;
+    height: 74%;
     overflow: auto;
     direction: rtl;
     padding: 0 4px;

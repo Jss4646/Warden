@@ -3,10 +3,13 @@ const {
   addDeviceScreenshots,
   getFailingThreshold,
   updateScreenshotLoading,
+  getSitePages,
 } = require("./database-calls");
 const { imgDiff } = require("img-diff-js");
 const sharp = require("sharp");
 const fs = require("fs");
+const logger = require("./logger");
+const { broadcastData } = require("./websocket-server");
 
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
@@ -33,7 +36,7 @@ async function initialiseCluster() {
     },
   });
 
-  await cluster.task(takeScreenshot);
+  await cluster.task(await takeScreenshot).catch((err) => logger.log(err));
   return cluster;
 }
 
@@ -53,49 +56,77 @@ async function takeScreenshot({
   page,
   data: { url, cookieData, resolution, userAgent, fileName },
 }) {
-  console.log(`Taking screenshot at ${url}`);
-  await page.setViewport(resolution);
-  // .catch((err) => sendError("Couldn't set viewport", err, res));
+  const screenshotIdentifier = `${url}:${resolution.width}x${resolution.height}`;
+  logger.log("info", `${screenshotIdentifier}: Taking screenshot at ${url}`);
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: Setting resolution to ${resolution.width}x${resolution.height}`
+  );
+  await page.setViewport(resolution).catch((err) => logger.log("error", err));
 
-  await page.setUserAgent(userAgent.toString());
-  // .catch((err) => sendError("Couldn't set user agent", err, res));
+  logger.log({
+    level: "debug",
+    message: `${screenshotIdentifier}: Setting user agent to ${userAgent}`,
+  });
+  await page
+    .setUserAgent(userAgent.toString())
+    .catch((err) => logger.log("error", err));
 
   if (cookieData) {
     const parsedCookieData = JSON.parse(cookieData);
-    await page.setCookie(...parsedCookieData);
-  }
-  // .catch((err) => sendError("Couldn't set cookies", err, res));
-
-  await page.goto(url, { timeout: 120000, waitUntil: "networkidle0" });
-  // .catch((err) => sendError("Couldn't navigate to page", err, res));
-
-  await page.evaluate(async () => {
-    document.body.scrollIntoView(false);
-
-    const selectors = Array.from(document.querySelectorAll("img"));
-    await Promise.all(
-      selectors.map((img) => {
-        if (img.complete) return;
-        return new Promise((resolve, reject) => {
-          img.addEventListener("load", resolve);
-          img.addEventListener("error", reject);
-        });
-      })
+    logger.log(
+      "debug",
+      `${screenshotIdentifier}: Setting cookies to: `,
+      parsedCookieData
     );
-  });
+    await page
+      .setCookie(...parsedCookieData)
+      .catch((err) => logger.log("error", err));
+  }
 
-  const screenshot = await page.screenshot({
-    fullPage: true,
-    path: `${__dirname}/../screenshots/${fileName}.png`,
-  });
-  // .catch((err) => sendError("Couldn't take screenshot", err, res));
+  logger.log("debug", `${screenshotIdentifier}: Loading page at ${url}`);
+  await page
+    .goto(url, { timeout: 120000, waitUntil: "networkidle0" })
+    .catch((err) => logger.log("error", err));
 
+  // logger.log("debug", "Waiting for images to load");
+  // await page.evaluate(async () => {
+  //   document.body.scrollIntoView(false);
+  //
+  //   const selectors = Array.from(document.querySelectorAll("img"));
+  //   await Promise.all(
+  //     selectors.map((img) => {
+  //       if (img.complete) return;
+  //       return new Promise((resolve, reject) => {
+  //         img.addEventListener("load", resolve);
+  //         img.addEventListener("error", reject);
+  //       });
+  //     })
+  //   );
+  // });
+
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: Taking screenshot with filename ${fileName}`
+  );
+  const screenshot = await page
+    .screenshot({
+      fullPage: true,
+      path: `${__dirname}/../screenshots/${fileName}.png`,
+    })
+    .catch((err) => logger.log("error", err));
+
+  logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
   await sharp(screenshot)
     .webp({ quality: 50, effort: 6 })
-    .toFile(`${__dirname}/../screenshots/${fileName}.webp`);
+    .toFile(`${__dirname}/../screenshots/${fileName}.webp`)
+    .catch((err) => logger.log("error", err));
 
   await page.close();
-  console.log(`Finished taking and converting screenshot at ${url}`);
+  logger.log(
+    "info",
+    `${screenshotIdentifier}: Finished taking and converting screenshot at ${url}`
+  );
   return screenshot;
 }
 
@@ -138,13 +169,31 @@ async function compareScreenshots(
     userAgent,
     sitePath,
     device,
+    id,
   } = screenshotData;
 
-  const parsedUrl = new URL(baselineUrl);
-  await updateScreenshotLoading(db, sitePath, parsedUrl.pathname, device, true);
+  const screenshotIdentifier = `${baselineUrl}:${device}`;
+
+  logger.log("info", `${screenshotIdentifier}: Starting new comparison`);
+  logger.log(
+    "info",
+    `${screenshotIdentifier}: Comparing ${baselineUrl} to ${comparisonUrl}`
+  );
+
+  await updateScreenshotLoading(db, id, device, true);
+
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
 
   const defaultData = { cookieData, resolution, userAgent };
 
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: Loading comparison screenshot at ${comparisonUrl}`
+  );
   const comparisonScreenshotPromise = cluster.execute({
     url: comparisonUrl,
     fileName: comparisonFileName,
@@ -152,6 +201,10 @@ async function compareScreenshots(
   });
 
   if (generateBaselines) {
+    logger.log(
+      "debug",
+      `${screenshotIdentifier}: Loading baseline screenshot at ${baselineUrl}`
+    );
     const baselineScreenshotPromise = cluster.execute({
       url: baselineUrl,
       fileName: baselineFileName,
@@ -163,25 +216,35 @@ async function compareScreenshots(
     await comparisonScreenshotPromise;
   }
 
+  logger.log("debug", `${screenshotIdentifier}: Running comparison`);
   const diffData = await imgDiff({
     actualFilename: `${__dirname}/../screenshots/${baselineFileName}.png`,
     expectedFilename: `${__dirname}/../screenshots/${comparisonFileName}.png`,
     diffFilename: `${__dirname}/../screenshots/${baselineFileName}-diff.png`,
   });
 
+  logger.log("debug", `${screenshotIdentifier}: Reading diff image`);
   const diffFile = await fs.readFileSync(
     `${__dirname}/../screenshots/${baselineFileName}-diff.png`
   );
 
+  logger.log("debug", `${screenshotIdentifier}: converting diff image to webp`);
   await sharp(diffFile)
     .webp({ quality: 50, effort: 6 })
     .toFile(`${__dirname}/../screenshots/${baselineFileName}-diff.webp`)
-    .catch(console.log);
+    .catch((err) => logger.log("error", err));
 
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
+  logger.log("debug", `${percentageDiff}% pixels different`);
   const failingThreshold = await getFailingThreshold(db, sitePath);
   const failed = percentageDiff > failingThreshold;
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: ${
+      failed ? "Failed" : "Passed"
+    } at threshold of ${failingThreshold}%`
+  );
 
   const screenshots = {
     baselineScreenshot: `/api/screenshots/${baselineFileName}.webp`,
@@ -191,19 +254,24 @@ async function compareScreenshots(
     loading: false,
   };
 
-  await addDeviceScreenshots(
-    db,
-    sitePath,
-    parsedUrl.pathname,
-    screenshots,
-    device
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: Adding screenshots to database`
   );
-  await updateScreenshotLoading(
-    db,
-    sitePath,
-    parsedUrl.pathname,
-    device,
-    false
+  await addDeviceScreenshots(db, id, screenshots, device);
+
+  logger.log("debug", `${screenshotIdentifier}: Updating screenshot loading`);
+  await updateScreenshotLoading(db, id, device, false);
+
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
+
+  logger.log(
+    "info",
+    `${screenshotIdentifier}: Finished comparing ${baselineFileName} to ${comparisonFileName}`
   );
 }
 

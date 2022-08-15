@@ -36,6 +36,7 @@ function siteData(state = [], action) {
       return stateCopy;
 
     case "ADD_SCREENSHOTS":
+      // console.log(stateCopy.pages);
       stateCopy.pages[action.page].screenshots[action.device] =
         action.screenshots;
       return stateCopy;

@@ -16,6 +16,7 @@ const {
   deleteAllSitePages,
   updateBaselineUrl,
   updateComparisonUrl,
+  abortRunningScreenshots,
 } = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -23,7 +24,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const Sentry = require("@sentry/node");
 const { initWebSocket } = require("./tools/websocket-server");
-const {teardown} = require("./tools/teardown");
+require("./tools/logger");
+const logger = require("./tools/logger");
 
 const MongoClient = require("mongodb").MongoClient;
 const client = new MongoClient("mongodb://localhost:27017");
@@ -48,6 +50,13 @@ let db;
  * Endpoints that need the puppeteer cluster go in here
  */
 (async () => {
+  await client.connect((err) => {
+    if (err) throw err;
+  });
+  db = await client.db("warden");
+
+  abortRunningScreenshots(db);
+
   const cluster = await initialiseCluster();
   app.post("/api/take-screenshot", (req, res) =>
     generateScreenshot(req, res, cluster)
@@ -55,11 +64,6 @@ let db;
   app.post("/api/run-comparison", (req, res) =>
     runComparison(req, res, cluster, db)
   );
-
-  await client.connect((err) => {
-    if (err) throw err;
-  });
-  db = await client.db("warden");
 
   app.post("/api/add-site", (req, res) => addSite(db, req, res));
   app.post("/api/get-site", (req, res) => getSite(db, req, res));
@@ -77,8 +81,6 @@ let db;
   app.post("/api/update-comparison-url", (req, res) =>
     updateComparisonUrl(db, req, res)
   );
-
-
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
@@ -94,7 +96,4 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const server = app.listen(port, () => console.log(`Listening on port ${port}`));
-process.on('SIGINT', () => teardown(server, db) );
-process.on('SIGTERM', () => teardown(server, db) );
-process.on('SIGHUP', () => teardown(server, db) );
+app.listen(port, () => logger.info(`Listening on port ${port}`));

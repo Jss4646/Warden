@@ -11,9 +11,12 @@ class SiteUrls extends Component {
   }
 
   updateUrls = async () => {
-    const { sitePath, url, comparisonUrl } = this.props.siteData;
+    let { sitePath, url, comparisonUrl } = this.props.siteData;
 
     this.updateStatusText("Saving urls...");
+
+    url = new URL(url).href;
+    comparisonUrl = new URL(comparisonUrl).href;
 
     await fetch("/api/update-baseline-url", {
       method: "POST",
