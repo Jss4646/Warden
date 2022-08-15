@@ -130,6 +130,16 @@ async function deleteSite(db, req, res) {
     .collection("sites")
     .deleteOne({ sitePath: req.body.sitePath })
     .catch((err) => {
+      logger.log("error", err);
+      res.status(500);
+      res.send(err);
+    });
+
+  await db
+    .collection("pages")
+    .deleteMany({ sitePath: req.body.sitePath })
+    .catch((err) => {
+      logger.log("error", err);
       res.status(500);
       res.send(err);
     });

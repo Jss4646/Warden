@@ -61,8 +61,8 @@ export function runPageComparison(
     return;
   }
 
-  url = url.slice(0, -1);
-  comparisonUrl = comparisonUrl.slice(0, -1);
+  url = new URL(url).href.slice(0, -1);
+  comparisonUrl = new URL(comparisonUrl).href.slice(0, -1);
 
   const fullUrl = `${url}${page}`;
   const fullComparisonUrl = `${comparisonUrl}${page}`;
@@ -76,8 +76,10 @@ export function runPageComparison(
 
     const baselineFileName = generateBaselines
       ? createFilename(fullUrl, device)
-      : currentScreenshots.baselineScreenshot.slice(17, -4);
+      : currentScreenshots.baselineScreenshot.slice(17, -5);
     const comparisonFileName = createFilename(fullComparisonUrl, device);
+
+    console.log(baselineFileName);
 
     let parsedCookies = "";
 
@@ -101,10 +103,11 @@ export function runPageComparison(
     console.log(screenshotData);
 
     if (generateBaselines) {
-      addScreenshots(new URL(fullUrl).pathname, device, {});
+      addScreenshots(new URL(fullUrl).pathname, device, { loading: true });
     } else {
       addScreenshots(new URL(fullUrl).pathname, device, {
         baselineScreenshot: `/api/screenshots/${baselineFileName}.png`,
+        loading: true,
       });
     }
 

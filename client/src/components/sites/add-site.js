@@ -59,13 +59,13 @@ class AddSite extends Component {
 
     let sitePath = this.state.siteName.toLowerCase().replaceAll(" ", "-");
 
-    const url = new URL(this.state.url);
-    const comparisonUrl = new URL(this.state.comparisonUrl);
+    const url = new URL(this.state.url).href;
+    const comparisonUrl = new URL(this.state.comparisonUrl).href;
 
     const params = {
       siteName: this.state.siteName,
-      url: url.toString(),
-      comparisonUrl: comparisonUrl.toString(),
+      url,
+      comparisonUrl,
       sitePath,
       failingPercentage: 5,
       devices: ["1080p", "iphone-x/xs"],
