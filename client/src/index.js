@@ -8,11 +8,11 @@ import "./css/index.css";
 import "antd/dist/antd.css";
 
 import NavBar from "./components/nav-bar/nav-bar";
-import ScreenshotTool from "./pages/screenshot-tool";
 import Sites from "./pages/sites";
 import SiteDashboard from "./pages/site-dashboard";
 
 import store from "./store";
+import ScreenshotTool from "./pages/screenshot-tool";
 
 const Router = () => {
   const api_regex = /^\/api\/.*/;
@@ -24,9 +24,9 @@ const Router = () => {
     <Provider store={store}>
       <BrowserRouter>
         <NavBar />
-        <Route exact path="/" component={ScreenshotTool} />
-        <Route exact path="/sites" component={Sites} />
+        <Route exact path="/" component={Sites} />
         <Route exact path="/sites/:sitePath" component={SiteDashboard} />
+        <Route exact path="/screenshot-tool" component={ScreenshotTool} />
         <Route path="/api" />
       </BrowserRouter>
     </Provider>

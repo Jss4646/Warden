@@ -8,12 +8,12 @@ import { CameraOutlined, ToolOutlined } from "@ant-design/icons";
 const Navigation = () => {
   return (
     <ul className="navigation">
+      <NavigationItem text="Sites" link="/" logo={<ToolOutlined />} />
       <NavigationItem
-        link="/"
+        link="/screenshot-tool"
         logo={<CameraOutlined />}
         text="Screenshot Tool"
       />
-      <NavigationItem text="Sites" link="/sites" logo={<ToolOutlined />} />
     </ul>
   );
 };
