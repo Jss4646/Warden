@@ -115,6 +115,10 @@ async function getAllSites(db, req, res) {
           continue;
         }
 
+        if (!screenshot.baselineScreenshot) {
+          continue;
+        }
+
         passing++;
       }
     }
