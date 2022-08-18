@@ -27,7 +27,7 @@ class SiteDashboard extends Component {
       body: JSON.stringify(params),
     }).then((res) => {
       if (res.status !== 200) {
-        this.props.history.push("/sites");
+        this.props.history.push("/");
         return res.text();
       }
 

@@ -9,22 +9,42 @@ class Sites extends Component {
     this.state = { sites: [] };
   }
 
-  async componentDidMount() {
-    const fetchUrl = `${window.location.origin}/api/get-all-sites`;
-    console.log("Getting site");
-    const siteData = await fetch(fetchUrl).then((res) => {
+  async getSiteData(fetchUrl) {
+    return await fetch(fetchUrl).then((res) => {
       if (res.status === 200) {
         return res.json();
       } else {
-        return res.text();
+        console.error(res.text());
+        return false;
       }
     });
+  }
+
+  async componentDidMount() {
+    const fetchUrl = `${window.location.origin}/api/get-all-sites`;
+    console.log("Getting site");
+
+    let siteData;
+
+    for (let i = 0; i < 10; i++) {
+      siteData = await this.getSiteData(fetchUrl);
+      if (siteData) {
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
     console.log("site data:", siteData);
     this.setState({ sites: siteData });
   }
 
   render() {
     const sites = this.state?.sites;
+
+    if (!sites) {
+      return <div>Loading</div>;
+    }
 
     return (
       <div className="sites">
@@ -35,29 +55,10 @@ class Sites extends Component {
           {sites?.map((site, index) => {
             const lastRan = site.lastRan ? site.lastRan : "Never";
 
-            const totalScreenshots =
-              Object.keys(site.pages).length * site.devices.length;
-
-            const numOfFailing = Object.keys(site.pages).reduce(
-              (prev_num, page) => {
-                const screenshots = site.pages[page].screenshots;
-                const numOfFailing = Object.keys(screenshots).reduce(
-                  (prev_num, device) => {
-                    return prev_num + screenshots[device].failing;
-                  },
-                  0
-                );
-                return prev_num + numOfFailing;
-              },
-              0
-            );
-
-            console.log(numOfFailing);
-
             const siteStatus = {
-              passing: totalScreenshots - numOfFailing,
+              passing: site.passing,
               difference: site.difference ? site.difference : "--",
-              failing: numOfFailing,
+              failing: site.failing,
             };
             const frequency = site.frequency ? site.frequency : "Not set";
 

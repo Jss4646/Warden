@@ -96,15 +96,38 @@ async function getSite(db, req, res) {
  */
 async function getAllSites(db, req, res) {
   logger.log("info", "Getting all sites");
-  const results = await db.collection("sites").find().toArray();
+  const results = [];
+  const sites = await db.collection("sites").find().toArray();
 
-  logger.log("debug", `Found ${results.length} sites`);
+  logger.log("debug", `Found ${sites.length} sites`);
 
-  for (const site of results) {
-    site.pages = await getSitePages(site.sitePath, db);
+  for (const site of sites) {
+    const pages = await getSitePages(site.sitePath, db);
+
+    let passing = 0;
+    let failing = 0;
+
+    for (const page of Object.values(pages)) {
+      page.screenshots = Object.values(page.screenshots);
+      for (const screenshot of page.screenshots) {
+        if (screenshot.failing) {
+          failing++;
+          continue;
+        }
+
+        passing++;
+      }
+    }
+
+    results.push({
+      siteName: site.siteName,
+      sitePath: site.sitePath,
+      passing,
+      failing,
+    });
   }
 
-  if (!results) {
+  if (!sites) {
     res.status(500);
     res.send("No sites found");
   }
@@ -189,9 +212,15 @@ async function addSitePage(db, req, res) {
  * @param res {Response}
  */
 async function deleteSitePage(db, req, res) {
+  logger.log("info", "Deleting page: ", req.body.pageId);
   const { pageId } = req.body;
   await db.collection("pages").deleteOne({ _id: ObjectId(pageId) });
   res.send("Page deleted");
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(req.body.sitePath, db),
+    req.body.sitePath
+  );
 }
 
 /**
@@ -231,7 +260,7 @@ async function fillSitePages(db, req, res) {
 
   broadcastData(
     "UPDATE_SCREENSHOTS",
-    getSitePages(req.body.sitePath, db),
+    await getSitePages(req.body.sitePath, db),
     req.body.sitePath
   );
 

@@ -67,6 +67,22 @@ class PageScreenshots extends Component {
     });
   }
 
+  removePage = () => {
+    const params = {
+      pageId: this.props.siteData.pages[this.props.siteData.currentPage]._id,
+      sitePath: this.props.siteData.sitePath,
+    };
+    fetch(`${window.location.origin}/api/delete-site-page`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    }).catch((err) => console.error(err));
+
+    this.props.removePage(this.props.siteData.currentPage);
+  };
+
   render() {
     this.numOfFailing = 0;
     const { currentPage, pages } = this.props.siteData;
@@ -102,6 +118,15 @@ class PageScreenshots extends Component {
       );
     }
 
+    let removePageButton;
+    if (currentPage !== "/") {
+      removePageButton = (
+        <Button onClick={this.removePage} danger>
+          Remove Page
+        </Button>
+      );
+    }
+
     if (currentPage) {
       return (
         <div className="page-screenshots">
@@ -111,6 +136,7 @@ class PageScreenshots extends Component {
             </h1>
             <Button onClick={this.runComparison}>Run comparison</Button>
             <Button onClick={this.generateBaselines}>Generate baselines</Button>
+            {removePageButton}
           </div>
           {this.generateScreenshotBars(screenshots)}
         </div>

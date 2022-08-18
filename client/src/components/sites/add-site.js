@@ -54,6 +54,9 @@ class AddSite extends Component {
 
     if (!validateURL(this.state.url)) {
       this.updateErrorMessage("Url is not valid");
+      setTimeout(() => {
+        this.updateErrorMessage("");
+      }, 3000);
       return;
     }
 
