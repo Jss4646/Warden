@@ -114,7 +114,15 @@ async function takeScreenshot({
       fullPage: true,
       path: `${__dirname}/../screenshots/${fileName}.png`,
     })
-    .catch((err) => logger.log("error", err));
+    .catch((err) => {
+      logger.log("error", err);
+      return false;
+    });
+
+  if (!screenshot) {
+    logger.log("error", `${screenshotIdentifier}: No screenshot taken`);
+    return;
+  }
 
   logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
   await sharp(screenshot)
@@ -194,26 +202,34 @@ async function compareScreenshots(
     "debug",
     `${screenshotIdentifier}: Loading comparison screenshot at ${comparisonUrl}`
   );
-  const comparisonScreenshotPromise = cluster.execute({
-    url: comparisonUrl,
-    fileName: comparisonFileName,
-    ...defaultData,
-  });
+  const comparisonScreenshotPromise = cluster
+    .execute({
+      url: comparisonUrl,
+      fileName: comparisonFileName,
+      ...defaultData,
+    })
+    .catch((err) => logger.log("error", err));
+
+  if (!fs.existsSync(`${__dirname}/../screenshots/${baselineFileName}.png`)) {
+    generateBaselines = true;
+  }
 
   if (generateBaselines) {
     logger.log(
       "debug",
       `${screenshotIdentifier}: Loading baseline screenshot at ${baselineUrl}`
     );
-    const baselineScreenshotPromise = cluster.execute({
-      url: baselineUrl,
-      fileName: baselineFileName,
-      ...defaultData,
-    });
+    const baselineScreenshotPromise = cluster
+      .execute({
+        url: baselineUrl,
+        fileName: baselineFileName,
+        ...defaultData,
+      })
+      .catch((err) => logger.log("error", err));
 
     await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
   } else {
-    await comparisonScreenshotPromise;
+    await comparisonScreenshotPromise.catch((err) => logger.log("error", err));
   }
 
   logger.log("debug", `${screenshotIdentifier}: Running comparison`);
@@ -221,7 +237,7 @@ async function compareScreenshots(
     actualFilename: `${__dirname}/../screenshots/${baselineFileName}.png`,
     expectedFilename: `${__dirname}/../screenshots/${comparisonFileName}.png`,
     diffFilename: `${__dirname}/../screenshots/${baselineFileName}-diff.png`,
-  });
+  }).catch((err) => logger.log("error", err));
 
   logger.log("debug", `${screenshotIdentifier}: Reading diff image`);
   const diffFile = await fs.readFileSync(
