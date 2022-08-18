@@ -13,6 +13,10 @@ const createScreenshotContainer = (src, loading) => {
     return <Spin />;
   }
 
+  if (!src) {
+    return <div>No screenshot</div>;
+  }
+
   return (
     <div className="dashboard-screenshot-bar__screenshots-img">
       <img
