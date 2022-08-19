@@ -63,6 +63,11 @@ class PagesSidebar extends Component {
     const { pages } = this.props.siteData;
     console.log(pages);
 
+    if (pages.length > 2000) {
+      console.log("This will probably crash the server");
+      return;
+    }
+
     for (const page in pages) {
       runPageComparison(
         this.props.siteData,

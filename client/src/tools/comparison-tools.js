@@ -66,6 +66,8 @@ export function runPageComparison(
 
   const fullUrl = `${url}${page}`;
   const fullComparisonUrl = `${comparisonUrl}${page}`;
+  // check to see if total screenshot count is higher than 2000
+  const numScreenshots = devices.length * Object.keys(pages).length;
 
   for (const device of devices) {
     const currentScreenshots = pages[page].screenshots[device];
@@ -78,8 +80,6 @@ export function runPageComparison(
       ? createFilename(fullUrl, device)
       : currentScreenshots.baselineScreenshot.slice(17, -5);
     const comparisonFileName = createFilename(fullComparisonUrl, device);
-
-    console.log(baselineFileName);
 
     let parsedCookies = "";
 
@@ -100,8 +100,6 @@ export function runPageComparison(
       id: pages[page]._id,
     };
 
-    console.log(screenshotData);
-
     if (generateBaselines) {
       addScreenshots(new URL(fullUrl).pathname, device, { loading: true });
     } else {
@@ -114,7 +112,8 @@ export function runPageComparison(
     pagesRequestData.push(screenshotData);
   }
 
-  generateScreenshots(pagesRequestData, generateBaselines);
+  // generateScreenshots(pagesRequestData, generateBaselines);
+  console.log(pagesRequestData);
 }
 
 /**

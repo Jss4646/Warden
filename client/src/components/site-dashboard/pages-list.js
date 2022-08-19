@@ -94,13 +94,7 @@ class PagesList extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(params),
-    })
-      .then((res) => res.json())
-      .then((urls) => {
-        urls.forEach((url) => {
-          this.addPageClientSide(url);
-        });
-      });
+    });
     this.toggleLoadingPages();
   };
 
