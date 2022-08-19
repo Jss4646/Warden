@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { Button, Empty, Input, Spin } from "antd";
 import Page from "./page";
-import { setPages } from "../../actions/siteData";
-
-const { Search } = Input;
 
 class PagesList extends Component {
   state = { addPagePath: "", loadingPages: false };

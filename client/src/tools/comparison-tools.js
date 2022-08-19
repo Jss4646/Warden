@@ -66,8 +66,6 @@ export function runPageComparison(
 
   const fullUrl = `${url}${page}`;
   const fullComparisonUrl = `${comparisonUrl}${page}`;
-  // check to see if total screenshot count is higher than 2000
-  const numScreenshots = devices.length * Object.keys(pages).length;
 
   for (const device of devices) {
     const currentScreenshots = pages[page].screenshots[device];
