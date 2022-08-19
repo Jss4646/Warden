@@ -110,8 +110,7 @@ export function runPageComparison(
     pagesRequestData.push(screenshotData);
   }
 
-  // generateScreenshots(pagesRequestData, generateBaselines);
-  console.log(pagesRequestData);
+  generateScreenshots(pagesRequestData, generateBaselines);
 }
 
 /**
