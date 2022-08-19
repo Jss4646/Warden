@@ -273,9 +273,17 @@ async function fillSitePages(db, req, res) {
 
 async function deletePages(db, req, res) {
   let { pages, sitePath } = req.body;
+  const dbCalls = [];
+
+  logger.log("info", "Deleting pages");
+
   for (const page of pages) {
-    await db.collection("pages").deleteOne({ _id: ObjectId(page) });
+    dbCalls.push(db.collection("pages").deleteOne({ _id: ObjectId(page) }));
   }
+
+  await Promise.all(dbCalls);
+
+  logger.log("info", "Finished removing pages");
   broadcastData(
     "UPDATE_SCREENSHOTS",
     await getSitePages(sitePath, db),

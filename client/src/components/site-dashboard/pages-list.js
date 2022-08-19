@@ -160,7 +160,6 @@ class PagesList extends Component {
     const foundPaths = [];
     const pagesToDelete = [];
 
-    console.log("hi");
     Object.keys(pages).forEach((path) => {
       const page = pages[path];
       const paths = page.pagePath.split("/").filter((p) => p !== "");
