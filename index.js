@@ -17,6 +17,7 @@ const {
   updateBaselineUrl,
   updateComparisonUrl,
   abortRunningScreenshots,
+  deletePages,
 } = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -39,8 +40,8 @@ Sentry.init({
 
 initWebSocket();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(express.json({ limit: "50mb" }));
 app.use(Sentry.Handlers.requestHandler());
 app.use("/api/screenshots", express.static("screenshots"));
 
@@ -81,6 +82,7 @@ let db;
   app.post("/api/update-comparison-url", (req, res) =>
     updateComparisonUrl(db, req, res)
   );
+  app.post("/api/delete-pages", (req, res) => deletePages(db, req, res));
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);

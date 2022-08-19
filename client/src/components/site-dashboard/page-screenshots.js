@@ -93,7 +93,7 @@ class PageScreenshots extends Component {
       .map((site) => {
         const screenshots = pages[site].screenshots;
         const screenshotBars = this.generateScreenshotBars(screenshots, true);
-        if (screenshotBars.length > 0) {
+        if (Object.keys(screenshotBars).length > 0) {
           return (
             <div key={site}>
               <h2>{site}</h2>

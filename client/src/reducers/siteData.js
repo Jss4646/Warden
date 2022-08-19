@@ -23,6 +23,10 @@ function siteData(state = [], action) {
       stateCopy.pages[action.pagePath] = action.page;
       return stateCopy;
 
+    case "SET_PAGES":
+      stateCopy.pages = action.pages;
+      return stateCopy;
+
     case "REMOVE_PAGE":
       delete stateCopy.pages[action.pagePath];
       return stateCopy;

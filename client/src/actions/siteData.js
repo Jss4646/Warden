@@ -26,6 +26,13 @@ export function addPage(pagePath, page) {
   };
 }
 
+export function setPages(pages) {
+  return {
+    type: "SET_PAGES",
+    pages,
+  };
+}
+
 export function removePage(pagePath) {
   return {
     type: "REMOVE_PAGE",
@@ -94,5 +101,5 @@ export function setCookies(cookies) {
   return {
     type: "SET_COOKIES",
     cookies,
-  }
+  };
 }

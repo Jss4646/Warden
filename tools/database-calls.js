@@ -271,6 +271,19 @@ async function fillSitePages(db, req, res) {
   res.send(urls);
 }
 
+async function deletePages(db, req, res) {
+  let { pages, sitePath } = req.body;
+  for (const page of pages) {
+    await db.collection("pages").deleteOne({ _id: ObjectId(page) });
+  }
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
+  res.send("Removed pages");
+}
+
 /**
  * Deletes all pages from a site in the db
  *
@@ -419,6 +432,7 @@ module.exports = {
   addSite,
   getSite,
   getAllSites,
+  deletePages,
   deleteSite,
   addSitePage,
   deleteSitePage,
