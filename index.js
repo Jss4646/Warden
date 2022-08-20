@@ -43,7 +43,7 @@ initWebSocket();
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(express.json({ limit: "50mb" }));
 app.use(Sentry.Handlers.requestHandler());
-app.use("/api/screenshots", express.static("screenshots"));
+// app.use("/api/screenshots", express.static("screenshots"));
 
 let db;
 
@@ -88,14 +88,8 @@ let db;
 app.post("/api/crawl-url", crawlSitemapEndpoint);
 app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
 
-if (process.env.NODE_ENV === "production") {
-  // Serve any static files
-  app.use(express.static(path.join(__dirname, "client/build")));
-
-  // Handle React routing, return all requests to React app
-  app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, "client/build", "index.html"));
-  });
+if (process.env.NODE_ENV !== "production") {
+  app.use("/screenshots", express.static("screenshots"));
 }
 
 app.listen(port, () => logger.info(`Listening on port ${port}`));
