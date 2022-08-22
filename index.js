@@ -89,6 +89,7 @@ app.post("/api/crawl-url", crawlSitemapEndpoint);
 app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
 
 if (process.env.NODE_ENV !== "production") {
+  logger.log("info", "Running in development mode");
   app.use("/screenshots", express.static("screenshots"));
 }
 
