@@ -263,9 +263,9 @@ async function compareScreenshots(
   );
 
   const screenshots = {
-    baselineScreenshot: `/api/screenshots/${baselineFileName}.webp`,
-    comparisonScreenshot: `/api/screenshots/${comparisonFileName}.webp`,
-    diffImage: `/api/screenshots/${baselineFileName}-diff.webp`,
+    baselineScreenshot: `/screenshots/${baselineFileName}.webp`,
+    comparisonScreenshot: `/screenshots/${comparisonFileName}.webp`,
+    diffImage: `/screenshots/${baselineFileName}-diff.webp`,
     failing: failed,
     loading: false,
   };

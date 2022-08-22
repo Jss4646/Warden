@@ -9,7 +9,7 @@
     "test:ci-run": "cy2 run --parallel --record --key test --ci-build-id hello-cypress",
     "client": "cd client && npm start",
     "css:watch": "cd client && npm run watch:css",
-    "server": "nodemon --signal SIGHUP index.js",
+    "server": "nodemon --signal SIGHUP --ignore ./client/ index.js",
     "database": "mongod --dbpath ./data/db",
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" \"npm run css:watch\" \"npm run database\""
   },

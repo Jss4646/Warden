@@ -102,7 +102,7 @@ export function runPageComparison(
       addScreenshots(new URL(fullUrl).pathname, device, { loading: true });
     } else {
       addScreenshots(new URL(fullUrl).pathname, device, {
-        baselineScreenshot: `/api/screenshots/${baselineFileName}.png`,
+        baselineScreenshot: `/screenshots/${baselineFileName}.png`,
         loading: true,
       });
     }
