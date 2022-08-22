@@ -10,6 +10,7 @@ const sharp = require("sharp");
 const fs = require("fs");
 const logger = require("./logger");
 const { broadcastData } = require("./websocket-server");
+const { ObjectId } = require("mongodb");
 
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
@@ -188,13 +189,7 @@ async function compareScreenshots(
     `${screenshotIdentifier}: Comparing ${baselineUrl} to ${comparisonUrl}`
   );
 
-  await updateScreenshotLoading(db, id, device, true);
-
-  broadcastData(
-    "UPDATE_SCREENSHOTS",
-    await getSitePages(sitePath, db),
-    sitePath
-  );
+  updateScreenshotLoading(db, id, device, true);
 
   const defaultData = { cookieData, resolution, userAgent };
 
@@ -291,8 +286,29 @@ async function compareScreenshots(
   );
 }
 
-function runComparison(req, res, cluster, db) {
+async function setScreenshotsLoading(screenshots, db) {
+  await new Promise((res) => {
+    for (let screenshot of screenshots) {
+      db.collection("pages").updateOne(
+        { _id: ObjectId(screenshot.id) },
+        { $set: { [`screenshots.${screenshot.device}.loading`]: true } }
+      );
+    }
+    res();
+  });
+
+  const sitePath = screenshots[0].sitePath;
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
+}
+
+async function runComparison(req, res, cluster, db) {
   const { pages: screenshots, generateBaselines } = req.body;
+
+  await setScreenshotsLoading(screenshots, db);
 
   screenshots.forEach((screenshot) => {
     compareScreenshots(screenshot, generateBaselines, cluster, db);

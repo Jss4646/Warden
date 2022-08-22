@@ -67,33 +67,18 @@ class PagesSidebar extends Component {
       return;
     }
 
-    for (const page in pages) {
-      runPageComparison(
-        this.props.siteData,
-        page,
-        this.props.addScreenshots,
-        this.props.setIsScreenshotFailing
-      );
-    }
+    runPageComparison(this.props.siteData, Object.keys(pages));
   };
 
   generateBaselines = () => {
     const { pages } = this.props.siteData;
 
-    if (Object.keys(pages).length > 2000) {
+    if (Object.keys(pages).length > 4000) {
       console.log("This will probably crash the server");
       return;
     }
 
-    for (const page in pages) {
-      runPageComparison(
-        this.props.siteData,
-        page,
-        this.props.addScreenshots,
-        this.props.setIsScreenshotFailing,
-        true
-      );
-    }
+    runPageComparison(this.props.siteData, Object.keys(pages), true);
   };
 
   calculateNumInQueue(pages) {

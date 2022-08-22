@@ -19,20 +19,13 @@ class PageScreenshots extends Component {
    * @returns {Promise<void>}
    */
   runComparison = () => {
-    runPageComparison(
-      this.props.siteData,
-      this.props.siteData.currentPage,
-      this.props.addScreenshots,
-      this.props.setIsScreenshotFailing
-    );
+    runPageComparison(this.props.siteData, [this.props.siteData.currentPage]);
   };
 
   generateBaselines = () => {
     runPageComparison(
       this.props.siteData,
-      this.props.siteData.currentPage,
-      this.props.addScreenshots,
-      this.props.setIsScreenshotFailing,
+      [this.props.siteData.currentPage],
       true
     );
   };

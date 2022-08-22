@@ -18,7 +18,7 @@ import { default as devicesData } from "../data/devices.json";
  * @returns {Promise<string>}
  */
 export function generateScreenshots(pagesRequestData, generateBaselines) {
-  fetch(`${window.location.origin}/api/run-comparison`, {
+  return fetch(`${window.location.origin}/api/run-comparison`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,6 +32,21 @@ export function generateScreenshots(pagesRequestData, generateBaselines) {
   });
 }
 
+export function runPageComparison(siteData, pages, generateBaselines = false) {
+  const pagesRequestData = [];
+
+  for (const page of pages) {
+    const pageRequestData = createPageRequestData(
+      siteData,
+      page,
+      generateBaselines
+    );
+    pagesRequestData.push(...pageRequestData);
+  }
+
+  generateScreenshots(pagesRequestData, generateBaselines).catch(console.error);
+}
+
 /**
  * Generates comparison screenshots for a given page
  *
@@ -42,17 +57,9 @@ export function generateScreenshots(pagesRequestData, generateBaselines) {
  * @param siteData.sitePath {string}
  * @param siteData.screenshotPages {Object}
  * @param page {Array[string]}
- * @param addScreenshots {function}
- * @param setIsScreenshotFailing {function}
  * @param [generateBaselines] {boolean}
  */
-export function runPageComparison(
-  siteData,
-  page,
-  addScreenshots,
-  setIsScreenshotFailing,
-  generateBaselines = false
-) {
+function createPageRequestData(siteData, page, generateBaselines = false) {
   const pagesRequestData = [];
 
   let { devices, url, comparisonUrl, sitePath, pages, cookies } = siteData;
@@ -98,19 +105,9 @@ export function runPageComparison(
       id: pages[page]._id,
     };
 
-    if (generateBaselines) {
-      addScreenshots(new URL(fullUrl).pathname, device, { loading: true });
-    } else {
-      addScreenshots(new URL(fullUrl).pathname, device, {
-        baselineScreenshot: `/screenshots/${baselineFileName}.png`,
-        loading: true,
-      });
-    }
-
     pagesRequestData.push(screenshotData);
   }
-
-  generateScreenshots(pagesRequestData, generateBaselines);
+  return pagesRequestData;
 }
 
 /**
