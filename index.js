@@ -56,12 +56,13 @@ let db;
   });
   db = await client.db("warden");
 
-  abortRunningScreenshots(db);
+  abortRunningScreenshots(db).catch((err) => logger.error(err));
 
   const cluster = await initialiseCluster();
   app.post("/api/take-screenshot", (req, res) =>
     generateScreenshot(req, res, cluster)
   );
+
   app.post("/api/run-comparison", (req, res) =>
     runComparison(req, res, cluster, db)
   );

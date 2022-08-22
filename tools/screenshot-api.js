@@ -189,8 +189,6 @@ async function compareScreenshots(
     `${screenshotIdentifier}: Comparing ${baselineUrl} to ${comparisonUrl}`
   );
 
-  updateScreenshotLoading(db, id, device, true);
-
   const defaultData = { cookieData, resolution, userAgent };
 
   logger.log(
