@@ -55,7 +55,7 @@ async function initialiseCluster() {
  */
 async function takeScreenshot({
   page,
-  data: { url, cookieData, resolution, userAgent, fileName },
+  data: { url, cookieData, resolution, userAgent, filePath },
 }) {
   const screenshotIdentifier = `${url}:${resolution.width}x${resolution.height}`;
   logger.log("info", `${screenshotIdentifier}: Taking screenshot at ${url}`);
@@ -108,12 +108,12 @@ async function takeScreenshot({
 
   logger.log(
     "debug",
-    `${screenshotIdentifier}: Taking screenshot with filename ${fileName}`
+    `${screenshotIdentifier}: Taking screenshot with filepath ${filePath}`
   );
   const screenshot = await page
     .screenshot({
       fullPage: true,
-      path: `${__dirname}/../screenshots/${fileName}.png`,
+      path: filePath,
     })
     .catch((err) => {
       logger.log("error", err);
@@ -128,7 +128,7 @@ async function takeScreenshot({
   logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
   await sharp(screenshot)
     .webp({ quality: 50, effort: 6 })
-    .toFile(`${__dirname}/../screenshots/${fileName}.webp`)
+    .toFile(filePath.replace(".png", ".webp"))
     .catch((err) => logger.log("error", err));
 
   await page.close();
@@ -181,6 +181,8 @@ async function compareScreenshots(
     id,
   } = screenshotData;
 
+  let { page } = screenshotData;
+
   const screenshotIdentifier = `${baselineUrl}:${device}`;
 
   logger.log("info", `${screenshotIdentifier}: Starting new comparison`);
@@ -191,6 +193,19 @@ async function compareScreenshots(
 
   const defaultData = { cookieData, resolution, userAgent };
 
+  page = page.replaceAll("/", "-");
+  if (page !== "-") {
+    page = page.slice(1, page.length - 1);
+  }
+
+  const path = `${__dirname}/../screenshots/${sitePath}/${page}`;
+  const comparisonFilePath = `${path}/${comparisonFileName}.png`;
+  const baselineFilePath = `${path}/${baselineFileName}.png`;
+
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path, { recursive: true });
+  }
+
   logger.log(
     "debug",
     `${screenshotIdentifier}: Loading comparison screenshot at ${comparisonUrl}`
@@ -198,12 +213,12 @@ async function compareScreenshots(
   const comparisonScreenshotPromise = cluster
     .execute({
       url: comparisonUrl,
-      fileName: comparisonFileName,
+      filePath: comparisonFilePath,
       ...defaultData,
     })
     .catch((err) => logger.log("error", err));
 
-  if (!fs.existsSync(`${__dirname}/../screenshots/${baselineFileName}.png`)) {
+  if (!fs.existsSync(baselineFilePath)) {
     generateBaselines = true;
   }
 
@@ -215,7 +230,7 @@ async function compareScreenshots(
     const baselineScreenshotPromise = cluster
       .execute({
         url: baselineUrl,
-        fileName: baselineFileName,
+        filePath: baselineFilePath,
         ...defaultData,
       })
       .catch((err) => logger.log("error", err));
@@ -225,22 +240,22 @@ async function compareScreenshots(
     await comparisonScreenshotPromise.catch((err) => logger.log("error", err));
   }
 
+  const diffFilename = `${path}/${baselineFileName}-diff.png`;
+
   logger.log("debug", `${screenshotIdentifier}: Running comparison`);
   const diffData = await imgDiff({
-    actualFilename: `${__dirname}/../screenshots/${baselineFileName}.png`,
-    expectedFilename: `${__dirname}/../screenshots/${comparisonFileName}.png`,
-    diffFilename: `${__dirname}/../screenshots/${baselineFileName}-diff.png`,
+    actualFilename: baselineFilePath,
+    expectedFilename: comparisonFilePath,
+    diffFilename,
   }).catch((err) => logger.log("error", err));
 
   logger.log("debug", `${screenshotIdentifier}: Reading diff image`);
-  const diffFile = await fs.readFileSync(
-    `${__dirname}/../screenshots/${baselineFileName}-diff.png`
-  );
+  const diffFile = await fs.readFileSync(diffFilename);
 
   logger.log("debug", `${screenshotIdentifier}: converting diff image to webp`);
   await sharp(diffFile)
     .webp({ quality: 50, effort: 6 })
-    .toFile(`${__dirname}/../screenshots/${baselineFileName}-diff.webp`)
+    .toFile(`${diffFilename.replace(".png", ".webp")}`)
     .catch((err) => logger.log("error", err));
 
   const { width, height, diffCount } = diffData;
@@ -256,9 +271,9 @@ async function compareScreenshots(
   );
 
   const screenshots = {
-    baselineScreenshot: `/screenshots/${baselineFileName}.webp`,
-    comparisonScreenshot: `/screenshots/${comparisonFileName}.webp`,
-    diffImage: `/screenshots/${baselineFileName}-diff.webp`,
+    baselineScreenshot: `/screenshots/${sitePath}/${page}/${baselineFileName}.webp`,
+    comparisonScreenshot: `/screenshots/${sitePath}/${page}/${comparisonFileName}.webp`,
+    diffImage: `/screenshots/${sitePath}/${page}/${baselineFileName}-diff.webp`,
     failing: failed,
     loading: false,
   };

@@ -83,7 +83,7 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
 
     const baselineFileName = generateBaselines
       ? createFilename(fullUrl, device)
-      : currentScreenshots.baselineScreenshot.slice(17, -5);
+      : currentScreenshots.baselineScreenshot.split("/").pop();
     const comparisonFileName = createFilename(fullComparisonUrl, device);
 
     let parsedCookies = "";
@@ -102,6 +102,7 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
       sitePath,
       device,
       cookieData: parsedCookies,
+      page,
       id: pages[page]._id,
     };
 
@@ -118,16 +119,9 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
  * @returns {string}
  */
 export function createFilename(url, device) {
-  const date = new Date();
   const parsedUrl = new URL(url);
-
-  let path = parsedUrl.pathname === "/" ? "" : `${parsedUrl.pathname}-`;
-  path = path.replaceAll("/", "-");
-
   let deviceSanitised = device.replaceAll("/", "-");
-
-  const fileNameDate = `${date.getMilliseconds()}-${date.getSeconds()}-${date.getDay()}-${date.getMonth()}-${date.getFullYear()}-${deviceSanitised}`;
-  return `${parsedUrl.host}-${path}${fileNameDate}`;
+  return `${parsedUrl.host}-${deviceSanitised}`;
 }
 
 /**
