@@ -1,1 +1,0 @@
-Can functions run when component is unloaded

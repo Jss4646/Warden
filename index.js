@@ -1,12 +1,35 @@
-const { crawlSitemapEndpoint } = require("./tools/crawlUrl");
+const { crawlSitemapEndpoint } = require("./tools/crawl-url");
 const {
   initialiseCluster,
   generateScreenshot,
-} = require("./tools/screenshotAPI");
+  runComparison,
+} = require("./tools/screenshot-api");
+
+const {
+  addSite,
+  getSite,
+  getAllSites,
+  deleteSite,
+  addSitePage,
+  deleteSitePage,
+  fillSitePages,
+  deleteAllSitePages,
+  updateBaselineUrl,
+  updateComparisonUrl,
+  abortRunningScreenshots,
+  deletePages,
+} = require("./tools/database-calls");
+const { getSiteStatus } = require("./tools/status-checker");
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const Sentry = require("@sentry/node");
+const { initWebSocket } = require("./tools/websocket-server");
+require("./tools/logger");
+const logger = require("./tools/logger");
+
+const MongoClient = require("mongodb").MongoClient;
+const client = new MongoClient("mongodb://localhost:27017");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -15,31 +38,60 @@ Sentry.init({
   dsn: "https://c2b2b9486fa243399f474ae3be986686@sentry.synotio.se/166",
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(Sentry.Handlers.requestHandler());
+initWebSocket();
 
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(express.json({ limit: "50mb" }));
+app.use(Sentry.Handlers.requestHandler());
+// app.use("/api/screenshots", express.static("screenshots"));
+
+let db;
+
+/**
+ * Endpoints that need the puppeteer cluster go in here
+ */
 (async () => {
+  await client.connect((err) => {
+    if (err) throw err;
+  });
+  db = await client.db("warden");
+
+  abortRunningScreenshots(db).catch((err) => logger.error(err));
+
   const cluster = await initialiseCluster();
   app.post("/api/take-screenshot", (req, res) =>
     generateScreenshot(req, res, cluster)
   );
+
+  app.post("/api/run-comparison", (req, res) =>
+    runComparison(req, res, cluster, db)
+  );
+
+  app.post("/api/add-site", (req, res) => addSite(db, req, res));
+  app.post("/api/get-site", (req, res) => getSite(db, req, res));
+  app.get("/api/get-all-sites", (req, res) => getAllSites(db, req, res));
+  app.post("/api/delete-site", (req, res) => deleteSite(db, req, res));
+  app.post("/api/add-site-page", (req, res) => addSitePage(db, req, res));
+  app.post("/api/delete-site-page", (req, res) => deleteSitePage(db, req, res));
+  app.post("/api/fill-site-pages", (req, res) => fillSitePages(db, req, res));
+  app.post("/api/delete-all-site-pages", (req, res) =>
+    deleteAllSitePages(db, req, res)
+  );
+  app.post("/api/update-baseline-url", (req, res) =>
+    updateBaselineUrl(db, req, res)
+  );
+  app.post("/api/update-comparison-url", (req, res) =>
+    updateComparisonUrl(db, req, res)
+  );
+  app.post("/api/delete-pages", (req, res) => deletePages(db, req, res));
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
+app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
 
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error!");
-});
-
-if (process.env.NODE_ENV === "production") {
-  // Serve any static files
-  app.use(express.static(path.join(__dirname, "client/build")));
-
-  // Handle React routing, return all requests to React app
-  app.get("*", function (req, res) {
-    res.sendFile(path.join(__dirname, "client/build", "index.html"));
-  });
+if (process.env.NODE_ENV !== "production") {
+  logger.log("info", "Running in development mode");
+  app.use("/screenshots", express.static("screenshots"));
 }
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => logger.info(`Listening on port ${port}`));

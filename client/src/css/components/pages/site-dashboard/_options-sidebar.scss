@@ -1,0 +1,40 @@
+.site-urls {
+  display: flex;
+  flex-direction: column;
+
+  &__save-button {
+    width: 126px;
+    margin-top: 14px;
+  }
+
+  &__status-text {
+    margin-left: 6px;
+    color: $qa-tool-grey;
+  }
+}
+
+.cookies {
+  resize: none;
+  width: 100%;
+  height: 150px;
+
+  &--valid {
+    border-color: $qa-tool-green;
+  }
+
+  &--not-valid {
+    border-color: $qa-tool-red;
+  }
+
+  &:focus-visible {
+    outline: none !important;
+
+    &--valid {
+      border-color: $qa-tool-green;
+    }
+
+    &--not-valid {
+      border-color: $qa-tool-red;
+    }
+  }
+}

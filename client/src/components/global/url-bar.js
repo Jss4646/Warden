@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Input, Progress } from "antd";
+import validateURL from "../../tools/url";
 
 /**
  * The url bar component
@@ -14,28 +15,9 @@ class UrlBar extends Component {
   updateUrl = (event) => {
     const url = event.target.value;
 
-    const isCurrentUrlValid = this.validateURL(url);
+    const isCurrentUrlValid = validateURL(url);
     this.props.updateIsCurrentUrlValid(isCurrentUrlValid);
     this.props.updateCurrentUrl(url);
-  };
-
-  /**
-   * Validates a URL using regex
-   *
-   * @param url
-   * @returns {boolean}
-   */
-  validateURL = (url) => {
-    const pattern = new RegExp(
-      "^(https?:\\/\\/)?" + // protocol
-        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-        "(\\#[-a-z\\d_]*)?$",
-      "i"
-    ); // fragment locator
-    return !!pattern.test(url);
   };
 
   /**
