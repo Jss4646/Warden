@@ -7,8 +7,8 @@ const logger = new createLogger({
   transports: [
     new transports.Console({ format: combine(colorize(), simple()) }),
     new transports.File({
-      level: "info",
-      filename: `client/build/info.log`,
+      level: "debug",
+      filename: `client/build/debug.log`,
       handleExceptions: true,
       json: true,
       maxsize: 5242880,
