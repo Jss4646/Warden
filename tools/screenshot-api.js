@@ -181,8 +181,6 @@ async function compareScreenshots(
     id,
   } = screenshotData;
 
-  let { page } = screenshotData;
-
   const screenshotIdentifier = `${baselineUrl}:${device}`;
 
   logger.log("info", `${screenshotIdentifier}: Starting new comparison`);
@@ -193,7 +191,7 @@ async function compareScreenshots(
 
   const defaultData = { cookieData, resolution, userAgent };
 
-  page = page.replaceAll("/", "-");
+  let page = screenshotData.page.replaceAll("/", "-");
   if (page !== "-") {
     page = page.slice(1, page.length - 1);
   }
@@ -324,6 +322,8 @@ async function runComparison(req, res, cluster, db) {
   await setScreenshotsLoading(screenshots, db);
 
   screenshots.forEach((screenshot) => {
+    logger.log("debug", "Comparing screenshots: ", screenshot);
+
     compareScreenshots(screenshot, generateBaselines, cluster, db);
   });
 
