@@ -54,7 +54,9 @@ let db;
   await client.connect((err) => {
     if (err) throw err;
   });
-  db = await client.db("warden");
+  const dbName = process.env.DB_NAME || "warden";
+  logger.log("info", `Connecting to database ${dbName}`);
+  db = await client.db(dbName);
 
   abortRunningScreenshots(db).catch((err) => logger.error(err));
 
