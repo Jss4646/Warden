@@ -160,14 +160,17 @@ async function generateScreenshot(req, res, cluster) {
  * @param generateBaselines {boolean}
  * @param cluster {Cluster}
  * @param db {Db}
+ * @param abortController {AbortController}
  * @returns {Promise<void>}
  */
 async function compareScreenshots(
   screenshotData,
   generateBaselines,
   cluster,
-  db
+  db,
+  abortController
 ) {
+
   const {
     baselineUrl,
     baselineFileName,
@@ -316,7 +319,7 @@ async function setScreenshotsLoading(screenshots, db) {
   );
 }
 
-async function runComparison(req, res, cluster, db) {
+async function runComparison(req, res, cluster, db, abortController) {
   const { pages: screenshots, generateBaselines } = req.body;
 
   await setScreenshotsLoading(screenshots, db);
@@ -324,7 +327,7 @@ async function runComparison(req, res, cluster, db) {
   screenshots.forEach((screenshot) => {
     logger.log("debug", "Comparing screenshots: ", screenshot);
 
-    compareScreenshots(screenshot, generateBaselines, cluster, db);
+    compareScreenshots(screenshot, generateBaselines, cluster, db, abortController);
   });
 
   res.send("running");

@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import SiteCard from "../components/sites/site-card";
 import bindComponentToState from "../tools/bindComponentToState";
 import AddSite from "../components/sites/add-site";
+import ClearQueue from "../components/sites/clear-queue";
 
 class Sites extends Component {
   constructor(props) {
     super(props);
-    this.state = { sites: [] };
+    this.state = { sites: [], loading: true };
   }
 
   async getSiteData(fetchUrl) {
@@ -36,20 +37,27 @@ class Sites extends Component {
     }
 
     console.log("site data:", siteData);
-    this.setState({ sites: siteData });
+
+    this.setState({ ...this.state, sites: siteData, loading: false });
   }
 
   render() {
     const sites = this.state?.sites;
+    console.log(sites)
+
+    if (this.state.loading) {
+      return <div>Loading</div>;
+    }
 
     if (!sites) {
-      return <div>Loading</div>;
+      return <div>Server is down :( please message jack</div>
     }
 
     return (
       <div className="sites">
         <div className="sites__options">
           <AddSite />
+          <ClearQueue />
         </div>
         <div className="sites__cards">
           {sites?.map((site, index) => {
