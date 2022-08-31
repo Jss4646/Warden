@@ -18,6 +18,8 @@ const siteData = {
   comparisonUrl: "",
   siteStatus: "",
   sitePages: {},
+  siteUsername: "",
+  sitePassword: "",
   currentPage: "",
   failingPercentage: 5,
   failingScreenshots: {},

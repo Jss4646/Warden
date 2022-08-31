@@ -103,3 +103,17 @@ export function setCookies(cookies) {
     cookies,
   };
 }
+
+export function setSiteUsername(username) {
+  return {
+    type: "SET_SITE_USERNAME",
+    username,
+  }
+}
+
+export function setSitePassword(password) {
+  return {
+    type: "SET_SITE_PASSWORD",
+    password,
+  }
+}

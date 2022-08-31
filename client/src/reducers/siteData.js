@@ -69,6 +69,14 @@ function siteData(state = [], action) {
       stateCopy.cookies = action.cookies;
       return stateCopy;
 
+    case "SET_SITE_USERNAME":
+      stateCopy.siteUsername = action.username;
+      return stateCopy;
+
+    case "SET_SITE_PASSWORD":
+      stateCopy.sitePassword = action.password;
+      return stateCopy;
+
     default:
       return state;
   }

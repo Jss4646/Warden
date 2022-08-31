@@ -55,7 +55,7 @@ async function initialiseCluster() {
  */
 async function takeScreenshot({
   page,
-  data: { url, cookieData, resolution, userAgent, filePath },
+  data: { url, cookieData, resolution, userAgent, filePath, siteLogin },
 }) {
   const screenshotIdentifier = `${url}:${resolution.width}x${resolution.height}`;
   logger.log("info", `${screenshotIdentifier}: Taking screenshot at ${url}`);
@@ -64,6 +64,11 @@ async function takeScreenshot({
     `${screenshotIdentifier}: Setting resolution to ${resolution.width}x${resolution.height}`
   );
   await page.setViewport(resolution).catch((err) => logger.log("error", err));
+
+  if (siteLogin) {
+    logger.log("debug", "Setting site login to: ", siteLogin);
+    await page.authenticate(siteLogin);
+  }
 
   logger.log({
     level: "debug",
@@ -170,7 +175,6 @@ async function compareScreenshots(
   db,
   abortController
 ) {
-
   const {
     baselineUrl,
     baselineFileName,
@@ -181,6 +185,7 @@ async function compareScreenshots(
     userAgent,
     sitePath,
     device,
+    siteLogin,
     id,
   } = screenshotData;
 
@@ -192,7 +197,7 @@ async function compareScreenshots(
     `${screenshotIdentifier}: Comparing ${baselineUrl} to ${comparisonUrl}`
   );
 
-  const defaultData = { cookieData, resolution, userAgent };
+  const defaultData = { cookieData, resolution, userAgent, siteLogin };
 
   let page = screenshotData.page.replaceAll("/", "-");
   if (page !== "-") {
@@ -328,7 +333,13 @@ async function runComparison(req, res, cluster, db, abortController) {
   screenshots.forEach((screenshot) => {
     logger.log("debug", "Comparing screenshots: ", screenshot);
 
-    compareScreenshots(screenshot, generateBaselines, cluster, db, abortController);
+    compareScreenshots(
+      screenshot,
+      generateBaselines,
+      cluster,
+      db,
+      abortController
+    );
   });
 
   res.send("running");

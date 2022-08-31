@@ -62,7 +62,7 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
 function createPageRequestData(siteData, page, generateBaselines = false) {
   const pagesRequestData = [];
 
-  let { devices, url, comparisonUrl, sitePath, pages, cookies } = siteData;
+  let { devices, url, comparisonUrl, sitePath, pages, cookies, siteUsername, sitePassword } = siteData;
 
   if (cookies && !validateCookies(cookies)) {
     return;
@@ -103,6 +103,7 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
       device,
       cookieData: parsedCookies,
       page,
+      siteLogin: {username: siteUsername, password: sitePassword},
       id: pages[page]._id,
     };
 
