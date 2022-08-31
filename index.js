@@ -61,6 +61,12 @@ let db;
   abortRunningScreenshots(db).catch((err) => logger.error(err));
 
   const cluster = await initialiseCluster();
+  app.post("/api/cancel-all-screenshots", async (req, res) => {
+    logger.log("info", "Canceling all screenshots");
+    res.send("Shutting down and restarting server");
+    process.exit(0);
+  });
+
   app.post("/api/take-screenshot", (req, res) =>
     generateScreenshot(req, res, cluster)
   );
@@ -91,7 +97,7 @@ let db;
 app.post("/api/crawl-url", crawlSitemapEndpoint);
 app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.USER !== "apache") {
   logger.log("info", "Running in development mode");
   app.use("/screenshots", express.static("screenshots"));
 }
