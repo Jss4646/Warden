@@ -5,6 +5,7 @@ class Cookies extends Component {
   constructor(props) {
     super(props);
     this.setCookies = this.setCookies.bind(this);
+    this.props.setCookies(localStorage.getItem("cookies"));
   }
 
   /**
@@ -13,6 +14,7 @@ class Cookies extends Component {
    * @param {Event} event
    */
   setCookies(event) {
+    localStorage.setItem("cookies", event.target.value);
     this.props.setCookies(event.target.value);
   }
 
