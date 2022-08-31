@@ -424,12 +424,14 @@ async function abortRunningScreenshots(db) {
 
   for (let page of pages) {
     for (let device in page.screenshots) {
-      await db
-        .collection("pages")
-        .updateOne(
-          { _id: ObjectId(page._id) },
-          { $set: { [`screenshots.${device}.loading`]: false } }
-        );
+      if (page.screenshots[device].loading) {
+        await db
+            .collection("pages")
+            .updateOne(
+                { _id: ObjectId(page._id) },
+                { $set: { [`screenshots.${device}`]: {} } }
+            );
+      }
     }
   }
 

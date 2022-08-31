@@ -1,7 +1,9 @@
 const { WebSocketServer } = require("ws");
 const logger = require("./logger");
 
-const wss = new WebSocketServer({ port: 8080 });
+const port = process.env.WEBSOCKET_PORT || 8080;
+logger.log("info", `Starting websocket server on port ${port}`);
+const wss = new WebSocketServer({ port });
 
 function initWebSocket() {
   wss.on("connection", (ws) => {

@@ -54,11 +54,19 @@ let db;
   await client.connect((err) => {
     if (err) throw err;
   });
-  db = await client.db("warden");
+  const dbName = process.env.DB_NAME || "warden";
+  logger.log("info", `Connecting to database ${dbName}`);
+  db = await client.db(dbName);
 
   abortRunningScreenshots(db).catch((err) => logger.error(err));
 
   const cluster = await initialiseCluster();
+  app.post("/api/cancel-all-screenshots", async (req, res) => {
+    logger.log("info", "Canceling all screenshots");
+    res.send("Shutting down and restarting server");
+    process.exit(0);
+  });
+
   app.post("/api/take-screenshot", (req, res) =>
     generateScreenshot(req, res, cluster)
   );
@@ -89,7 +97,7 @@ let db;
 app.post("/api/crawl-url", crawlSitemapEndpoint);
 app.post("/api/get-site-status", (req, res) => getSiteStatus(req, res));
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.USER !== "apache") {
   logger.log("info", "Running in development mode");
   app.use("/screenshots", express.static("screenshots"));
 }

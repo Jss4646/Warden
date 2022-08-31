@@ -14,8 +14,7 @@
     ·
     <a href="http://warden.synotio.se/">Live site</a>
     ·
-    <a href="https://angrycreative.slack.com/archives/D01BMQH8081">Contact maintainer</a>
-  </p>
+    <a href="https://confluence.angrycreative.se/display/TOOL/Warden">Confluence Page</a>
 </div>
 
 <!-- ABOUT THE PROJECT -->
@@ -66,5 +65,3 @@ To get a local copy up and running follow these simple example steps.
 ## Contact
 
 Jack Sandeman - [Slack](https://angrycreative.slack.com/archives/D01BMQH8081) - jack.sandeman@angrycreative.uk
-<br/>
-[Confluence Page](https://confluence.angrycreative.se/display/TOOL/Warden)
