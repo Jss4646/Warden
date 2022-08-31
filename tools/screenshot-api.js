@@ -219,7 +219,8 @@ async function compareScreenshots(
     })
     .catch((err) => logger.log("error", err));
 
-  if (!fs.existsSync(baselineFilePath)) {
+  const baselineScreenshotExists = fs.existsSync(baselineFilePath);
+  if (!baselineScreenshotExists) {
     generateBaselines = true;
   }
 

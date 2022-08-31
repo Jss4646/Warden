@@ -83,7 +83,7 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
 
     const baselineFileName = generateBaselines
       ? createFilename(fullUrl, device)
-      : currentScreenshots.baselineScreenshot.split("/").pop();
+      : currentScreenshots.baselineScreenshot.split("/").pop().split(".webp")[0];
     const comparisonFileName = createFilename(fullComparisonUrl, device);
 
     let parsedCookies = "";
