@@ -61,23 +61,11 @@ class PagesSidebar extends Component {
 
   runComparison = () => {
     const { pages } = this.props.siteData;
-
-    if (Object.keys(pages).length > 4000) {
-      console.log("This will probably crash the server");
-      return;
-    }
-
     runPageComparison(this.props.siteData, Object.keys(pages));
   };
 
   generateBaselines = () => {
     const { pages } = this.props.siteData;
-
-    if (Object.keys(pages).length > 4000) {
-      console.log("This will probably crash the server");
-      return;
-    }
-
     runPageComparison(this.props.siteData, Object.keys(pages), true);
   };
 
