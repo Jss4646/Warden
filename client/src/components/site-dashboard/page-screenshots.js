@@ -35,10 +35,10 @@ class PageScreenshots extends Component {
       return "";
     }
 
-    return Object.keys(page).map((device) => {
+    const screenshotBars = Object.keys(page).map((device) => {
       const screenshots = page[device];
 
-      if (screenshots.failing) {
+      if (screenshots.failing && !screenshots.loading) {
         this.numOfFailing += 1;
       }
 
@@ -46,7 +46,7 @@ class PageScreenshots extends Component {
         this.numOfFailing += 1;
       }
 
-      if (screenshots.failing || !hidePassing) {
+      if ((screenshots.failing && !screenshots.loading) || !hidePassing) {
         return (
           <DashboardScreenshotsBar
             screenshots={screenshots}
@@ -58,6 +58,8 @@ class PageScreenshots extends Component {
 
       return "";
     });
+
+    return screenshotBars.filter((bar) => bar !== "");
   }
 
   removePage = () => {
@@ -81,24 +83,25 @@ class PageScreenshots extends Component {
     const { currentPage, pages } = this.props.siteData;
     const screenshots = pages[currentPage]?.screenshots;
 
-    const failingScreenshots = Object.keys(pages)
-      .sort()
-      .map((site) => {
-        const screenshots = pages[site].screenshots;
-        const screenshotBars = this.generateScreenshotBars(screenshots, true);
-        if (Object.keys(screenshotBars).length > 0) {
-          return (
-            <div key={site}>
-              <h2>{site}</h2>
-              {screenshotBars}
-            </div>
-          );
-        } else {
-          return "";
-        }
-      });
-
     if (currentPage === "failing") {
+      const failingScreenshots = Object.keys(pages)
+        .sort()
+        .map((site) => {
+          const screenshots = pages[site].screenshots;
+          const screenshotBars = this.generateScreenshotBars(screenshots, true);
+          console.log("hi");
+          if (Object.keys(screenshotBars).length > 0) {
+            return (
+              <div key={site}>
+                <h2>{site}</h2>
+                {screenshotBars}
+              </div>
+            );
+          } else {
+            return "";
+          }
+        });
+
       return (
         <div className="page-screenshots">
           <div className="page-screenshots__buttons-bar">

@@ -30,20 +30,23 @@ const SiteLogin = (props) => {
     );
   }, [setUsername, setPassword, props.siteData.sitePath]);
 
+  const siteUsername = siteData.siteUsername ? siteData.siteUsername : "";
+  const sitePassword = siteData.sitePassword ? siteData.sitePassword : "";
+
   return (
     <div className="site-login">
       <span>Username:</span>
       <Input
         placeholder="username"
-        defaultValue={props.siteData.siteUsername}
-        value={props.siteData.siteUsername}
+        defaultValue={siteUsername}
+        value={siteUsername}
         onChange={(event) => setUsername(event.target.value)}
       />
       <span>Password:</span>
       <Input
         placeholder="password"
-        defaultValue={props.siteData.sitePassword}
-        value={props.siteData.sitePassword}
+        defaultValue={sitePassword}
+        value={sitePassword}
         onChange={(event) => setPassword(event.target.value)}
       />
     </div>

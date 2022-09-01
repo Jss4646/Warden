@@ -62,10 +62,19 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
 function createPageRequestData(siteData, page, generateBaselines = false) {
   const pagesRequestData = [];
 
-  let { devices, url, comparisonUrl, sitePath, pages, cookies, siteUsername, sitePassword } = siteData;
+  let {
+    devices,
+    url,
+    comparisonUrl,
+    sitePath,
+    pages,
+    cookies,
+    siteUsername,
+    sitePassword,
+  } = siteData;
 
   if (cookies && !validateCookies(cookies)) {
-    return;
+    cookies = "";
   }
 
   url = new URL(url).href.slice(0, -1);
@@ -83,7 +92,10 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
 
     const baselineFileName = generateBaselines
       ? createFilename(fullUrl, device)
-      : currentScreenshots.baselineScreenshot.split("/").pop().split(".webp")[0];
+      : currentScreenshots.baselineScreenshot
+          .split("/")
+          .pop()
+          .split(".webp")[0];
     const comparisonFileName = createFilename(fullComparisonUrl, device);
 
     let parsedCookies = "";
@@ -103,7 +115,7 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
       device,
       cookieData: parsedCookies,
       page,
-      siteLogin: {username: siteUsername, password: sitePassword},
+      siteLogin: { username: siteUsername, password: sitePassword },
       id: pages[page]._id,
     };
 

@@ -46,7 +46,9 @@ class Cookies extends Component {
     const placeholder = "[{\r\n\t'cookieData': 'data'\r\n}]";
     const classes = ["cookies"];
 
-    const cookies = this.props.siteData.cookies;
+    const cookies = this.props.siteData.cookies
+      ? this.props.siteData.cookies
+      : "";
     const cookiesValidClass = this.generateCookieClass(cookies);
     if (cookiesValidClass) {
       classes.push(cookiesValidClass);
