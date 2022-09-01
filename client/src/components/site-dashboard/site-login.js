@@ -6,9 +6,7 @@ const SiteLogin = (props) => {
   const { sitePath } = siteData;
 
   const setUsername = useCallback(
-    (event) => {
-      const value = event.target ? event.target.value : event;
-
+    (value) => {
       localStorage.setItem(`${sitePath}-siteUsername`, value);
       setSiteUsername(value);
     },
@@ -16,9 +14,7 @@ const SiteLogin = (props) => {
   );
 
   const setPassword = useCallback(
-    (event) => {
-      const value = event.target ? event.target.value : event;
-
+    (value) => {
       localStorage.setItem(`${sitePath}-sitePassword`, value);
       setSitePassword(value);
     },
@@ -41,14 +37,14 @@ const SiteLogin = (props) => {
         placeholder="username"
         defaultValue={props.siteData.siteUsername}
         value={props.siteData.siteUsername}
-        onChange={setUsername}
+        onChange={(event) => setUsername(event.target.value)}
       />
       <span>Password:</span>
       <Input
         placeholder="password"
         defaultValue={props.siteData.sitePassword}
         value={props.siteData.sitePassword}
-        onChange={setPassword}
+        onChange={(event) => setPassword(event.target.value)}
       />
     </div>
   );
