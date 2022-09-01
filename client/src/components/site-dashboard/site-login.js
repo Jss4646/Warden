@@ -3,28 +3,26 @@ import { Input } from "antd";
 
 const SiteLogin = (props) => {
   useEffect(() => {
-    props.setSiteUsername(
+    setSiteUsername(
       localStorage.getItem(`${props.siteData.sitePath}-siteUsername`)
     );
-    props.setSitePassword(
+    setSitePassword(
       localStorage.getItem(`${props.siteData.sitePath}-sitePassword`)
     );
-  }, [props]);
+  }, []);
 
   const setSiteUsername = (event) => {
-    localStorage.setItem(
-      `${props.siteData.sitePath}-siteUsername`,
-      event.target.value
-    );
-    props.setSiteUsername(event.target.value);
+    const value = event.target ? event.target.value : event;
+
+    localStorage.setItem(`${props.siteData.sitePath}-siteUsername`, value);
+    props.setSiteUsername(value);
   };
 
   const setSitePassword = (event) => {
-    localStorage.setItem(
-      `${props.siteData.sitePath}-sitePassword`,
-      event.target.value
-    );
-    props.setSitePassword(event.target.value);
+    const value = event.target ? event.target.value : event;
+
+    localStorage.setItem(`${props.siteData.sitePath}-sitePassword`, value);
+    props.setSitePassword(value);
   };
 
   return (
