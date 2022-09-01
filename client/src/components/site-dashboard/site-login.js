@@ -1,29 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Input } from "antd";
 
 const SiteLogin = (props) => {
+  const { siteData, setSitePassword, setSiteUsername } = props;
+  const { sitePath } = siteData;
+
+  const setUsername = useCallback(
+    (event) => {
+      const value = event.target ? event.target.value : event;
+
+      localStorage.setItem(`${sitePath}-siteUsername`, value);
+      setSiteUsername(value);
+    },
+    [sitePath, setSiteUsername]
+  );
+
+  const setPassword = useCallback(
+    (event) => {
+      const value = event.target ? event.target.value : event;
+
+      localStorage.setItem(`${sitePath}-sitePassword`, value);
+      setSitePassword(value);
+    },
+    [sitePath, setSitePassword]
+  );
+
   useEffect(() => {
-    setSiteUsername(
+    setUsername(
       localStorage.getItem(`${props.siteData.sitePath}-siteUsername`)
     );
-    setSitePassword(
+    setPassword(
       localStorage.getItem(`${props.siteData.sitePath}-sitePassword`)
     );
-  }, []);
-
-  const setSiteUsername = (event) => {
-    const value = event.target ? event.target.value : event;
-
-    localStorage.setItem(`${props.siteData.sitePath}-siteUsername`, value);
-    props.setSiteUsername(value);
-  };
-
-  const setSitePassword = (event) => {
-    const value = event.target ? event.target.value : event;
-
-    localStorage.setItem(`${props.siteData.sitePath}-sitePassword`, value);
-    props.setSitePassword(value);
-  };
+  }, [setUsername, setPassword, props.siteData.sitePath]);
 
   return (
     <div className="site-login">
@@ -32,14 +41,14 @@ const SiteLogin = (props) => {
         placeholder="username"
         defaultValue={props.siteData.siteUsername}
         value={props.siteData.siteUsername}
-        onChange={setSiteUsername}
+        onChange={setUsername}
       />
       <span>Password:</span>
       <Input
         placeholder="password"
         defaultValue={props.siteData.sitePassword}
         value={props.siteData.sitePassword}
-        onChange={setSitePassword}
+        onChange={setPassword}
       />
     </div>
   );
