@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Input } from "antd";
 
 const SiteLogin = (props) => {
-  useEffect(() => {
+  useEffect((props) => {
     props.setSiteUsername(
       localStorage.getItem(`${props.siteData.sitePath}-siteUsername`)
     );
