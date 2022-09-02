@@ -55,8 +55,16 @@ async function initialiseCluster() {
  */
 async function takeScreenshot({
   page,
-  data: { url, cookieData, resolution, userAgent, filePath, siteLogin },
+  data: { url, cookieData, resolution, userAgent, filePath, siteLogin, path },
 }) {
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path, { recursive: true });
+  }
+
   const screenshotIdentifier = `${url}:${resolution.width}x${resolution.height}`;
   logger.log("info", `${screenshotIdentifier}: Taking screenshot at ${url}`);
   logger.log(
@@ -65,7 +73,7 @@ async function takeScreenshot({
   );
   await page.setViewport(resolution).catch((err) => logger.log("error", err));
 
-  if (siteLogin) {
+  if (siteLogin.username !== "" && siteLogin.password !== "") {
     logger.log("debug", "Setting site login to: ", siteLogin);
     await page.authenticate(siteLogin);
   }
@@ -92,8 +100,8 @@ async function takeScreenshot({
 
   logger.log("debug", `${screenshotIdentifier}: Loading page at ${url}`);
   await page
-    .goto(url, { timeout: 120000, waitUntil: "networkidle0" })
-    .catch((err) => logger.log("error", err));
+    .goto(url, { timeout: 60000, waitUntil: "networkidle0" })
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
 
   // logger.log("debug", "Waiting for images to load");
   // await page.evaluate(async () => {
@@ -197,8 +205,6 @@ async function compareScreenshots(
     `${screenshotIdentifier}: Comparing ${baselineUrl} to ${comparisonUrl}`
   );
 
-  const defaultData = { cookieData, resolution, userAgent, siteLogin };
-
   let page = screenshotData.page.replaceAll("/", "-");
   if (page !== "-") {
     page = page.slice(1, page.length - 1);
@@ -208,9 +214,7 @@ async function compareScreenshots(
   const comparisonFilePath = `${path}/${comparisonFileName}.png`;
   const baselineFilePath = `${path}/${baselineFileName}.png`;
 
-  if (!fs.existsSync(path)) {
-    fs.mkdirSync(path, { recursive: true });
-  }
+  const defaultData = { cookieData, resolution, userAgent, siteLogin, path };
 
   logger.log(
     "debug",
@@ -222,7 +226,7 @@ async function compareScreenshots(
       filePath: comparisonFilePath,
       ...defaultData,
     })
-    .catch((err) => logger.log("error", err));
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
 
   const baselineScreenshotExists = fs.existsSync(baselineFilePath);
   if (!baselineScreenshotExists) {
@@ -240,11 +244,13 @@ async function compareScreenshots(
         filePath: baselineFilePath,
         ...defaultData,
       })
-      .catch((err) => logger.log("error", err));
+      .catch((err) => logger.log("error", screenshotIdentifier, err));
 
     await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
   } else {
-    await comparisonScreenshotPromise.catch((err) => logger.log("error", err));
+    await comparisonScreenshotPromise.catch((err) =>
+      logger.log("error", screenshotIdentifier, err)
+    );
   }
 
   const diffFilename = `${path}/${baselineFileName}-diff.png`;
@@ -254,7 +260,7 @@ async function compareScreenshots(
     actualFilename: baselineFilePath,
     expectedFilename: comparisonFilePath,
     diffFilename,
-  }).catch((err) => logger.log("error", err));
+  }).catch((err) => logger.log("error", screenshotIdentifier, err));
 
   logger.log("debug", `${screenshotIdentifier}: Reading diff image`);
   const diffFile = await fs.readFileSync(diffFilename);
@@ -263,7 +269,7 @@ async function compareScreenshots(
   await sharp(diffFile)
     .webp({ quality: 50, effort: 6 })
     .toFile(`${diffFilename.replace(".png", ".webp")}`)
-    .catch((err) => logger.log("error", err));
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
 
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
@@ -330,17 +336,21 @@ async function runComparison(req, res, cluster, db, abortController) {
 
   await setScreenshotsLoading(screenshots, db);
 
-  screenshots.forEach((screenshot) => {
-    logger.log("debug", "Comparing screenshots: ", screenshot);
+  for ([index, s] of screenshots.entries()) {
+    logger.log("debug", "Comparing screenshots: ", s);
 
     compareScreenshots(
-      screenshot,
+      s,
       generateBaselines,
       cluster,
       db,
       abortController
-    );
-  });
+    ).catch((err) => logger.log("error", err));
+
+    if ((index + 1) % 1000 === 0) {
+      await new Promise((res) => setTimeout(res, 500));
+    }
+  }
 
   res.send("running");
 }
