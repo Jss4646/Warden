@@ -319,6 +319,11 @@ async function setScreenshotsLoading(screenshots, db) {
         { _id: ObjectId(screenshot.id) },
         { $set: { [`screenshots.${screenshot.device}.loading`]: true } }
       );
+
+      db.collection("pages").updateOne(
+        { _id: ObjectId(screenshot.id) },
+        { $set: { [`screenshots.${screenshot.device}.failing`]: false } }
+      );
     }
     res();
   });
