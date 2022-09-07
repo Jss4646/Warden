@@ -7,8 +7,7 @@ class Page extends Component {
   /**
    * Removes a page from the client and db
    *
-   * @param pagePath {String}
-   * @returns {Promise<void>}
+   * @returns {JSX.Element}
    */
   // TODO setup a way to remove page
   // removePage = async (pagePath) => {

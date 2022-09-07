@@ -374,29 +374,34 @@ async function setScreenshotsLoading(screenshots, db) {
 }
 
 //remove screenshots that do not contain the device
-async function removeScreenshots(db, sitePath, devices) {
-  const pages = await db.collection("pages").find({ sitePath }).toArray();
+async function removeRedundantScreenshots(db, sitePath, devices) {
+  const pages = await db
+    .collection("pages")
+    .find({ sitePath, screenshots: { $ne: {} } })
+    .toArray();
 
-  if (!pages) {
+  if (pages.length === 0) {
     return;
   }
 
   for (const page of Object.values(pages)) {
     for (const device of Object.keys(page.screenshots)) {
-      if (!devices.includes(page.screenshots[device].device)) {
+      if (!devices.includes(device)) {
         delete page.screenshots[device];
       }
     }
   }
 
-  await db.collection("pages").deleteMany({ sitePath });
+  await db
+    .collection("pages")
+    .deleteMany({ sitePath, screenshots: { $ne: {} } });
   await db.collection("pages").insertMany(pages);
 }
 async function runComparison(req, res, cluster, db, abortController) {
   const { pages: screenshots, siteRequestData, generateBaselines } = req.body;
 
   const { devices, sitePath } = siteRequestData;
-  await removeScreenshots(db, sitePath, devices);
+  await removeRedundantScreenshots(db, sitePath, devices);
   await setScreenshotsLoading(screenshots, db);
 
   broadcastData(

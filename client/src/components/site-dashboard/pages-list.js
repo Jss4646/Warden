@@ -145,10 +145,12 @@ class PagesList extends Component {
     if (this.state.loadingPages) {
       return <Spin />;
     } else if (Object.keys(pages).length > 0) {
-      return Object.keys(pages).map((path) => {
-        const page = pages[path];
-        return <Page {...this.props} page={page} path={path} key={path} />;
-      });
+      return Object.keys(pages)
+        .sort()
+        .map((path) => {
+          const page = pages[path];
+          return <Page {...this.props} page={page} path={path} key={path} />;
+        });
     } else {
       return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
