@@ -108,12 +108,39 @@ export function setSiteUsername(username) {
   return {
     type: "SET_SITE_USERNAME",
     username,
-  }
+  };
 }
 
 export function setSitePassword(password) {
   return {
     type: "SET_SITE_PASSWORD",
     password,
-  }
+  };
+}
+
+export function setDevices(devices) {
+  return {
+    type: "SET_DEVICES",
+    devices,
+  };
+}
+
+/**
+ *
+ * @returns {{type: string}}
+ */
+export function selectAllDevices() {
+  return {
+    type: "SELECT_ALL_DEVICES",
+  };
+}
+
+/**
+ *
+ * @returns {{type: string}}
+ */
+export function deselectAllDevices() {
+  return {
+    type: "DESELECT_ALL_DEVICES",
+  };
 }

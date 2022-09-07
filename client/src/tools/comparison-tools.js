@@ -14,10 +14,15 @@ import { default as devicesData } from "../data/devices.json";
  * Makes the call to the api to generate the screenshots and diff image
  *
  * @param pagesRequestData {Array[screenshotData]}
+ * @param siteRequestData {Object}
  * @param generateBaselines {boolean}
  * @returns {Promise<string>}
  */
-export function generateScreenshots(pagesRequestData, generateBaselines) {
+export function generateScreenshots(
+  pagesRequestData,
+  siteRequestData,
+  generateBaselines
+) {
   return fetch(`${window.location.origin}/api/run-comparison`, {
     method: "POST",
     headers: {
@@ -25,6 +30,7 @@ export function generateScreenshots(pagesRequestData, generateBaselines) {
     },
     body: JSON.stringify({
       pages: pagesRequestData,
+      siteRequestData,
       generateBaselines,
     }),
     // TODO cancel button
@@ -44,7 +50,27 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     pagesRequestData.push(...pageRequestData);
   }
 
-  generateScreenshots(pagesRequestData, generateBaselines).catch(console.error);
+  let { cookies, sitePath, siteUsername, sitePassword, devices } = siteData;
+
+  if (cookies && !validateCookies(cookies)) {
+    cookies = "";
+  } else if (!cookies) {
+    cookies = "";
+  }
+  cookies = cookies.replaceAll("\n", "");
+
+  const siteRequestData = {
+    sitePath,
+    cookieData: cookies,
+    devices,
+    siteLogin: { username: siteUsername, password: sitePassword },
+  };
+
+  generateScreenshots(
+    pagesRequestData,
+    siteRequestData,
+    generateBaselines
+  ).catch(console.error);
 }
 
 /**
@@ -62,20 +88,7 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
 function createPageRequestData(siteData, page, generateBaselines = false) {
   const pagesRequestData = [];
 
-  let {
-    devices,
-    url,
-    comparisonUrl,
-    sitePath,
-    pages,
-    cookies,
-    siteUsername,
-    sitePassword,
-  } = siteData;
-
-  if (cookies && !validateCookies(cookies)) {
-    cookies = "";
-  }
+  let { devices, url, comparisonUrl, pages } = siteData;
 
   url = new URL(url).href.slice(0, -1);
   comparisonUrl = new URL(comparisonUrl).href.slice(0, -1);
@@ -85,7 +98,7 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
 
   for (const device of devices) {
     const currentScreenshots = pages[page].screenshots[device];
-    const { height, width, userAgent } = devicesData[device];
+    const { height, width, userAgent, scale, touch } = devicesData[device];
 
     generateBaselines =
       currentScreenshots?.baselineScreenshot === undefined || generateBaselines;
@@ -98,24 +111,17 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
           .split(".webp")[0];
     const comparisonFileName = createFilename(fullComparisonUrl, device);
 
-    let parsedCookies = "";
-
-    if (cookies) {
-      parsedCookies = cookies.replaceAll("\n", "");
-    }
-
     let screenshotData = {
       resolution: { height, width },
       userAgent,
+      scale,
+      touch,
       comparisonUrl: fullComparisonUrl,
       comparisonFileName,
       baselineUrl: fullUrl,
       baselineFileName,
-      sitePath,
       device,
-      cookieData: parsedCookies,
       page,
-      siteLogin: { username: siteUsername, password: sitePassword },
       id: pages[page]._id,
     };
 

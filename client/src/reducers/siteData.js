@@ -1,3 +1,5 @@
+import devices from "../data/devices.json";
+
 function siteData(state = [], action) {
   const stateCopy = { ...state };
 
@@ -75,6 +77,18 @@ function siteData(state = [], action) {
 
     case "SET_SITE_PASSWORD":
       stateCopy.sitePassword = action.password;
+      return stateCopy;
+
+    case "SET_DEVICES":
+      stateCopy.devices = action.devices;
+      return stateCopy;
+
+    case "SELECT_ALL_DEVICES":
+      stateCopy.devices = Object.keys(devices);
+      return stateCopy;
+
+    case "DESELECT_ALL_DEVICES":
+      stateCopy.devices = [];
       return stateCopy;
 
     default:

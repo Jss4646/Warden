@@ -55,7 +55,17 @@ async function initialiseCluster() {
  */
 async function takeScreenshot({
   page,
-  data: { url, cookieData, resolution, userAgent, filePath, siteLogin, path },
+  data: {
+    url,
+    cookieData,
+    resolution,
+    userAgent,
+    scale,
+    touch,
+    filePath,
+    siteLogin,
+    path,
+  },
 }) {
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath);
@@ -71,7 +81,13 @@ async function takeScreenshot({
     "debug",
     `${screenshotIdentifier}: Setting resolution to ${resolution.width}x${resolution.height}`
   );
-  await page.setViewport(resolution).catch((err) => logger.log("error", err));
+  await page
+    .setViewport({
+      ...resolution,
+      hasTouch: touch,
+      deviceScaleFactor: scale,
+    })
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
 
   if (siteLogin.username !== "" && siteLogin.password !== "") {
     logger.log("debug", "Setting site login to: ", siteLogin);
@@ -84,7 +100,7 @@ async function takeScreenshot({
   });
   await page
     .setUserAgent(userAgent.toString())
-    .catch((err) => logger.log("error", err));
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
 
   if (cookieData) {
     const parsedCookieData = JSON.parse(cookieData);
@@ -95,7 +111,7 @@ async function takeScreenshot({
     );
     await page
       .setCookie(...parsedCookieData)
-      .catch((err) => logger.log("error", err));
+      .catch((err) => logger.log("error", screenshotIdentifier, err));
   }
 
   logger.log("debug", `${screenshotIdentifier}: Loading page at ${url}`);
@@ -129,7 +145,7 @@ async function takeScreenshot({
       path: filePath,
     })
     .catch((err) => {
-      logger.log("error", err);
+      logger.log("error", screenshotIdentifier, err);
       return false;
     });
 
@@ -140,9 +156,14 @@ async function takeScreenshot({
 
   logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
   await sharp(screenshot)
-    .webp({ quality: 50, effort: 6 })
-    .toFile(filePath.replace(".png", ".webp"))
-    .catch((err) => logger.log("error", err));
+    .metadata()
+    .then(({ width }) =>
+      sharp(screenshot)
+        .resize(Math.round(width * 0.5))
+        .toFormat("webp", { quality: 50, effort: 6 })
+        .toFile(filePath.replace(".png", ".webp"))
+        .catch((err) => logger.log("error", screenshotIdentifier, err))
+    );
 
   await page.close();
   logger.log(
@@ -191,6 +212,8 @@ async function compareScreenshots(
     cookieData,
     resolution,
     userAgent,
+    scale,
+    touch,
     sitePath,
     device,
     siteLogin,
@@ -214,7 +237,15 @@ async function compareScreenshots(
   const comparisonFilePath = `${path}/${comparisonFileName}.png`;
   const baselineFilePath = `${path}/${baselineFileName}.png`;
 
-  const defaultData = { cookieData, resolution, userAgent, siteLogin, path };
+  const defaultData = {
+    cookieData,
+    resolution,
+    userAgent,
+    scale,
+    touch,
+    siteLogin,
+    path,
+  };
 
   logger.log(
     "debug",
@@ -267,9 +298,14 @@ async function compareScreenshots(
 
   logger.log("debug", `${screenshotIdentifier}: converting diff image to webp`);
   await sharp(diffFile)
-    .webp({ quality: 50, effort: 6 })
-    .toFile(`${diffFilename.replace(".png", ".webp")}`)
-    .catch((err) => logger.log("error", screenshotIdentifier, err));
+    .metadata()
+    .then(({ width }) =>
+      sharp(diffFile)
+        .resize(Math.round(width * 0.5))
+        .toFormat("webp", { quality: 50, effort: 6 })
+        .toFile(`${diffFilename.replace(".png", ".webp")}`)
+        .catch((err) => logger.log("error", screenshotIdentifier, err))
+    );
 
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
@@ -336,16 +372,45 @@ async function setScreenshotsLoading(screenshots, db) {
   );
 }
 
-async function runComparison(req, res, cluster, db, abortController) {
-  const { pages: screenshots, generateBaselines } = req.body;
+//remove screenshots that do not contain the device
+async function removeScreenshots(db, sitePath, devices) {
+  const pages = await db.collection("pages").find({ sitePath }).toArray();
 
+  if (!pages) {
+    return;
+  }
+
+  for (const page of Object.values(pages)) {
+    console.log(page);
+    for (const device of Object.keys(page.screenshots)) {
+      if (!devices.includes(page.screenshots[device].device)) {
+        delete page.screenshots[device];
+      }
+    }
+  }
+
+  await db.collection("pages").deleteMany({ sitePath });
+  await db.collection("pages").insertMany(pages);
+}
+async function runComparison(req, res, cluster, db, abortController) {
+  const { pages: screenshots, siteRequestData, generateBaselines } = req.body;
+
+  const { devices, sitePath } = siteRequestData;
+  await removeScreenshots(db, sitePath, devices);
   await setScreenshotsLoading(screenshots, db);
 
-  for ([index, s] of screenshots.entries()) {
-    logger.log("debug", "Comparing screenshots: ", s);
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
+
+  for (let [index, screenshot] of screenshots.entries()) {
+    logger.log("debug", "Comparing screenshots: ", screenshot);
+    screenshot = { ...screenshot, ...siteRequestData };
 
     compareScreenshots(
-      s,
+      screenshot,
       generateBaselines,
       cluster,
       db,
