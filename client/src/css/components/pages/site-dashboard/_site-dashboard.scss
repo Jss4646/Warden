@@ -1,6 +1,6 @@
 .site-dashboard {
   display: grid;
-  grid-template-columns: 450px minmax(1100px, calc(100% - 700px)) 350px;
+  grid-template-columns: 450px minmax(500px, calc(100% - 700px)) 350px;
   grid-template-rows: 100%;
 
   height: calc(100% - 80px);

@@ -4,10 +4,21 @@
 
   .sidebar__accordion {
     height: 100%;
+    max-height: 100%;
     overflow: auto;
     border-radius: 0;
     border-top: none;
     border-bottom: none;
     border-right: none;
   }
+}
+
+.sidebar__accordion {
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
+  border-radius: 0;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
 }

@@ -12,6 +12,23 @@ const logger = require("./logger");
 const { broadcastData } = require("./websocket-server");
 const { ObjectId } = require("mongodb");
 
+function convertToWebp(image, filePath, screenshotIdentifier) {
+  return sharp(image)
+    .metadata()
+    .then(({ height }) => {
+      const sharpImage = sharp(image);
+
+      if (height > 16_383) {
+        sharpImage.resize({ height: 16_383 });
+      }
+
+      sharpImage
+        .toFormat("webp", { quality: 50, effort: 6 })
+        .toFile(filePath.replace(".png", ".webp"))
+        .catch((err) => logger.log("error", screenshotIdentifier, err));
+    });
+}
+
 /**
  * Starts screenshot cluster which manages the screenshot queue serverside
  *
@@ -155,15 +172,7 @@ async function takeScreenshot({
   }
 
   logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
-  await sharp(screenshot)
-    .metadata()
-    .then(({ width }) =>
-      sharp(screenshot)
-        .resize(Math.round(width * 0.5))
-        .toFormat("webp", { quality: 50, effort: 6 })
-        .toFile(filePath.replace(".png", ".webp"))
-        .catch((err) => logger.log("error", screenshotIdentifier, err))
-    );
+  convertToWebp(screenshot, filePath, screenshotIdentifier);
 
   await page.close();
   logger.log(
@@ -297,15 +306,7 @@ async function compareScreenshots(
   const diffFile = await fs.readFileSync(diffFilename);
 
   logger.log("debug", `${screenshotIdentifier}: converting diff image to webp`);
-  await sharp(diffFile)
-    .metadata()
-    .then(({ width }) =>
-      sharp(diffFile)
-        .resize(Math.round(width * 0.5))
-        .toFormat("webp", { quality: 50, effort: 6 })
-        .toFile(`${diffFilename.replace(".png", ".webp")}`)
-        .catch((err) => logger.log("error", screenshotIdentifier, err))
-    );
+  convertToWebp(diffFile, diffFilename, screenshotIdentifier);
 
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
