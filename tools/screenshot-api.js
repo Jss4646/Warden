@@ -382,7 +382,6 @@ async function removeScreenshots(db, sitePath, devices) {
   }
 
   for (const page of Object.values(pages)) {
-    console.log(page);
     for (const device of Object.keys(page.screenshots)) {
       if (!devices.includes(page.screenshots[device].device)) {
         delete page.screenshots[device];

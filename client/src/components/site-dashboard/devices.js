@@ -56,6 +56,10 @@ const Devices = (props) => {
   };
 
   const updateSelectedDevices = (checkedKeys) => {
+    if (checkedKeys.length === 0) {
+      return;
+    }
+
     checkedKeys = checkedKeys.filter(
       (item) =>
         item !== "desktop" &&
@@ -92,9 +96,9 @@ const Devices = (props) => {
         selectable={false}
       />
       <div className="devices__buttons">
+        <Button onClick={saveDevices}>Save</Button>
         <Button onClick={props.selectAllDevices}>Select All</Button>
         <Button onClick={props.deselectAllDevices}>Deselect All</Button>
-        <Button onClick={saveDevices}>Save</Button>
       </div>
     </div>
   );

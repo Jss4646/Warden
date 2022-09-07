@@ -88,7 +88,7 @@ function siteData(state = [], action) {
       return stateCopy;
 
     case "DESELECT_ALL_DEVICES":
-      stateCopy.devices = [];
+      stateCopy.devices = ["1080p"];
       return stateCopy;
 
     default:
