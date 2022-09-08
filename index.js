@@ -18,6 +18,7 @@ const {
   updateComparisonUrl,
   abortRunningScreenshots,
   deletePages,
+  setSiteDevices,
 } = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -91,6 +92,7 @@ let db;
     updateComparisonUrl(db, req, res)
   );
   app.post("/api/delete-pages", (req, res) => deletePages(db, req, res));
+  app.post("/api/set-site-devices", (req, res) => setSiteDevices(db, req, res));
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);

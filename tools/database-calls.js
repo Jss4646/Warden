@@ -426,16 +426,25 @@ async function abortRunningScreenshots(db) {
     for (let device in page.screenshots) {
       if (page.screenshots[device].loading) {
         await db
-            .collection("pages")
-            .updateOne(
-                { _id: ObjectId(page._id) },
-                { $set: { [`screenshots.${device}`]: {} } }
-            );
+          .collection("pages")
+          .updateOne(
+            { _id: ObjectId(page._id) },
+            { $set: { [`screenshots.${device}`]: {} } }
+          );
       }
     }
   }
 
   logger.log("info", "Finished aborting all running screenshots");
+}
+
+async function setSiteDevices(db, req, res) {
+  const { sitePath, devices } = req.body;
+
+  logger.log("info", "Setting devices", sitePath, devices);
+  await db.collection("sites").updateOne({ sitePath }, { $set: { devices } });
+  logger.log("info", "Finished setting devices");
+  res.send(true);
 }
 
 module.exports = {
@@ -455,4 +464,5 @@ module.exports = {
   updateScreenshotLoading,
   abortRunningScreenshots,
   getSitePages,
+  setSiteDevices,
 };
