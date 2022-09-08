@@ -226,6 +226,7 @@ async function compareScreenshots(
     sitePath,
     device,
     siteLogin,
+    failingThreshold,
     id,
   } = screenshotData;
 
@@ -311,7 +312,6 @@ async function compareScreenshots(
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
   logger.log("debug", `${percentageDiff}% pixels different`);
-  const failingThreshold = await getFailingThreshold(db, sitePath);
   const failed = percentageDiff > failingThreshold;
   logger.log(
     "debug",

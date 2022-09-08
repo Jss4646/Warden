@@ -91,6 +91,10 @@ function siteData(state = [], action) {
       stateCopy.devices = ["1080p"];
       return stateCopy;
 
+    case "SET_FAILING_PERCENTAGE":
+      stateCopy.failingPercentage = action.failingPercentage;
+      return stateCopy;
+
     default:
       return state;
   }

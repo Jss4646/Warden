@@ -369,18 +369,6 @@ async function updateScreenshotLoading(db, id, device, loading) {
 }
 
 /**
- * Gets the failing threshold for a site
- *
- * @param db {Db}
- * @param sitePath {String}
- * @returns {Promise<number|*>}
- */
-async function getFailingThreshold(db, sitePath) {
-  const site = await db.collection("sites").findOne({ sitePath });
-  return site.failingPercentage;
-}
-
-/**
  * Updates the baseline url of a site
  *
  * @param db {Db}
@@ -447,6 +435,23 @@ async function setSiteDevices(db, req, res) {
   res.send(true);
 }
 
+async function setSiteSettings(db, req, res) {
+  const { sitePath, failingPercentage } = req.body;
+
+  if (!sitePath) {
+    res.status(400);
+    res.send("No site path provided");
+    return;
+  }
+
+  logger.log("info", "Saving site settings");
+  await db
+    .collection("sites")
+    .updateOne({ sitePath }, { $set: { failingPercentage } });
+  logger.log("info", "Finished saving site settings");
+  res.send(true);
+}
+
 module.exports = {
   addSite,
   getSite,
@@ -458,11 +463,11 @@ module.exports = {
   fillSitePages,
   deleteAllSitePages,
   addDeviceScreenshots,
-  getFailingThreshold,
   updateBaselineUrl,
   updateComparisonUrl,
   updateScreenshotLoading,
   abortRunningScreenshots,
   getSitePages,
   setSiteDevices,
+  setSiteSettings,
 };

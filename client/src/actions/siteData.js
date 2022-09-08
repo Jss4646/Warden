@@ -144,3 +144,10 @@ export function deselectAllDevices() {
     type: "DESELECT_ALL_DEVICES",
   };
 }
+
+export function setFailingPercentage(failingPercentage) {
+  return {
+    type: "SET_FAILING_PERCENTAGE",
+    failingPercentage,
+  };
+}
