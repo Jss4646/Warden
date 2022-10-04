@@ -50,7 +50,16 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     pagesRequestData.push(...pageRequestData);
   }
 
-  let { cookies, sitePath, siteUsername, sitePassword, devices } = siteData;
+  let {
+    cookies,
+    sitePath,
+    siteUsername,
+    sitePassword,
+    devices,
+    failingPercentage,
+    validJS,
+    injectedJS,
+  } = siteData;
 
   if (cookies && !validateCookies(cookies)) {
     cookies = "";
@@ -63,6 +72,8 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     sitePath,
     cookieData: cookies,
     devices,
+    failingThreshold: failingPercentage,
+    injectedJS: validJS ? injectedJS : "",
     siteLogin: { username: siteUsername, password: sitePassword },
   };
 

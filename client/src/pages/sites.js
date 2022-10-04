@@ -43,14 +43,13 @@ class Sites extends Component {
 
   render() {
     const sites = this.state?.sites;
-    console.log(sites)
 
     if (this.state.loading) {
       return <div>Loading</div>;
     }
 
     if (!sites) {
-      return <div>Server is down :( please message jack</div>
+      return <div>Server is down :( please message jack</div>;
     }
 
     return (

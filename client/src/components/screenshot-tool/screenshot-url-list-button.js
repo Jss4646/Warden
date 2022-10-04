@@ -12,8 +12,7 @@ class ScreenshotUrlListButton extends Component {
     this._logScreenshots();
 
     for (const url of urls) {
-        console.log(url)
-        takeScreenshot(url, this.props);
+      takeScreenshot(url, this.props).catch(console.error);
     }
   };
 

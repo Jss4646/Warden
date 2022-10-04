@@ -42,7 +42,6 @@ function siteData(state = [], action) {
       return stateCopy;
 
     case "ADD_SCREENSHOTS":
-      // console.log(stateCopy.pages);
       stateCopy.pages[action.page].screenshots[action.device] =
         action.screenshots;
       return stateCopy;
@@ -89,6 +88,18 @@ function siteData(state = [], action) {
 
     case "DESELECT_ALL_DEVICES":
       stateCopy.devices = ["1080p"];
+      return stateCopy;
+
+    case "SET_FAILING_PERCENTAGE":
+      stateCopy.failingPercentage = action.failingPercentage;
+      return stateCopy;
+
+    case "SET_INJECTED_JS":
+      stateCopy.injectedJS = action.injectedJS;
+      return stateCopy;
+
+    case "SET_VALID_JS":
+      stateCopy.validJS = action.validJS;
       return stateCopy;
 
     default:

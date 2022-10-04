@@ -24,7 +24,6 @@ const takeScreenshot = async (url, props) => {
     const fileName = `${
       parsedUrl.host
     }-${path}${date.getMilliseconds()}-${date.getSeconds()}-${date.getDay()}-${date.getMonth()}-${date.getFullYear()}`;
-    console.log(fileName);
 
     const screenshotData = {
       deviceName: name,

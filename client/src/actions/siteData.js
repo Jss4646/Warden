@@ -144,3 +144,24 @@ export function deselectAllDevices() {
     type: "DESELECT_ALL_DEVICES",
   };
 }
+
+export function setFailingPercentage(failingPercentage) {
+  return {
+    type: "SET_FAILING_PERCENTAGE",
+    failingPercentage,
+  };
+}
+
+export function setInjectedJS(injectedJS) {
+  return {
+    type: "SET_INJECTED_JS",
+    injectedJS,
+  };
+}
+
+export function setValidJS(validJS) {
+  return {
+    type: "SET_VALID_JS",
+    validJS,
+  };
+}

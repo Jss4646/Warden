@@ -23,10 +23,10 @@ const SiteLogin = (props) => {
 
   useEffect(() => {
     setUsername(
-      localStorage.getItem(`${props.siteData.sitePath}-siteUsername`)
+      localStorage.getItem(`${props.siteData.sitePath}-siteUsername`) ?? ""
     );
     setPassword(
-      localStorage.getItem(`${props.siteData.sitePath}-sitePassword`)
+      localStorage.getItem(`${props.siteData.sitePath}-sitePassword`) ?? ""
     );
   }, [setUsername, setPassword, props.siteData.sitePath]);
 

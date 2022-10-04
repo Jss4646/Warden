@@ -82,10 +82,12 @@ async function takeScreenshot({
     filePath,
     siteLogin,
     path,
+    injectedJS,
   },
 }) {
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+  const webpFilePath = filePath.replace(".png", ".webp");
+  if (fs.existsSync(webpFilePath)) {
+    fs.unlinkSync(webpFilePath);
   }
 
   if (!fs.existsSync(path)) {
@@ -134,6 +136,11 @@ async function takeScreenshot({
   logger.log("debug", `${screenshotIdentifier}: Loading page at ${url}`);
   await page
     .goto(url, { timeout: 60000, waitUntil: "networkidle0" })
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
+
+  logger.log("debug", `${screenshotIdentifier}: Injecting JS`);
+  await page
+    .evaluate(injectedJS)
     .catch((err) => logger.log("error", screenshotIdentifier, err));
 
   // logger.log("debug", "Waiting for images to load");
@@ -226,6 +233,8 @@ async function compareScreenshots(
     sitePath,
     device,
     siteLogin,
+    failingThreshold,
+    injectedJS,
     id,
   } = screenshotData;
 
@@ -254,6 +263,7 @@ async function compareScreenshots(
     touch,
     siteLogin,
     path,
+    injectedJS,
   };
 
   logger.log(
@@ -311,7 +321,6 @@ async function compareScreenshots(
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
   logger.log("debug", `${percentageDiff}% pixels different`);
-  const failingThreshold = await getFailingThreshold(db, sitePath);
   const failed = percentageDiff > failingThreshold;
   logger.log(
     "debug",

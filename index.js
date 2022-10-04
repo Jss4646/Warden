@@ -19,6 +19,7 @@ const {
   abortRunningScreenshots,
   deletePages,
   setSiteDevices,
+  setSiteSettings,
 } = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -93,6 +94,9 @@ let db;
   );
   app.post("/api/delete-pages", (req, res) => deletePages(db, req, res));
   app.post("/api/set-site-devices", (req, res) => setSiteDevices(db, req, res));
+  app.post("/api/set-site-settings", (req, res) =>
+    setSiteSettings(db, req, res)
+  );
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
