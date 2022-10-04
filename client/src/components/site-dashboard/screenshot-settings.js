@@ -42,14 +42,12 @@ const ScreenshotSettings = (props) => {
       console.error(err);
     });
   };
-  console.log(validJS);
 
   useEffect(() => {
-    const localInjectedJS = localStorage.getItem(`${sitePath}-injectedJS`);
-    if (localInjectedJS) {
-      setInjectedJS(localInjectedJS);
-      validateJS(localInjectedJS, setValidJS);
-    }
+    const localInjectedJS =
+      localStorage.getItem(`${sitePath}-injectedJS`) ?? "";
+    setInjectedJS(localInjectedJS);
+    validateJS(localInjectedJS, setValidJS);
   }, [setInjectedJS, sitePath, setValidJS]);
 
   return (

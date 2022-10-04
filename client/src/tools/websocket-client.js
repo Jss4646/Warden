@@ -1,11 +1,13 @@
-const socketUrl = process.env?.NODE_ENV === "development" ? `ws://${window.location.hostname}:8080` : `ws://${window.location.hostname}:80/ws`;
-console.log(socketUrl)
+const socketUrl =
+  process.env?.NODE_ENV === "development"
+    ? `ws://${window.location.hostname}:8080`
+    : `ws://${window.location.hostname}:80/ws`;
 
 export function wsInit(setAllScreenshots) {
   let socket;
 
   function connect() {
-    if ( socket instanceof WebSocket ) {
+    if (socket instanceof WebSocket) {
       socket.onerror = null;
       socket.onclose = null;
       socket.onopen = null;
@@ -14,8 +16,8 @@ export function wsInit(setAllScreenshots) {
     socket = new WebSocket(socketUrl);
 
     socket.onclose = () => {
-      console.log( 'socket closed. Trying to reconnect...' );
-      setTimeout( connect, 1000 );
+      console.log("socket closed. Trying to reconnect...");
+      setTimeout(connect, 1000);
     };
 
     socket.onmessage = (event) => {
@@ -23,28 +25,25 @@ export function wsInit(setAllScreenshots) {
       console.log("Received message", response.action);
       switch (response.action) {
         case "CONNECTION":
-          console.log(response.data);
+          console.log("Connected to websocket server");
           return;
 
-      case "UPDATE_SCREENSHOTS":
-        const path = window.location.pathname.split('/')
-        const sitePath = path[path.length - 1];
-        if (response.sitePath !== sitePath) {
+        case "UPDATE_SCREENSHOTS":
+          const path = window.location.pathname.split("/");
+          const sitePath = path[path.length - 1];
+          if (response.sitePath !== sitePath) {
+            return;
+          }
+          setAllScreenshots(response.data);
           return;
-        }
-        console.log(response.data);
-        setAllScreenshots(response.data);
-        return;
 
         default:
           return;
       }
     };
-
-    console.log( socket );
   }
 
-  if ( typeof socket === 'undefined' || socket.readyState === socket.CLOSED ) {
+  if (typeof socket === "undefined" || socket.readyState === socket.CLOSED) {
     connect();
   }
 }

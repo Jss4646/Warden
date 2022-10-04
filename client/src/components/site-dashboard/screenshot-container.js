@@ -15,7 +15,7 @@ const ScreenshotContainer = (props) => {
   const ref = useRef();
 
   useEffect(() => {
-    if (!ref) {
+    if (!ref.current) {
       return;
     }
 
