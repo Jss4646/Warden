@@ -95,6 +95,14 @@ function siteData(state = [], action) {
       stateCopy.failingPercentage = action.failingPercentage;
       return stateCopy;
 
+    case "SET_INJECTED_JS":
+      stateCopy.injectedJS = action.injectedJS;
+      return stateCopy;
+
+    case "SET_VALID_JS":
+      stateCopy.validJS = action.validJS;
+      return stateCopy;
+
     default:
       return state;
   }

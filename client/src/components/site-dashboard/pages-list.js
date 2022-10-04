@@ -5,6 +5,14 @@ import Page from "./page";
 class PagesList extends Component {
   state = { addPagePath: "", loadingPages: false };
 
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    const { pages: nextPages, currentPage: nextCurrentPage } =
+      nextProps.siteData;
+    const { pages, currentPage } = this.props.siteData;
+
+    return nextPages !== pages || nextCurrentPage !== currentPage;
+  }
+
   /**
    * Updates user inputted new page path
    *

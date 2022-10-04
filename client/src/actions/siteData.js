@@ -151,3 +151,17 @@ export function setFailingPercentage(failingPercentage) {
     failingPercentage,
   };
 }
+
+export function setInjectedJS(injectedJS) {
+  return {
+    type: "SET_INJECTED_JS",
+    injectedJS,
+  };
+}
+
+export function setValidJS(validJS) {
+  return {
+    type: "SET_VALID_JS",
+    validJS,
+  };
+}

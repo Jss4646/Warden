@@ -57,6 +57,8 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     sitePassword,
     devices,
     failingPercentage,
+    validJS,
+    injectedJS,
   } = siteData;
 
   if (cookies && !validateCookies(cookies)) {
@@ -71,6 +73,7 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     cookieData: cookies,
     devices,
     failingThreshold: failingPercentage,
+    injectedJS: validJS ? injectedJS : "",
     siteLogin: { username: siteUsername, password: sitePassword },
   };
 

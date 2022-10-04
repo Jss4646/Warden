@@ -1,0 +1,13 @@
+.screenshot-settings {
+  &__injected-js {
+    margin-bottom: 6px;
+
+    & > div {
+      border: 1px solid $qa-tool-light-grey-2;
+    }
+
+    &--invalid-js > div {
+      border: red 1px solid;
+    }
+  }
+}

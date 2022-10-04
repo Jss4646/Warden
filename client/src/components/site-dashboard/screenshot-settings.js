@@ -1,9 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, InputNumber } from "antd";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { JSHINT } from "jshint";
 
 const ScreenshotSettings = (props) => {
-  const { siteData, setFailingPercentage } = props;
-  const { failingPercentage, sitePath } = siteData;
+  const { siteData, setFailingPercentage, setInjectedJS, setValidJS } = props;
+  const { failingPercentage, sitePath, injectedJS, validJS } = siteData;
+
+  const validateJS = (value) => {
+    JSHINT(value, {}, {});
+    const data = JSHINT.data();
+
+    if (data.errors) {
+      setValidJS(false);
+      return;
+    }
+
+    setValidJS(true);
+  };
+
+  const updateInjectedJS = (value) => {
+    localStorage.setItem(`${sitePath}-injectedJS`, value);
+    setInjectedJS(value);
+    validateJS(value);
+  };
 
   const saveSettings = () => {
     const body = {
@@ -21,6 +42,15 @@ const ScreenshotSettings = (props) => {
       console.error(err);
     });
   };
+  console.log(validJS);
+
+  useEffect(() => {
+    const localInjectedJS = localStorage.getItem(`${sitePath}-injectedJS`);
+    if (localInjectedJS) {
+      setInjectedJS(localInjectedJS);
+      validateJS(localInjectedJS);
+    }
+  }, []);
 
   return (
     <div className="screenshot-settings">
@@ -34,6 +64,24 @@ const ScreenshotSettings = (props) => {
           value={failingPercentage}
           addonAfter="%"
           onChange={(value) => setFailingPercentage(value)}
+        />
+      </div>
+      <div
+        className={`screenshot-settings__injected-js${
+          !validJS ? " screenshot-settings__injected-js--invalid-js" : ""
+        }`}
+      >
+        <label>Injected JS: </label>
+        <CodeMirror
+          value={injectedJS}
+          height="200px"
+          extensions={[javascript()]}
+          basicSetup={{
+            lineNumbers: false,
+            foldGutter: false,
+            syntaxHighlighting: true,
+          }}
+          onChange={(value) => updateInjectedJS(value)}
         />
       </div>
       <Button onClick={saveSettings}>Save</Button>
