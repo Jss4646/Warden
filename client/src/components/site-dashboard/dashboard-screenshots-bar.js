@@ -1,5 +1,4 @@
-import React, { Component, useEffect, useRef, useState } from "react";
-import { Spin } from "antd";
+import React, { useState } from "react";
 import ScreenshotContainer from "./screenshot-container";
 
 /**
@@ -23,6 +22,7 @@ const DashboardScreenshotsBar = (props) => {
       scrollState={scrollState}
     />
   );
+
   const changedImg = (
     <ScreenshotContainer
       src={comparisonScreenshot}
@@ -30,6 +30,7 @@ const DashboardScreenshotsBar = (props) => {
       scrollState={scrollState}
     />
   );
+
   const diffImg = (
     <ScreenshotContainer
       src={diffImage}

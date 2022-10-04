@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, InputNumber } from "antd";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
@@ -8,7 +8,7 @@ const ScreenshotSettings = (props) => {
   const { siteData, setFailingPercentage, setInjectedJS, setValidJS } = props;
   const { failingPercentage, sitePath, injectedJS, validJS } = siteData;
 
-  const validateJS = (value) => {
+  const validateJS = (value, setValidJS) => {
     JSHINT(value, {}, {});
     const data = JSHINT.data();
 
@@ -23,7 +23,7 @@ const ScreenshotSettings = (props) => {
   const updateInjectedJS = (value) => {
     localStorage.setItem(`${sitePath}-injectedJS`, value);
     setInjectedJS(value);
-    validateJS(value);
+    validateJS(value, setValidJS);
   };
 
   const saveSettings = () => {
@@ -48,9 +48,9 @@ const ScreenshotSettings = (props) => {
     const localInjectedJS = localStorage.getItem(`${sitePath}-injectedJS`);
     if (localInjectedJS) {
       setInjectedJS(localInjectedJS);
-      validateJS(localInjectedJS);
+      validateJS(localInjectedJS, setValidJS);
     }
-  }, []);
+  }, [setInjectedJS, sitePath, setValidJS]);
 
   return (
     <div className="screenshot-settings">
