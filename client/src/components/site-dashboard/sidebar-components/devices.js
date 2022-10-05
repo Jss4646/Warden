@@ -1,5 +1,5 @@
 import React from "react";
-import devices from "../../data/devices.json";
+import devices from "../../../data/devices.json.js";
 import { Button, Tree } from "antd";
 
 const Devices = (props) => {

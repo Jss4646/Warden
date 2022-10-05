@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Collapse } from "antd";
-import SiteUrls from "./site-urls";
-import Cookies from "./cookies";
-import SiteLogin from "./site-login";
-import Devices from "./devices";
-import ScreenshotSettings from "./screenshot-settings";
+import SiteUrls from "./sidebar-components/site-urls";
+import Cookies from "./sidebar-components/cookies";
+import SiteLogin from "./sidebar-components/site-login";
+import Devices from "./sidebar-components/devices";
+import ScreenshotSettings from "./sidebar-components/screenshot-settings";
+import Misc from "./sidebar-components/misc";
 
 const { Panel } = Collapse;
 
@@ -14,7 +15,7 @@ const { Panel } = Collapse;
 class OptionsSidebar extends Component {
   render() {
     return (
-      <Collapse defaultActiveKey={["0", "3"]} className="sidebar__accordion">
+      <Collapse defaultActiveKey={["0"]} className="sidebar__accordion">
         <Panel key={0} header="Site urls" id="site-urls">
           <SiteUrls {...this.props} />
         </Panel>
@@ -29,6 +30,9 @@ class OptionsSidebar extends Component {
         </Panel>
         <Panel key={4} header={"Site login"}>
           <SiteLogin {...this.props} />
+        </Panel>
+        <Panel key={5} header={"Misc"}>
+          <Misc {...this.props} />
         </Panel>
       </Collapse>
     );

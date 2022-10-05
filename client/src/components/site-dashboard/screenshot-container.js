@@ -10,7 +10,7 @@ import React, { useEffect, useRef } from "react";
  * @returns {JSX.Element}
  */
 const ScreenshotContainer = (props) => {
-  const { src, loading, scrollState } = props;
+  let { src, loading, scrollState } = props;
   const [scrollDepth, setScrollDepth] = scrollState;
   const ref = useRef();
 
@@ -36,6 +36,8 @@ const ScreenshotContainer = (props) => {
   if (!src) {
     return <div>No screenshot</div>;
   }
+
+  src = `${src}?cache=none`;
 
   return (
     <div ref={ref} className="dashboard-screenshot-bar__screenshots-img">
