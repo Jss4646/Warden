@@ -10,7 +10,11 @@ class PagesList extends Component {
       nextProps.siteData;
     const { pages, currentPage } = this.props.siteData;
 
-    return nextPages !== pages || nextCurrentPage !== currentPage;
+    return (
+      nextPages !== pages ||
+      nextCurrentPage !== currentPage ||
+      nextState !== this.state
+    );
   }
 
   /**
