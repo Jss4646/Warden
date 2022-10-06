@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { validateCookies } from "../../tools/comparison-tools";
+import { validateCookies } from "../../../tools/comparison-tools";
 
 class Cookies extends Component {
   constructor(props) {
     super(props);
     this.setCookies = this.setCookies.bind(this);
     this.props.setCookies(
-      localStorage.getItem(`${props.siteData.sitePath}-cookies`)
+      localStorage.getItem(`${props.siteData.sitePath}-cookies`) ?? ""
     );
   }
 

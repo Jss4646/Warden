@@ -240,6 +240,17 @@ async function deleteSitePage(db, req, res) {
  * @param res {Response}
  */
 async function fillSitePages(db, req, res) {
+  await db
+    .collection("pages")
+    .deleteMany({ sitePath: req.body.sitePath, pagePath: { $ne: "/" } });
+
+  await db
+    .collection("pages")
+    .updateOne(
+      { sitePath: req.body.sitePath, pagePath: "/" },
+      { $set: { screenshots: {} } }
+    );
+
   const results = await crawlSitemap(req.body.url, res);
 
   if (!results) {
@@ -308,6 +319,13 @@ async function deleteAllSitePages(db, req, res) {
   await db
     .collection("pages")
     .deleteMany({ sitePath: req.body.sitePath, pagePath: { $ne: "/" } });
+
+  await db
+    .collection("pages")
+    .updateOne(
+      { sitePath: req.body.sitePath, pagePath: "/" },
+      { $set: { screenshots: {} } }
+    );
 
   broadcastData(
     "UPDATE_SCREENSHOTS",

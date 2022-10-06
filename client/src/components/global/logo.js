@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 /**
  * The QA Tools logo
@@ -6,9 +7,11 @@ import React from "react";
  */
 const Logo = () => {
   return (
-    <h1 className="logo">
-      <span>W</span>ARDEN
-    </h1>
+    <NavLink to={"/"}>
+      <h1 className="logo">
+        <span>W</span>ARDEN
+      </h1>
+    </NavLink>
   );
 };
 

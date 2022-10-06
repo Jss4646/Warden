@@ -2,7 +2,7 @@
   "name": "qa-hub",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:5050",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@codemirror/lang-javascript": "^6.0.2",
@@ -18,6 +18,7 @@
     "@uiw/codemirror-extensions-basic-setup": "^4.12.1",
     "@uiw/react-codemirror": "^4.12.1",
     "antd": "^4.9.4",
+    "file-saver": "^2.0.5",
     "http-proxy-middleware": "^1.0.6",
     "jshint": "^2.13.5",
     "jszip": "^3.10.1",

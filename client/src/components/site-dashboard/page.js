@@ -25,10 +25,9 @@ class Page extends Component {
   // };
 
   render() {
-    const { path, siteData } = this.props;
-    const { currentPage, pages } = siteData;
+    const { page, path, currentPage, setCurrentPage } = this.props;
 
-    const screenshots = pages[path].screenshots;
+    const screenshots = page.screenshots;
     const passing = Object.keys(screenshots).reduce((sum, key) => {
       const screenshot = screenshots[key];
 
@@ -47,7 +46,7 @@ class Page extends Component {
         className={`pages-list__page ${
           currentPage === path ? "pages-list__page--underlined" : ""
         }`}
-        onClick={() => this.props.setCurrentPage(path)}
+        onClick={() => setCurrentPage(path)}
       >
         <span className="pages-list__page-url">{path}</span>
         <span className="pages-list__page-passing-count">{passingString}</span>
