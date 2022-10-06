@@ -23,7 +23,7 @@ const ScreenshotContainer = (props) => {
       e.preventDefault();
       setScrollDepth(e.target.scrollTop);
     });
-  }, [setScrollDepth]);
+  }, [setScrollDepth, loading]);
 
   if (ref.current) {
     ref.current.scrollTop = scrollDepth;
