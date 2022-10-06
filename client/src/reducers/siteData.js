@@ -37,6 +37,7 @@ function siteData(state = [], action) {
       return stateCopy;
 
     case "REMOVE_ALL_PAGES":
+      stateCopy.pages["/"].screenshots = {};
       stateCopy.pages = { "/": stateCopy.pages["/"] };
       return stateCopy;
 
