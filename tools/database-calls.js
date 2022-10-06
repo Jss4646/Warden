@@ -246,7 +246,7 @@ async function fillSitePages(db, req, res) {
 
   await db
     .collection("pages")
-    .updateOne(
+    .updateMany(
       { sitePath: req.body.sitePath, pagePath: "/" },
       { $set: { screenshots: {} } }
     );
@@ -322,7 +322,7 @@ async function deleteAllSitePages(db, req, res) {
 
   await db
     .collection("pages")
-    .updateOne(
+    .updateMany(
       { sitePath: req.body.sitePath, pagePath: "/" },
       { $set: { screenshots: {} } }
     );
