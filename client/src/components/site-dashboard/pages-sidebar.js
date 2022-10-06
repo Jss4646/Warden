@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
-import PagesList from "./pages-list";
+import PagesOptions from "./pages-options";
 import { Button } from "antd";
 import { runPageComparison } from "../../tools/comparison-tools";
 
@@ -114,7 +114,7 @@ class PagesSidebar extends Component {
         <span className="pages-sidebar__comparison-text">
           Comparisons in queue: {numInQueue}
         </span>
-        <PagesList {...this.props} />
+        <PagesOptions {...this.props} />
       </div>
     );
   }

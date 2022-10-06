@@ -1,7 +1,9 @@
 import devices from "../data/devices.json";
 
+//heads up, redux will not acknowledge deep changes to objects so will break memo'd components
 function siteData(state = [], action) {
   const stateCopy = { ...state };
+  const newPages = { ...stateCopy.pages };
 
   switch (action.type) {
     case "CLEAR_SITE_DATA":
@@ -22,7 +24,8 @@ function siteData(state = [], action) {
       return stateCopy;
 
     case "ADD_PAGE":
-      stateCopy.pages[action.pagePath] = action.page;
+      newPages[action.pagePath] = action.page;
+      stateCopy.pages = newPages;
       return stateCopy;
 
     case "SET_PAGES":
@@ -42,8 +45,8 @@ function siteData(state = [], action) {
       return stateCopy;
 
     case "ADD_SCREENSHOTS":
-      stateCopy.pages[action.page].screenshots[action.device] =
-        action.screenshots;
+      newPages[action.page].screenshots[action.device] = action.screenshots;
+      stateCopy.pages = newPages;
       return stateCopy;
 
     case "SET_ALL_SCREENSHOTS":
@@ -103,7 +106,7 @@ function siteData(state = [], action) {
       return stateCopy;
 
     default:
-      return state;
+      return stateCopy;
   }
 }
 
