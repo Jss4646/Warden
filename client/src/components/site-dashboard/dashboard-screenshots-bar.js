@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ScreenshotContainer from "./screenshot-container";
 
 /**
@@ -7,7 +7,7 @@ import ScreenshotContainer from "./screenshot-container";
 const DashboardScreenshotsBar = (props) => {
   const scrollState = useState(0);
 
-  const { date, screenshots } = props;
+  const { screenshots } = props;
 
   const {
     baselineScreenshot,
