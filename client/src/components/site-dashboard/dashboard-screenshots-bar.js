@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ScreenshotContainer from "./screenshot-container";
 
 /**
@@ -22,7 +22,6 @@ const DashboardScreenshotsBar = (props) => {
       src={baselineScreenshot}
       loading={loading}
       scrollState={scrollState}
-      date={date}
     />
   );
 
@@ -31,7 +30,6 @@ const DashboardScreenshotsBar = (props) => {
       src={comparisonScreenshot}
       loading={loading}
       scrollState={scrollState}
-      date={date}
     />
   );
 
@@ -40,7 +38,6 @@ const DashboardScreenshotsBar = (props) => {
       src={diffImage}
       loading={loading}
       scrollState={scrollState}
-      date={date}
     />
   );
 

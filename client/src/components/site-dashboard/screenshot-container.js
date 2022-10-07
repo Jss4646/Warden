@@ -1,5 +1,5 @@
 import { Spin } from "antd";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 /**
  * Creates a loading icon if url isn't present and displays the image if it is
@@ -10,9 +10,14 @@ import React, { useEffect, useRef } from "react";
  * @returns {JSX.Element}
  */
 const ScreenshotContainer = (props) => {
-  let { src, loading, scrollState, date } = props;
+  let { src, loading, scrollState } = props;
   const [scrollDepth, setScrollDepth] = scrollState;
+  const [date, setDate] = useState(Date.now());
   const ref = useRef();
+
+  useEffect(() => {
+    setDate(Date.now());
+  }, [loading]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -37,7 +42,7 @@ const ScreenshotContainer = (props) => {
     return <div>No screenshot</div>;
   }
 
-  src = `${src}?cacheBust=${date}`;
+  src = `${src}?cache=${date}`;
 
   return (
     <div ref={ref} className="dashboard-screenshot-bar__screenshots-img">
