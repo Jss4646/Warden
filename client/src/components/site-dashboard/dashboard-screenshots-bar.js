@@ -7,19 +7,22 @@ import ScreenshotContainer from "./screenshot-container";
 const DashboardScreenshotsBar = (props) => {
   const scrollState = useState(0);
 
+  const { date, screenshots } = props;
+
   const {
     baselineScreenshot,
     comparisonScreenshot,
     diffImage,
     failing,
     loading,
-  } = props.screenshots;
+  } = screenshots;
 
   const baselineImg = (
     <ScreenshotContainer
       src={baselineScreenshot}
       loading={loading}
       scrollState={scrollState}
+      date={date}
     />
   );
 
@@ -28,6 +31,7 @@ const DashboardScreenshotsBar = (props) => {
       src={comparisonScreenshot}
       loading={loading}
       scrollState={scrollState}
+      date={date}
     />
   );
 
@@ -36,6 +40,7 @@ const DashboardScreenshotsBar = (props) => {
       src={diffImage}
       loading={loading}
       scrollState={scrollState}
+      date={date}
     />
   );
 

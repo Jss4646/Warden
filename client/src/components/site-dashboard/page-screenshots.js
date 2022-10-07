@@ -35,6 +35,8 @@ class PageScreenshots extends Component {
       return "";
     }
 
+    const date = Date.now();
+
     const screenshotBars = Object.keys(page).map((device) => {
       const screenshots = page[device];
 
@@ -51,6 +53,7 @@ class PageScreenshots extends Component {
           <DashboardScreenshotsBar
             screenshots={screenshots}
             deviceName={device}
+            date={date}
             key={device}
           />
         );
