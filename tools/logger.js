@@ -6,15 +6,15 @@ const logger = new createLogger({
   level: "debug",
   transports: [
     new transports.Console({ format: combine(colorize(), simple()) }),
-    // new transports.File({
-    //   level: "info",
-    //   filename: `client/build/info.log`,
-    //   handleExceptions: true,
-    //   json: true,
-    //   maxsize: 5242880,
-    //   maxFiles: 20,
-    //   colorize: false,
-    // }),
+    new transports.File({
+      level: "debug",
+      filename: "client/build/debug.log",
+      handleExceptions: true,
+      json: true,
+      maxsize: 5242880,
+      maxFiles: 20,
+      colorize: false,
+    }),
   ],
 });
 
