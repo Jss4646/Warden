@@ -45,7 +45,6 @@ const DashboardScreenshotsBar = (props) => {
     ? "dashboard-screenshot-bar__screenshots--failing"
     : "";
 
-  console.log(urls);
   return (
     <div className="dashboard-screenshot-bar">
       <h3 className="dashboard-screenshot-bar__title">{props.deviceName}</h3>
