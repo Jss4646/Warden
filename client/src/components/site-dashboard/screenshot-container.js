@@ -1,5 +1,5 @@
 import { Spin } from "antd";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 /**
  * Creates a loading icon if url isn't present and displays the image if it is
@@ -12,7 +12,12 @@ import React, { useEffect, useRef } from "react";
 const ScreenshotContainer = (props) => {
   let { src, loading, scrollState } = props;
   const [scrollDepth, setScrollDepth] = scrollState;
+  const [date, setDate] = useState(Date.now());
   const ref = useRef();
+
+  useEffect(() => {
+    setDate(Date.now());
+  }, [loading]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -37,22 +42,24 @@ const ScreenshotContainer = (props) => {
     return <div>No screenshot</div>;
   }
 
-  src = `${src}?cache=none`;
+  src = `${src}?cache=${date}`;
 
   return (
     <div ref={ref} className="dashboard-screenshot-bar__screenshots-img">
-      <img
-        src={src}
-        onError={(e) => {
-          if (e.target.src.includes(".png")) {
-            return;
-          }
-          e.target.src = e.target.src.replace(".webp", ".png");
-        }}
-        onScroll={(e) => {}}
-        alt="Screenshot"
-        loading="lazy"
-      />
+      <a href={src} target="_blank" rel="noreferrer noopener">
+        <img
+          src={src}
+          onError={(e) => {
+            if (e.target.src.includes(".png")) {
+              return;
+            }
+            e.target.src = e.target.src.replace(".webp", ".png");
+          }}
+          onScroll={(e) => {}}
+          alt="Screenshot"
+          loading="lazy"
+        />
+      </a>
     </div>
   );
 };

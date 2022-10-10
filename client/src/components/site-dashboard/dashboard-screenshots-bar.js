@@ -7,13 +7,15 @@ import ScreenshotContainer from "./screenshot-container";
 const DashboardScreenshotsBar = (props) => {
   const scrollState = useState(0);
 
+  const { screenshots, urls } = props;
+
   const {
     baselineScreenshot,
     comparisonScreenshot,
     diffImage,
     failing,
     loading,
-  } = props.screenshots;
+  } = screenshots;
 
   const baselineImg = (
     <ScreenshotContainer
@@ -48,11 +50,15 @@ const DashboardScreenshotsBar = (props) => {
       <h3 className="dashboard-screenshot-bar__title">{props.deviceName}</h3>
       <div className={`dashboard-screenshot-bar__screenshots ${failingClass}`}>
         <div className="dashboard-screenshot-bar__screenshot">
-          <h3>Baseline</h3>
+          <a href={urls.baseline} target="_blank" rel="noreferrer noopener">
+            <h3>Baseline</h3>
+          </a>
           {baselineImg}
         </div>
         <div className="dashboard-screenshot-bar__screenshot">
-          <h3>Changed</h3>
+          <a href={urls.comparison} target="_blank" rel="noreferrer noopener">
+            <h3>Changed</h3>
+          </a>
           {changedImg}
         </div>
         <div className="dashboard-screenshot-bar__screenshot">
