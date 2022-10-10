@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import DashboardScreenshotsBar from "./dashboard-screenshots-bar";
 import { Button, Empty } from "antd";
 import { runPageComparison } from "../../tools/comparison-tools";
+import devices from "../../data/devices.json";
 
 class PageScreenshots extends Component {
   numOfFailing = 0;
@@ -35,29 +36,38 @@ class PageScreenshots extends Component {
       return "";
     }
 
-    const screenshotBars = Object.keys(page).map((device) => {
-      const screenshots = page[device];
+    const screenshotBars = Object.keys(page)
+      .sort()
+      .map((device) => {
+        const deviceName = devices[device].name;
+        const screenshots = page[device];
 
-      if (screenshots.failing && !screenshots.loading) {
-        this.numOfFailing += 1;
-      }
+        if (screenshots.failing && !screenshots.loading) {
+          this.numOfFailing += 1;
+        }
 
-      if (screenshots.loading) {
-        this.numOfFailing += 1;
-      }
+        if (screenshots.loading) {
+          this.numOfFailing += 1;
+        }
 
-      if ((screenshots.failing && !screenshots.loading) || !hidePassing) {
-        return (
-          <DashboardScreenshotsBar
-            screenshots={screenshots}
-            deviceName={device}
-            key={device}
-          />
-        );
-      }
+        if ((screenshots.failing && !screenshots.loading) || !hidePassing) {
+          const urls = {
+            baseline: this.props.siteData.url,
+            comparison: this.props.siteData.comparisonUrl,
+          };
 
-      return "";
-    });
+          return (
+            <DashboardScreenshotsBar
+              urls={urls}
+              screenshots={screenshots}
+              deviceName={deviceName}
+              key={device}
+            />
+          );
+        }
+
+        return "";
+      });
 
     return screenshotBars.filter((bar) => bar !== "");
   }

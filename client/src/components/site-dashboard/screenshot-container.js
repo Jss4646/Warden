@@ -46,18 +46,20 @@ const ScreenshotContainer = (props) => {
 
   return (
     <div ref={ref} className="dashboard-screenshot-bar__screenshots-img">
-      <img
-        src={src}
-        onError={(e) => {
-          if (e.target.src.includes(".png")) {
-            return;
-          }
-          e.target.src = e.target.src.replace(".webp", ".png");
-        }}
-        onScroll={(e) => {}}
-        alt="Screenshot"
-        loading="lazy"
-      />
+      <a href={src} target="_blank" rel="noreferrer noopener">
+        <img
+          src={src}
+          onError={(e) => {
+            if (e.target.src.includes(".png")) {
+              return;
+            }
+            e.target.src = e.target.src.replace(".webp", ".png");
+          }}
+          onScroll={(e) => {}}
+          alt="Screenshot"
+          loading="lazy"
+        />
+      </a>
     </div>
   );
 };
