@@ -1,6 +1,5 @@
 import devices from "../data/devices.json";
 
-//heads up, redux will not acknowledge deep changes to objects so will break memo'd components
 function siteData(state = [], action) {
   const stateCopy = { ...state };
   const newPages = { ...stateCopy.pages };
@@ -104,6 +103,10 @@ function siteData(state = [], action) {
 
     case "SET_VALID_JS":
       stateCopy.validJS = action.validJS;
+      return stateCopy;
+
+    case "SET_TRIM_PAGES":
+      stateCopy.trimPages = action.trimPages;
       return stateCopy;
 
     default:

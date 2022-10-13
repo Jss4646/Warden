@@ -33,6 +33,7 @@ async function addSite(db, req, res) {
     sitePath,
     devices,
     failingPercentage,
+    trimPages: true,
   };
 
   const page = {
@@ -247,31 +248,33 @@ async function deleteSitePage(db, req, res) {
  * @param res {Response}
  */
 async function fillSitePages(db, req, res) {
-  await db
-    .collection("pages")
-    .deleteMany({ sitePath: req.body.sitePath, pagePath: { $ne: "/" } });
+  const { sitePath, url, trimPages } = req.body;
+
+  await db.collection("pages").deleteMany({ sitePath, pagePath: { $ne: "/" } });
 
   await db
     .collection("pages")
-    .updateMany(
-      { sitePath: req.body.sitePath, pagePath: "/" },
-      { $set: { screenshots: {} } }
-    );
+    .updateMany({ sitePath, pagePath: "/" }, { $set: { screenshots: {} } });
 
-  const results = await crawlSitemap(req.body.url, res);
+  const results = await crawlSitemap(url, res);
 
   if (!results) {
     res.send("No pages found");
     return;
   }
 
-  const urls = results.sites;
+  let urls = results.sites;
+
+  if (trimPages) {
+    urls = trimUrls(urls);
+  }
+
   urls.sort();
 
   urls.forEach((url) => {
     url = new URL(url);
     const page = {
-      sitePath: req.body.sitePath,
+      sitePath: sitePath,
       pagePath: url.pathname,
       url: url.href,
       screenshots: {},
@@ -287,6 +290,43 @@ async function fillSitePages(db, req, res) {
   );
 
   res.send(urls);
+}
+
+/**
+ * Removes all urls that have duplicate penultimate paths leaving one page per duplicate
+ *
+ * EG
+ * /example/1
+ * /example/2
+ * /example/3
+ *
+ * Becomes
+ * /example/1
+ *
+ * @param urls {Array[String]} - array of urls
+ * @returns {Array[String]} - array of urls with duplicates removed
+ */
+function trimUrls(urls) {
+  const newUrls = [];
+  const pathPrefixes = [];
+
+  urls.forEach((url) => {
+    url = new URL(url);
+    const paths = url.pathname.split("/").filter((p) => p !== "");
+    const pathPrefix = paths.slice(0, paths.length - 1).join("/");
+
+    if (pathPrefix === "") {
+      newUrls.push(url.toString());
+      return;
+    }
+
+    if (!pathPrefixes.includes(pathPrefix)) {
+      pathPrefixes.push(pathPrefix);
+      newUrls.push(url.toString());
+    }
+  });
+
+  return newUrls;
 }
 
 /**
@@ -507,6 +547,7 @@ async function setSiteDevices(db, req, res) {
  * {
  *     sitePath {String},
  *     failingPercentage {Number},
+ *     trimPages {Boolean},
  * }
  *
  * @param db
@@ -515,7 +556,7 @@ async function setSiteDevices(db, req, res) {
  * @returns {Promise<void>}
  */
 async function setSiteSettings(db, req, res) {
-  const { sitePath, failingPercentage } = req.body;
+  const { sitePath, failingPercentage, trimPages } = req.body;
 
   if (!sitePath) {
     res.status(400);
@@ -527,6 +568,9 @@ async function setSiteSettings(db, req, res) {
   await db
     .collection("sites")
     .updateOne({ sitePath }, { $set: { failingPercentage } });
+
+  await db.collection("sites").updateOne({ sitePath }, { $set: { trimPages } });
+
   logger.log("info", "Finished saving site settings");
   res.send(true);
 }

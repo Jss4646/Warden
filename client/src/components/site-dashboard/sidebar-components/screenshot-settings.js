@@ -1,12 +1,19 @@
 import React, { useEffect } from "react";
-import { Button, InputNumber } from "antd";
+import { Button, Checkbox, InputNumber } from "antd";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { JSHINT } from "jshint";
 
 const ScreenshotSettings = (props) => {
-  const { siteData, setFailingPercentage, setInjectedJS, setValidJS } = props;
-  const { failingPercentage, sitePath, injectedJS, validJS } = siteData;
+  const {
+    siteData,
+    setFailingPercentage,
+    setInjectedJS,
+    setValidJS,
+    setTrimPages,
+  } = props;
+  const { failingPercentage, sitePath, injectedJS, validJS, trimPages } =
+    siteData;
 
   /**
    * Sets whether the injected JS is valid or not
@@ -44,6 +51,7 @@ const ScreenshotSettings = (props) => {
     const body = {
       sitePath,
       failingPercentage,
+      trimPages,
     };
 
     fetch("/api/set-site-settings", {
@@ -98,6 +106,15 @@ const ScreenshotSettings = (props) => {
           }}
           onChange={(value) => updateInjectedJS(value)}
         />
+      </div>
+      <div className="screenshot-settings__trim-pages">
+        <Checkbox
+          onChange={() => setTrimPages(!trimPages)}
+          checked={trimPages}
+          defaultChecked={true}
+        >
+          Trim pages
+        </Checkbox>
       </div>
       <Button onClick={saveSettings}>Save</Button>
     </div>

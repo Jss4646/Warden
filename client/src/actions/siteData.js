@@ -165,3 +165,10 @@ export function setValidJS(validJS) {
     validJS,
   };
 }
+
+export function setTrimPages(trimPages) {
+  return {
+    type: "SET_TRIM_PAGES",
+    trimPages,
+  };
+}
