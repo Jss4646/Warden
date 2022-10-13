@@ -2,21 +2,11 @@ import React, { Component } from "react";
 import { Button, Input } from "antd";
 import PagesList from "./pages-list";
 
+/**
+ * Options that change the page list
+ */
 class PagesOptions extends Component {
   state = { addPagePath: "", loadingPages: false };
-
-  // shouldComponentUpdate(nextProps, nextState, nextContext) {
-  //   const { pages: nextPages, currentPage: nextCurrentPage } =
-  //     nextProps.siteData;
-  //   const { pages, currentPage } = this.props.siteData;
-  //
-  //   console.log(nextContext, nextState, nextPages)
-  //   return (
-  //     nextPages !== pages ||
-  //     nextCurrentPage !== currentPage ||
-  //     nextState !== this.state
-  //   );
-  // }
 
   /**
    * Updates user inputted new page path
@@ -39,7 +29,6 @@ class PagesOptions extends Component {
   }
 
   /**
-   * TODO Move to separate file
    * Adds a page to the db via the API
    *
    * @returns {Promise<void>}
@@ -79,8 +68,8 @@ class PagesOptions extends Component {
    */
   crawlSite = async () => {
     this.toggleLoadingPages();
-    const { sitePath, url } = this.props.siteData;
-    const params = { sitePath: sitePath, url: url };
+    const { sitePath, url, trimPages } = this.props.siteData;
+    const params = { sitePath, url, trimPages };
     const fetchUrl = new URL(`${window.location.origin}/api/fill-site-pages`);
 
     await fetch(fetchUrl, {
@@ -116,7 +105,12 @@ class PagesOptions extends Component {
     });
   };
 
-  // TODO merge all loops over pages
+  /**
+   * Calculates the number of failing pages
+   *
+   * @param {Object} pages - The pages object to calculate the number of failing
+   * @returns {number} - The number of failing pages
+   */
   calculateFailing(pages) {
     return Object.keys(pages).reduce((sum, site) => {
       const screenshots = pages[site].screenshots;
@@ -131,44 +125,6 @@ class PagesOptions extends Component {
       return sum;
     }, 0);
   }
-
-  trimPages = () => {
-    const { pages } = this.props.siteData;
-    const newPages = {};
-    const foundPaths = [];
-    const pagesToDelete = [];
-
-    Object.keys(pages).forEach((path) => {
-      const page = pages[path];
-      const paths = page.pagePath.split("/").filter((p) => p !== "");
-      const pathPrefix = paths.slice(0, paths.length - 1).join("/");
-
-      if (pathPrefix === "") {
-        newPages[path] = page;
-        return;
-      }
-
-      if (!foundPaths.includes(pathPrefix)) {
-        newPages[path] = page;
-        foundPaths.push(pathPrefix);
-        return;
-      }
-
-      pagesToDelete.push(page._id);
-    });
-
-    this.props.setPages(newPages);
-    fetch(`${window.location.origin}/api/delete-pages`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        pages: pagesToDelete,
-        sitePath: this.props.siteData.sitePath,
-      }),
-    }).catch(console.error);
-  };
 
   render() {
     const { currentPage, pages } = this.props.siteData;
@@ -205,12 +161,6 @@ class PagesOptions extends Component {
           </Button>
           <Button onClick={this.removeAllPages}>Remove all pages</Button>
         </div>
-        <Button
-          className="pages-list__trim-pages-button"
-          onClick={this.trimPages}
-        >
-          Trim pages
-        </Button>
         <div className="pages-list__pages">
           <PagesList
             pages={pages}

@@ -6,6 +6,11 @@ import { saveAs } from "file-saver";
 const Misc = (props) => {
   const [statusMessage, setStatusMessage] = useState("");
 
+  /**
+   * Downloads all the screenshots as a zip file
+   *
+   * @returns {Promise<void>}
+   */
   const downloadImages = async () => {
     const { pages, siteName } = props.siteData;
 
@@ -21,19 +26,7 @@ const Misc = (props) => {
             continue;
           }
 
-          fileCreationPromises.push(
-            new Promise(async (resolve, reject) => {
-              const screenshot = await fetch(screenshotData).catch((err) =>
-                reject(err)
-              );
-              const screenshotBlob = await screenshot
-                .blob()
-                .catch((err) => reject(err));
-
-              zip.file(screenshotData, screenshotBlob);
-              resolve();
-            })
-          );
+          fileCreationPromises.push(addToZipPromise(screenshotData, zip));
         }
       }
     }
@@ -46,6 +39,27 @@ const Misc = (props) => {
 
     saveAs(zipBlob, `${siteName} Comparison Export.zip`);
   };
+
+  /**
+   * Promises to add a file to the zip file
+   *
+   * @param screenshotPath
+   * @param {JSZip} zip
+   * @returns {Promise<void>}
+   */
+  function addToZipPromise(screenshotPath, zip) {
+    return new Promise(async (resolve, reject) => {
+      const screenshot = await fetch(screenshotPath).catch((err) =>
+        reject(err)
+      );
+      const screenshotBlob = await screenshot
+        .blob()
+        .catch((err) => reject(err));
+
+      zip.file(screenshotPath, screenshotBlob);
+      resolve();
+    });
+  }
 
   return (
     <div className="misc">

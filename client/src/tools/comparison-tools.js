@@ -38,6 +38,13 @@ export function generateScreenshots(
   });
 }
 
+/**
+ * Starts a comparison for given pages
+ *
+ * @param {Object} siteData - The site data
+ * @param {Object} pages - The pages data
+ * @param {Boolean} generateBaselines - Whether to generate baseline screenshots
+ */
 export function runPageComparison(siteData, pages, generateBaselines = false) {
   const pagesRequestData = [];
 

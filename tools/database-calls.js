@@ -33,6 +33,7 @@ async function addSite(db, req, res) {
     sitePath,
     devices,
     failingPercentage,
+    trimPages: true,
   };
 
   const page = {
@@ -49,6 +50,13 @@ async function addSite(db, req, res) {
   res.send(insertedId);
 }
 
+/**
+ * Gets all pages for a site
+ *
+ * @param {String} sitePath - The site path to get pages for
+ * @param db
+ * @returns {Promise<*>}
+ */
 async function getSitePages(sitePath, db) {
   let pages = await db.collection("pages").find({ sitePath }).toArray();
 
@@ -240,31 +248,33 @@ async function deleteSitePage(db, req, res) {
  * @param res {Response}
  */
 async function fillSitePages(db, req, res) {
-  await db
-    .collection("pages")
-    .deleteMany({ sitePath: req.body.sitePath, pagePath: { $ne: "/" } });
+  const { sitePath, url, trimPages } = req.body;
+
+  await db.collection("pages").deleteMany({ sitePath, pagePath: { $ne: "/" } });
 
   await db
     .collection("pages")
-    .updateMany(
-      { sitePath: req.body.sitePath, pagePath: "/" },
-      { $set: { screenshots: {} } }
-    );
+    .updateMany({ sitePath, pagePath: "/" }, { $set: { screenshots: {} } });
 
-  const results = await crawlSitemap(req.body.url, res);
+  const results = await crawlSitemap(url, res);
 
   if (!results) {
     res.send("No pages found");
     return;
   }
 
-  const urls = results.sites;
+  let urls = results.sites;
+
+  if (trimPages) {
+    urls = trimUrls(urls);
+  }
+
   urls.sort();
 
   urls.forEach((url) => {
     url = new URL(url);
     const page = {
-      sitePath: req.body.sitePath,
+      sitePath: sitePath,
       pagePath: url.pathname,
       url: url.href,
       screenshots: {},
@@ -282,6 +292,57 @@ async function fillSitePages(db, req, res) {
   res.send(urls);
 }
 
+/**
+ * Removes all urls that have duplicate penultimate paths leaving one page per duplicate
+ *
+ * EG
+ * /example/1
+ * /example/2
+ * /example/3
+ *
+ * Becomes
+ * /example/1
+ *
+ * @param urls {Array[String]} - array of urls
+ * @returns {Array[String]} - array of urls with duplicates removed
+ */
+function trimUrls(urls) {
+  const newUrls = [];
+  const pathPrefixes = [];
+
+  urls.forEach((url) => {
+    url = new URL(url);
+    const paths = url.pathname.split("/").filter((p) => p !== "");
+    const pathPrefix = paths.slice(0, paths.length - 1).join("/");
+
+    if (pathPrefix === "") {
+      newUrls.push(url.toString());
+      return;
+    }
+
+    if (!pathPrefixes.includes(pathPrefix)) {
+      pathPrefixes.push(pathPrefix);
+      newUrls.push(url.toString());
+    }
+  });
+
+  return newUrls;
+}
+
+/**
+ * Deletes all pages from an array of page ids
+ *
+ * Example body
+ * {
+ *     pages {Array<String>},
+ *     sitePath {String},
+ * }
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 async function deletePages(db, req, res) {
   let { pages, sitePath } = req.body;
   const dbCalls = [];
@@ -389,6 +450,12 @@ async function updateScreenshotLoading(db, id, device, loading) {
 /**
  * Updates the baseline url of a site
  *
+ * Example body
+ * {
+ *     sitePath {String},
+ *     url {String},
+ * }
+ *
  * @param db {Db}
  * @param req {Request}
  * @param res {Response}
@@ -403,6 +470,12 @@ async function updateBaselineUrl(db, req, res) {
 
 /**
  * Updates the comparison url of a site
+ *
+ * example body
+ * {
+ *     url {String},
+ *     sitePath {String},
+ * }
  *
  * @param db {Db}
  * @param req {Request}
@@ -444,6 +517,20 @@ async function abortRunningScreenshots(db) {
   logger.log("info", "Finished aborting all running screenshots");
 }
 
+/**
+ * Sets the devices for a site in the db
+ *
+ * example body
+ * {
+ *     sitePath {String},
+ *     devices {Array[String]}
+ * }
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 async function setSiteDevices(db, req, res) {
   const { sitePath, devices } = req.body;
 
@@ -453,8 +540,23 @@ async function setSiteDevices(db, req, res) {
   res.send(true);
 }
 
+/**
+ * Sets the settings for a site in the db
+ *
+ * Example body
+ * {
+ *     sitePath {String},
+ *     failingPercentage {Number},
+ *     trimPages {Boolean},
+ * }
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 async function setSiteSettings(db, req, res) {
-  const { sitePath, failingPercentage } = req.body;
+  const { sitePath, failingPercentage, trimPages } = req.body;
 
   if (!sitePath) {
     res.status(400);
@@ -466,6 +568,9 @@ async function setSiteSettings(db, req, res) {
   await db
     .collection("sites")
     .updateOne({ sitePath }, { $set: { failingPercentage } });
+
+  await db.collection("sites").updateOne({ sitePath }, { $set: { trimPages } });
+
   logger.log("info", "Finished saving site settings");
   res.send(true);
 }

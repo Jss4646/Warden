@@ -26,6 +26,9 @@ const Devices = (props) => {
     },
   ];
 
+  /**
+   * Adds data from devices.json to the treeData
+   */
   const initialiseDevices = () => {
     for (const [key, device] of Object.entries(devices)) {
       const dataItem = {
@@ -55,6 +58,10 @@ const Devices = (props) => {
     }
   };
 
+  /**
+   * Updates the state with the selected devices filtering out headings which are not valid devices
+   * @param {Array} checkedKeys - Array of keys of the selected devices
+   */
   const updateSelectedDevices = (checkedKeys) => {
     if (checkedKeys.length === 0) {
       return;
@@ -70,6 +77,9 @@ const Devices = (props) => {
     props.setDevices(checkedKeys);
   };
 
+  /**
+   * Saves the devices to the database
+   */
   const saveDevices = () => {
     fetch("/api/set-site-devices", {
       method: "POST",

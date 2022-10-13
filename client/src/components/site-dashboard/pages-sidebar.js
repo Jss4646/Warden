@@ -69,6 +69,12 @@ class PagesSidebar extends Component {
     runPageComparison(this.props.siteData, Object.keys(pages), true);
   };
 
+  /**
+   * Calculates the number of pages in the queue
+   *
+   * @param {Object} pages - pages object
+   * @returns {number} - number of pages in the queue
+   */
   calculateNumInQueue(pages) {
     return Object.keys(pages).reduce((sum, site) => {
       const screenshots = pages[site].screenshots;

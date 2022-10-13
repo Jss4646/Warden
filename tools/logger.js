@@ -2,8 +2,13 @@ const { createLogger, transports, format } = require("winston");
 
 const { combine, colorize, simple } = format;
 
+/**
+ * https://github.com/winstonjs/winston
+ *
+ * @type {winston.Logger}
+ */
 const logger = new createLogger({
-  level: "debug",
+  level: "info",
   transports: [
     new transports.Console({ format: combine(colorize(), simple()) }),
     new transports.File({

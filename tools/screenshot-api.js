@@ -1,7 +1,6 @@
 const { Cluster } = require("puppeteer-cluster");
 const {
   addDeviceScreenshots,
-  getFailingThreshold,
   updateScreenshotLoading,
   getSitePages,
 } = require("./database-calls");
@@ -12,21 +11,47 @@ const logger = require("./logger");
 const { broadcastData } = require("./websocket-server");
 const { ObjectId } = require("mongodb");
 
-function convertToWebp(image, filePath, screenshotIdentifier) {
-  return sharp(image)
-    .metadata()
-    .then(({ height }) => {
-      const sharpImage = sharp(image);
+/**
+ *
+ *
+ * @param req
+ * @param res
+ * @param cluster
+ * @param db
+ * @param abortController
+ * @returns {Promise<void>}
+ */
+async function runComparison(req, res, cluster, db, abortController) {
+  const { pages: screenshots, siteRequestData, generateBaselines } = req.body;
 
-      if (height > 16_383) {
-        sharpImage.resize({ height: 16_383 });
-      }
+  const { devices, sitePath } = siteRequestData;
+  await removeRedundantScreenshots(db, sitePath, devices);
+  await setScreenshotsLoading(screenshots, db);
 
-      sharpImage
-        .toFormat("webp", { quality: 50, effort: 6 })
-        .toFile(filePath.replace(".png", ".webp"))
-        .catch((err) => logger.log("error", screenshotIdentifier, err));
-    });
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
+
+  for (let [index, screenshot] of screenshots.entries()) {
+    logger.log("debug", "Comparing screenshots: ", screenshot);
+    screenshot = { ...screenshot, ...siteRequestData };
+
+    compareScreenshots(
+      screenshot,
+      generateBaselines,
+      cluster,
+      db,
+      abortController
+    ).catch((err) => logger.log("error", `${err}`));
+
+    if ((index + 1) % 1000 === 0) {
+      await new Promise((res) => setTimeout(res, 500));
+    }
+  }
+
+  res.send("running");
 }
 
 /**
@@ -59,15 +84,24 @@ async function initialiseCluster() {
 }
 
 /**
+ * @typedef {Object} screenshotData
+ * @property {string} url - The url of the page to be screenshotted
+ * @property {String} cookieData - Cookies to be passed to the browser before loading the page
+ * @property {{width: number, height: number}} resolution - The resolution of the browser
+ * @property {String} userAgent - The user agent to be passed to the browser before loading the page
+ * @property {Number} scale - The scale of the browser page
+ * @property {Boolean} touch - Whether the browser should be in touch mode
+ * @property {String} filePath - The path to save the screenshot to
+ * @property {{username: String, password: String}} siteLogin - The username and password to be passed to the browser before loading the page
+ * @property {String} path - path to folder to save screenshot to
+ * @property {String} injectedJS - JS to be injected into the page before taking the screenshot
+ */
+
+/**
  * Sets up a headless browser to take a screenshot of a given website
  *
  * @param page - Puppeteer cluster page
- * @param {string} url - The url of the page to be screenshotted
- * @param {String} cookieData - Cookies to be passed to the browser before loading the page
- * @param {{width: number, height: number}} resolution - The resolution of the browser
- * @param {String} userAgent - The user agent to be passed to the browser before loading the page
- * @param res - response object used by express
- *
+ * @param {screenshotData} data - screenshot data
  * @returns {Promise<void>}
  */
 async function takeScreenshot({
@@ -85,11 +119,6 @@ async function takeScreenshot({
     injectedJS,
   },
 }) {
-  const webpFilePath = filePath.replace(".png", ".webp");
-  if (fs.existsSync(webpFilePath)) {
-    fs.unlinkSync(webpFilePath);
-  }
-
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path, { recursive: true });
   }
@@ -190,20 +219,6 @@ async function takeScreenshot({
 }
 
 /**
- * The /take-screenshot endpoint function
- * Adds a screenshot to the queue
- *
- * @param req
- * @param res
- * @param cluster
- * @returns {Promise<void>}
- */
-async function generateScreenshot(req, res, cluster) {
-  const screenshot = await cluster.execute({ screenshotData: req.body });
-  res.send(screenshot);
-}
-
-/**
  * The endpoint to generate and compare two screenshots
  *
  * @param screenshotData {Object}
@@ -266,67 +281,35 @@ async function compareScreenshots(
     injectedJS,
   };
 
-  logger.log(
-    "debug",
-    `${screenshotIdentifier}: Loading comparison screenshot at ${comparisonUrl}`
-  );
-  const comparisonScreenshotPromise = cluster
-    .execute({
+  const screenshotDatas = {
+    comparison: {
+      ...defaultData,
       url: comparisonUrl,
       filePath: comparisonFilePath,
+    },
+    baseline: {
       ...defaultData,
-    })
-    .catch((err) => logger.log("error", screenshotIdentifier, err));
+      url: baselineUrl,
+      filePath: baselineFilePath,
+    },
+  };
+  await generateScreenshots(
+    screenshotIdentifier,
+    cluster,
+    screenshotDatas,
+    generateBaselines
+  );
 
-  const baselineScreenshotExists = fs.existsSync(baselineFilePath);
-  if (!baselineScreenshotExists) {
-    generateBaselines = true;
-  }
-
-  if (generateBaselines) {
-    logger.log(
-      "debug",
-      `${screenshotIdentifier}: Loading baseline screenshot at ${baselineUrl}`
-    );
-    const baselineScreenshotPromise = cluster
-      .execute({
-        url: baselineUrl,
-        filePath: baselineFilePath,
-        ...defaultData,
-      })
-      .catch((err) => logger.log("error", screenshotIdentifier, err));
-
-    await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
-  } else {
-    await comparisonScreenshotPromise.catch((err) =>
-      logger.log("error", screenshotIdentifier, err)
-    );
-  }
-
-  const diffFilename = `${path}/${baselineFileName}-diff.png`;
-
-  logger.log("debug", `${screenshotIdentifier}: Running comparison`);
-  const diffData = await imgDiff({
-    actualFilename: baselineFilePath,
-    expectedFilename: comparisonFilePath,
-    diffFilename,
-  }).catch((err) => logger.log("error", screenshotIdentifier, err));
-
-  logger.log("debug", `${screenshotIdentifier}: Reading diff image`);
-  const diffFile = await fs.readFileSync(diffFilename);
-
-  logger.log("debug", `${screenshotIdentifier}: converting diff image to webp`);
-  convertToWebp(diffFile, diffFilename, screenshotIdentifier);
-
-  const { width, height, diffCount } = diffData;
-  const percentageDiff = (diffCount / (width * height)) * 100;
-  logger.log("debug", `${percentageDiff}% pixels different`);
-  const failed = percentageDiff > failingThreshold;
-  logger.log(
-    "debug",
-    `${screenshotIdentifier}: ${
-      failed ? "Failed" : "Passed"
-    } at threshold of ${failingThreshold}%`
+  const diffFilePath = `${path}/${baselineFileName}-diff.png`;
+  const filePaths = {
+    baseline: baselineFilePath,
+    comparison: comparisonFilePath,
+  };
+  const failed = await generateDiffImg(
+    diffFilePath,
+    filePaths,
+    failingThreshold,
+    screenshotIdentifier
   );
 
   const screenshots = {
@@ -343,7 +326,10 @@ async function compareScreenshots(
   );
   await addDeviceScreenshots(db, id, screenshots, device);
 
-  logger.log("debug", `${screenshotIdentifier}: Updating screenshot loading`);
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: Updating screenshot loading to false`
+  );
   await updateScreenshotLoading(db, id, device, false);
 
   broadcastData(
@@ -358,6 +344,129 @@ async function compareScreenshots(
   );
 }
 
+/**
+ * Generates the screenshots for the comparison
+ *
+ * @param {String} screenshotIdentifier - The identifier for the screenshot used in logging
+ * @param {Cluster} cluster
+ * @param {{baseline: screenshotData, comparison: screenshotData}} screenshotData - The data for the comparison
+ * @param {Boolean} generateBaselines - Whether to generate the baseline screenshots
+ * @returns {Promise<void>}
+ */
+async function generateScreenshots(
+  screenshotIdentifier,
+  cluster,
+  screenshotData,
+  generateBaselines
+) {
+  const baselineScreenshotExists = fs.existsSync(
+    screenshotData.baseline.filePath
+  );
+  if (!baselineScreenshotExists) {
+    generateBaselines = true;
+  }
+
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: Loading comparison screenshot at ${screenshotData.comparison.url}`
+  );
+  const comparisonScreenshotPromise = cluster
+    .execute(screenshotData.comparison)
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
+
+  if (generateBaselines) {
+    logger.log(
+      "debug",
+      `${screenshotIdentifier}: Loading baseline screenshot at ${screenshotData.baseline.url}`
+    );
+    const baselineScreenshotPromise = cluster
+      .execute(screenshotData.baseline)
+      .catch((err) => logger.log("error", screenshotIdentifier, err));
+
+    await Promise.all([baselineScreenshotPromise, comparisonScreenshotPromise]);
+  } else {
+    await comparisonScreenshotPromise.catch((err) =>
+      logger.log("error", screenshotIdentifier, err)
+    );
+  }
+}
+
+/**
+ * Generates the diff image between two screenshots outputting whether they failed
+ *
+ * @param diffFilePath - The path to the diff image
+ * @param {{baseline: String, comparison: String}} filePaths - The paths to the baseline and comparison images
+ * @param {Number} failingThreshold - The threshold at which the diff image is considered to have failed
+ * @param {String} screenshotIdentifier - The identifier of the screenshot for logging
+ * @returns {Promise<boolean>} - Whether the diff image failed
+ */
+async function generateDiffImg(
+  diffFilePath,
+  filePaths,
+  failingThreshold,
+  screenshotIdentifier
+) {
+  const { baseline, comparison } = filePaths;
+  logger.log("debug", `${screenshotIdentifier}: Running comparison`);
+  const diffData = await imgDiff({
+    actualFilename: baseline,
+    expectedFilename: comparison,
+    diffFilename: diffFilePath,
+  }).catch((err) => logger.log("error", screenshotIdentifier, err));
+
+  logger.log("debug", `${screenshotIdentifier}: Reading diff image`);
+  const diffFile = await fs.readFileSync(diffFilePath);
+
+  logger.log("debug", `${screenshotIdentifier}: converting diff image to webp`);
+  convertToWebp(diffFile, diffFilePath, screenshotIdentifier).catch((err) =>
+    logger.log("error", screenshotIdentifier, err)
+  );
+
+  const { width, height, diffCount } = diffData;
+  const percentageDiff = (diffCount / (width * height)) * 100;
+  logger.log("debug", `${percentageDiff}% pixels different`);
+  const failed = percentageDiff > failingThreshold;
+  logger.log(
+    "debug",
+    `${screenshotIdentifier}: ${
+      failed ? "Failed" : "Passed"
+    } at threshold of ${failingThreshold}%`
+  );
+  return failed;
+}
+
+/**
+ * Converts an image to webp
+ *
+ * @param image
+ * @param filePath
+ * @param screenshotIdentifier
+ * @returns {Promise<T>}
+ */
+function convertToWebp(image, filePath, screenshotIdentifier) {
+  return sharp(image)
+    .metadata()
+    .then(({ height }) => {
+      const sharpImage = sharp(image);
+
+      if (height > 16_383) {
+        sharpImage.resize({ height: 16_383 });
+      }
+
+      sharpImage
+        .toFormat("webp", { quality: 50, effort: 6 })
+        .toFile(filePath.replace(".png", ".webp"))
+        .catch((err) => logger.log("error", screenshotIdentifier, err));
+    });
+}
+
+/**
+ * Sets all screenshots that are being taken to loading
+ *
+ * @param {screenshotData} screenshots
+ * @param db
+ * @returns {Promise<void>}
+ */
 async function setScreenshotsLoading(screenshots, db) {
   await new Promise((res) => {
     for (let screenshot of screenshots) {
@@ -382,7 +491,14 @@ async function setScreenshotsLoading(screenshots, db) {
   );
 }
 
-//remove screenshots that do not contain the device
+/**
+ * Removes all screenshots from devices that aren't selected
+ *
+ * @param db
+ * @param {String} sitePath - The path of the site
+ * @param {Array[String]} devices - The devices to keep
+ * @returns {Promise<void>}
+ */
 async function removeRedundantScreenshots(db, sitePath, devices) {
   const pages = await db
     .collection("pages")
@@ -406,37 +522,19 @@ async function removeRedundantScreenshots(db, sitePath, devices) {
     .deleteMany({ sitePath, screenshots: { $ne: {} } });
   await db.collection("pages").insertMany(pages);
 }
-async function runComparison(req, res, cluster, db, abortController) {
-  const { pages: screenshots, siteRequestData, generateBaselines } = req.body;
 
-  const { devices, sitePath } = siteRequestData;
-  await removeRedundantScreenshots(db, sitePath, devices);
-  await setScreenshotsLoading(screenshots, db);
-
-  broadcastData(
-    "UPDATE_SCREENSHOTS",
-    await getSitePages(sitePath, db),
-    sitePath
-  );
-
-  for (let [index, screenshot] of screenshots.entries()) {
-    logger.log("debug", "Comparing screenshots: ", screenshot);
-    screenshot = { ...screenshot, ...siteRequestData };
-
-    compareScreenshots(
-      screenshot,
-      generateBaselines,
-      cluster,
-      db,
-      abortController
-    ).catch((err) => logger.log("error", err));
-
-    if ((index + 1) % 1000 === 0) {
-      await new Promise((res) => setTimeout(res, 500));
-    }
-  }
-
-  res.send("running");
+/**
+ * The /take-screenshot endpoint function
+ * Adds a screenshot to the queue
+ *
+ * @param req
+ * @param res
+ * @param cluster
+ * @returns {Promise<void>}
+ */
+async function generateScreenshot(req, res, cluster) {
+  const screenshot = await cluster.execute({ screenshotData: req.body });
+  res.send(screenshot);
 }
 
 /**

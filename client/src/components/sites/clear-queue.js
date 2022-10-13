@@ -4,6 +4,11 @@ import { Button } from "antd";
 function ClearQueue() {
   const [hideModal, setHideModal] = useState(true);
 
+  /**
+   * Sends a request to the server to clear the queue
+   * This will kill the node server which will automatically restart
+   * There's not really a nice way to do this without killing the server unless I want to rewrite the cluster library
+   */
   const clearScreenshots = () => {
     fetch(`${window.location.origin}/api/cancel-all-screenshots`, {
       method: "POST",

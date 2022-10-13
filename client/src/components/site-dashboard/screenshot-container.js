@@ -15,10 +15,16 @@ const ScreenshotContainer = (props) => {
   const [date, setDate] = useState(Date.now());
   const ref = useRef();
 
+  /**
+   * Updates date when loading state changes to force cache reload
+   */
   useEffect(() => {
     setDate(Date.now());
   }, [loading]);
 
+  /**
+   * Updates scroll depth when scroll position changes
+   */
   useEffect(() => {
     if (!ref.current) {
       return;

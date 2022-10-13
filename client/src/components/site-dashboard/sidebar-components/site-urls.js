@@ -10,6 +10,11 @@ class SiteUrls extends Component {
     this.setState(stateCopy);
   }
 
+  /**
+   * Updates baseline and comparison urls in the db
+   *
+   * @returns {Promise<void>}
+   */
   updateUrls = async () => {
     let { sitePath, url, comparisonUrl } = this.props.siteData;
 
