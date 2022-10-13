@@ -2,21 +2,11 @@ import React, { Component } from "react";
 import { Button, Input } from "antd";
 import PagesList from "./pages-list";
 
+/**
+ * Options that change the page list
+ */
 class PagesOptions extends Component {
   state = { addPagePath: "", loadingPages: false };
-
-  // shouldComponentUpdate(nextProps, nextState, nextContext) {
-  //   const { pages: nextPages, currentPage: nextCurrentPage } =
-  //     nextProps.siteData;
-  //   const { pages, currentPage } = this.props.siteData;
-  //
-  //   console.log(nextContext, nextState, nextPages)
-  //   return (
-  //     nextPages !== pages ||
-  //     nextCurrentPage !== currentPage ||
-  //     nextState !== this.state
-  //   );
-  // }
 
   /**
    * Updates user inputted new page path
@@ -39,7 +29,6 @@ class PagesOptions extends Component {
   }
 
   /**
-   * TODO Move to separate file
    * Adds a page to the db via the API
    *
    * @returns {Promise<void>}
@@ -116,7 +105,12 @@ class PagesOptions extends Component {
     });
   };
 
-  // TODO merge all loops over pages
+  /**
+   * Calculates the number of failing pages
+   *
+   * @param {Object} pages - The pages object to calculate the number of failing
+   * @returns {number} - The number of failing pages
+   */
   calculateFailing(pages) {
     return Object.keys(pages).reduce((sum, site) => {
       const screenshots = pages[site].screenshots;
@@ -132,8 +126,19 @@ class PagesOptions extends Component {
     }, 0);
   }
 
+  /**
+   * Removes all pages that have duplicate penultimate paths leaving one page per duplicate
+   *
+   * EG
+   * /example/1
+   * /example/2
+   * /example/3
+   *
+   * Becomes
+   * /example/1
+   */
   trimPages = () => {
-    const { pages } = this.props.siteData;
+    const { pages, sitePath } = this.props.siteData;
     const newPages = {};
     const foundPaths = [];
     const pagesToDelete = [];
@@ -165,7 +170,7 @@ class PagesOptions extends Component {
       },
       body: JSON.stringify({
         pages: pagesToDelete,
-        sitePath: this.props.siteData.sitePath,
+        sitePath,
       }),
     }).catch(console.error);
   };

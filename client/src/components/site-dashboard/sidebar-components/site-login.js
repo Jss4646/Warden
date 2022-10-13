@@ -5,6 +5,9 @@ const SiteLogin = (props) => {
   const { siteData, setSitePassword, setSiteUsername } = props;
   const { sitePath } = siteData;
 
+  /**
+   * Sets the password in local storage and state
+   */
   const setUsername = useCallback(
     (value) => {
       localStorage.setItem(`${sitePath}-siteUsername`, value);
@@ -13,6 +16,9 @@ const SiteLogin = (props) => {
     [sitePath, setSiteUsername]
   );
 
+  /**
+   * Sets the username in local storage and state
+   */
   const setPassword = useCallback(
     (value) => {
       localStorage.setItem(`${sitePath}-sitePassword`, value);
@@ -21,6 +27,9 @@ const SiteLogin = (props) => {
     [sitePath, setSitePassword]
   );
 
+  /**
+   * Sets the username and password from local storage into state on first render
+   */
   useEffect(() => {
     setUsername(
       localStorage.getItem(`${props.siteData.sitePath}-siteUsername`) ?? ""

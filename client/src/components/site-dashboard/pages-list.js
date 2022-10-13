@@ -2,7 +2,8 @@ import React, { memo } from "react";
 import { Empty, Spin } from "antd";
 import Page from "./page";
 
-const MyComponent = memo((props) => {
+/** The list of pages on the left sidebar */
+const PagesList = memo((props) => {
   const { pages, loadingPages, currentPage, setCurrentPage } = props;
 
   if (loadingPages) {
@@ -27,4 +28,4 @@ const MyComponent = memo((props) => {
   }
 });
 
-export default MyComponent;
+export default PagesList;

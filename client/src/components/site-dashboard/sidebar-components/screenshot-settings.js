@@ -8,6 +8,12 @@ const ScreenshotSettings = (props) => {
   const { siteData, setFailingPercentage, setInjectedJS, setValidJS } = props;
   const { failingPercentage, sitePath, injectedJS, validJS } = siteData;
 
+  /**
+   * Sets whether the injected JS is valid or not
+   *
+   * @param {String} value - The injected JS
+   * @param {Function} setValidJS - The function to set whether the injected JS is valid or not
+   */
   const validateJS = (value, setValidJS) => {
     JSHINT(value, {}, {});
     const data = JSHINT.data();
@@ -20,12 +26,20 @@ const ScreenshotSettings = (props) => {
     setValidJS(true);
   };
 
+  /**
+   * Updates the injected JS in the state
+   *
+   * @param {String} value - The new value
+   */
   const updateInjectedJS = (value) => {
     localStorage.setItem(`${sitePath}-injectedJS`, value);
     setInjectedJS(value);
     validateJS(value, setValidJS);
   };
 
+  /**
+   * Save the settings to the database
+   */
   const saveSettings = () => {
     const body = {
       sitePath,
@@ -43,6 +57,9 @@ const ScreenshotSettings = (props) => {
     });
   };
 
+  /**
+   * Gets the injected JS from local storage if it exists
+   */
   useEffect(() => {
     const localInjectedJS =
       localStorage.getItem(`${sitePath}-injectedJS`) ?? "";

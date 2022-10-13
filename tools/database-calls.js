@@ -49,6 +49,13 @@ async function addSite(db, req, res) {
   res.send(insertedId);
 }
 
+/**
+ * Gets all pages for a site
+ *
+ * @param {String} sitePath - The site path to get pages for
+ * @param db
+ * @returns {Promise<*>}
+ */
 async function getSitePages(sitePath, db) {
   let pages = await db.collection("pages").find({ sitePath }).toArray();
 
@@ -282,6 +289,20 @@ async function fillSitePages(db, req, res) {
   res.send(urls);
 }
 
+/**
+ * Deletes all pages from an array of page ids
+ *
+ * Example body
+ * {
+ *     pages {Array<String>},
+ *     sitePath {String},
+ * }
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 async function deletePages(db, req, res) {
   let { pages, sitePath } = req.body;
   const dbCalls = [];
@@ -389,6 +410,12 @@ async function updateScreenshotLoading(db, id, device, loading) {
 /**
  * Updates the baseline url of a site
  *
+ * Example body
+ * {
+ *     sitePath {String},
+ *     url {String},
+ * }
+ *
  * @param db {Db}
  * @param req {Request}
  * @param res {Response}
@@ -403,6 +430,12 @@ async function updateBaselineUrl(db, req, res) {
 
 /**
  * Updates the comparison url of a site
+ *
+ * example body
+ * {
+ *     url {String},
+ *     sitePath {String},
+ * }
  *
  * @param db {Db}
  * @param req {Request}
@@ -444,6 +477,20 @@ async function abortRunningScreenshots(db) {
   logger.log("info", "Finished aborting all running screenshots");
 }
 
+/**
+ * Sets the devices for a site in the db
+ *
+ * example body
+ * {
+ *     sitePath {String},
+ *     devices {Array[String]}
+ * }
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 async function setSiteDevices(db, req, res) {
   const { sitePath, devices } = req.body;
 
@@ -453,6 +500,20 @@ async function setSiteDevices(db, req, res) {
   res.send(true);
 }
 
+/**
+ * Sets the settings for a site in the db
+ *
+ * Example body
+ * {
+ *     sitePath {String},
+ *     failingPercentage {Number},
+ * }
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 async function setSiteSettings(db, req, res) {
   const { sitePath, failingPercentage } = req.body;
 

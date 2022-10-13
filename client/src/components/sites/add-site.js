@@ -86,6 +86,9 @@ class AddSite extends Component {
     this.props.history.push(`/sites/${params.sitePath}`);
   }
 
+  /**
+   * Toggles to model open and closed
+   */
   toggleModal = () => {
     const newState = { ...this.state };
     newState.modalShown = !newState.modalShown;
