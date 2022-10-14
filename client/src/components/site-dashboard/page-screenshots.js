@@ -41,7 +41,7 @@ class PageScreenshots extends Component {
     const screenshotBars = Object.keys(page)
       .sort()
       .map((device) => {
-        const deviceName = devices[device].name;
+        const deviceName = devices[device]?.name;
         const screenshots = page[device];
 
         if ((screenshots.failing && !screenshots.loading) || !hidePassing) {

@@ -183,7 +183,7 @@ const devices = {
     scale: 2,
     height: 1024,
   },
-  "ipad-pro-10.5": {
+  "ipad-pro-10-5": {
     name: "iPad Pro (10.5-inch)",
     width: 834,
     height: 1112,
@@ -194,7 +194,7 @@ const devices = {
     touch: true,
     os: "iOS",
   },
-  "ipad-pro-12.9": {
+  "ipad-pro-12-9": {
     name: "iPad Pro (12.9-inch)",
     width: 1024,
     height: 1366,
