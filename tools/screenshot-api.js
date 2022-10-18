@@ -95,6 +95,7 @@ async function initialiseCluster() {
  * @property {{username: String, password: String}} siteLogin - The username and password to be passed to the browser before loading the page
  * @property {String} path - path to folder to save screenshot to
  * @property {String} injectedJS - JS to be injected into the page before taking the screenshot
+ * @property {Boolean} scrollPage - Whether to scroll the page before taking the screenshot
  */
 
 /**
@@ -117,6 +118,7 @@ async function takeScreenshot({
     siteLogin,
     path,
     injectedJS,
+    scrollPage,
   },
 }) {
   if (!fs.existsSync(path)) {
@@ -167,10 +169,24 @@ async function takeScreenshot({
     .goto(url, { timeout: 60000, waitUntil: "networkidle0" })
     .catch((err) => logger.log("error", screenshotIdentifier, err));
 
-  logger.log("debug", `${screenshotIdentifier}: Injecting JS`);
-  await page
-    .evaluate(injectedJS)
-    .catch((err) => logger.log("error", screenshotIdentifier, err));
+  if (injectedJS) {
+    logger.log("debug", `${screenshotIdentifier}: Injecting JS`);
+    await page
+      .evaluate(injectedJS)
+      .catch((err) => logger.log("error", screenshotIdentifier, err));
+  }
+
+  if (scrollPage) {
+    logger.log("debug", `${screenshotIdentifier}: Scrolling page`);
+    await page.evaluate(async () => {
+      for (let i = 0; i < document.body.scrollHeight; i = i + 100) {
+        window.scrollTo(0, i);
+        await new Promise((res) => setTimeout(res, 20));
+      }
+    });
+  }
+
+  await page.waitForNetworkIdle();
 
   // logger.log("debug", "Waiting for images to load");
   // await page.evaluate(async () => {
@@ -251,6 +267,7 @@ async function compareScreenshots(
     failingThreshold,
     injectedJS,
     id,
+    scrollPage,
   } = screenshotData;
 
   const screenshotIdentifier = `${baselineUrl}:${device}`;
@@ -279,6 +296,7 @@ async function compareScreenshots(
     siteLogin,
     path,
     injectedJS,
+    scrollPage,
   };
 
   const screenshotDatas = {

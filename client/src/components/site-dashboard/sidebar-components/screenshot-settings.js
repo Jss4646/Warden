@@ -11,9 +11,16 @@ const ScreenshotSettings = (props) => {
     setInjectedJS,
     setValidJS,
     setTrimPages,
+    setScrollPage,
   } = props;
-  const { failingPercentage, sitePath, injectedJS, validJS, trimPages } =
-    siteData;
+  const {
+    failingPercentage,
+    sitePath,
+    injectedJS,
+    validJS,
+    trimPages,
+    scrollPage,
+  } = siteData;
 
   /**
    * Sets whether the injected JS is valid or not
@@ -22,7 +29,7 @@ const ScreenshotSettings = (props) => {
    * @param {Function} setValidJS - The function to set whether the injected JS is valid or not
    */
   const validateJS = (value, setValidJS) => {
-    JSHINT(value, {}, {});
+    JSHINT(value, { esversion: 11 }, {});
     const data = JSHINT.data();
 
     if (data.errors) {
@@ -52,6 +59,7 @@ const ScreenshotSettings = (props) => {
       sitePath,
       failingPercentage,
       trimPages,
+      scrollPage,
     };
 
     fetch("/api/set-site-settings", {
@@ -114,6 +122,14 @@ const ScreenshotSettings = (props) => {
           defaultChecked={true}
         >
           Trim pages
+        </Checkbox>
+      </div>
+      <div className="screenshot-settings__scroll-page">
+        <Checkbox
+          onChange={() => setScrollPage(!scrollPage)}
+          checked={scrollPage}
+        >
+          Scroll page
         </Checkbox>
       </div>
       <Button onClick={saveSettings}>Save</Button>

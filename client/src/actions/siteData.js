@@ -172,3 +172,10 @@ export function setTrimPages(trimPages) {
     trimPages,
   };
 }
+
+export function setScrollPage(scrollPage) {
+  return {
+    type: "SET_SCROLL_PAGE",
+    scrollPage,
+  };
+}
