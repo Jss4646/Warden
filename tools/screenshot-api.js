@@ -67,7 +67,9 @@ async function initialiseCluster() {
     timeout: 500000,
     // monitor: true,
     puppeteerOptions: {
+      IgnoreHTTPSErrors: true,
       args: [
+        "--ignore-certificate-errors",
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",

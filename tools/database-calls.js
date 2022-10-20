@@ -572,20 +572,18 @@ async function setSiteSettings(db, req, res) {
   }
 
   logger.log("info", "Saving site settings");
-  await db
-    .collection("sites")
-    .updateOne(
-      { sitePath },
-      {
-        $set: {
-          trimPages,
-          scrollPage,
-          failingPercentage,
-          injectedJs,
-          pageTimeout,
-        },
-      }
-    );
+  await db.collection("sites").updateOne(
+    { sitePath },
+    {
+      $set: {
+        trimPages,
+        scrollPage,
+        failingPercentage,
+        injectedJs,
+        pageTimeout,
+      },
+    }
+  );
 
   logger.log("info", "Finished saving site settings");
   res.send(true);
