@@ -67,6 +67,7 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     validJS,
     injectedJS,
     scrollPage,
+    pageTimeout,
   } = siteData;
 
   if (cookies && !validateCookies(cookies)) {
@@ -84,6 +85,7 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     injectedJS: validJS ? injectedJS : "",
     siteLogin: { username: siteUsername, password: sitePassword },
     scrollPage,
+    pageTimeout,
   };
 
   generateScreenshots(

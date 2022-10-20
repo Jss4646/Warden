@@ -179,3 +179,10 @@ export function setScrollPage(scrollPage) {
     scrollPage,
   };
 }
+
+export function setPageTimeout(pageTimeout) {
+  return {
+    type: "SET_PAGE_TIMEOUT",
+    pageTimeout,
+  };
+}

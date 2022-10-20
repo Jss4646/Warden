@@ -556,7 +556,14 @@ async function setSiteDevices(db, req, res) {
  * @returns {Promise<void>}
  */
 async function setSiteSettings(db, req, res) {
-  const { sitePath, failingPercentage, trimPages, scrollPage } = req.body;
+  const {
+    sitePath,
+    failingPercentage,
+    trimPages,
+    scrollPage,
+    injectedJs,
+    pageTimeout,
+  } = req.body;
 
   if (!sitePath) {
     res.status(400);
@@ -567,11 +574,18 @@ async function setSiteSettings(db, req, res) {
   logger.log("info", "Saving site settings");
   await db
     .collection("sites")
-    .updateOne({ sitePath }, { $set: { failingPercentage } });
-
-  await db
-    .collection("sites")
-    .updateOne({ sitePath }, { $set: { trimPages, scrollPage } });
+    .updateOne(
+      { sitePath },
+      {
+        $set: {
+          trimPages,
+          scrollPage,
+          failingPercentage,
+          injectedJs,
+          pageTimeout,
+        },
+      }
+    );
 
   logger.log("info", "Finished saving site settings");
   res.send(true);

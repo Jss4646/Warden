@@ -119,6 +119,7 @@ async function takeScreenshot({
     path,
     injectedJS,
     scrollPage,
+    pageTimeout,
   },
 }) {
   if (!fs.existsSync(path)) {
@@ -186,23 +187,15 @@ async function takeScreenshot({
     });
   }
 
-  await page.waitForNetworkIdle();
+  if (pageTimeout) {
+    logger.log(
+      "debug",
+      `${screenshotIdentifier}: Waiting for page timeout for ${pageTimeout}ms`
+    );
+    await page.waitForTimeout(pageTimeout);
+  }
 
-  // logger.log("debug", "Waiting for images to load");
-  // await page.evaluate(async () => {
-  //   document.body.scrollIntoView(false);
-  //
-  //   const selectors = Array.from(document.querySelectorAll("img"));
-  //   await Promise.all(
-  //     selectors.map((img) => {
-  //       if (img.complete) return;
-  //       return new Promise((resolve, reject) => {
-  //         img.addEventListener("load", resolve);
-  //         img.addEventListener("error", reject);
-  //       });
-  //     })
-  //   );
-  // });
+  await page.waitForNetworkIdle();
 
   logger.log(
     "debug",
@@ -224,7 +217,9 @@ async function takeScreenshot({
   }
 
   logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
-  convertToWebp(screenshot, filePath, screenshotIdentifier);
+  convertToWebp(screenshot, filePath, screenshotIdentifier).catch((err) =>
+    logger.log("error", screenshotIdentifier, err)
+  );
 
   await page.close();
   logger.log(
@@ -268,6 +263,7 @@ async function compareScreenshots(
     injectedJS,
     id,
     scrollPage,
+    pageTimeout,
   } = screenshotData;
 
   const screenshotIdentifier = `${baselineUrl}:${device}`;
@@ -297,6 +293,7 @@ async function compareScreenshots(
     path,
     injectedJS,
     scrollPage,
+    pageTimeout,
   };
 
   const screenshotDatas = {

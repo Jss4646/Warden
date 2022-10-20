@@ -12,6 +12,7 @@ const ScreenshotSettings = (props) => {
     setValidJS,
     setTrimPages,
     setScrollPage,
+    setPageTimeout,
   } = props;
   const {
     failingPercentage,
@@ -20,6 +21,7 @@ const ScreenshotSettings = (props) => {
     validJS,
     trimPages,
     scrollPage,
+    pageTimeout,
   } = siteData;
 
   /**
@@ -29,6 +31,11 @@ const ScreenshotSettings = (props) => {
    * @param {Function} setValidJS - The function to set whether the injected JS is valid or not
    */
   const validateJS = (value, setValidJS) => {
+    if (!value) {
+      setValidJS(true);
+      return;
+    }
+
     JSHINT(value, { esversion: 11 }, {});
     const data = JSHINT.data();
 
@@ -46,7 +53,6 @@ const ScreenshotSettings = (props) => {
    * @param {String} value - The new value
    */
   const updateInjectedJS = (value) => {
-    localStorage.setItem(`${sitePath}-injectedJS`, value);
     setInjectedJS(value);
     validateJS(value, setValidJS);
   };
@@ -60,6 +66,8 @@ const ScreenshotSettings = (props) => {
       failingPercentage,
       trimPages,
       scrollPage,
+      injectedJS,
+      pageTimeout,
     };
 
     fetch("/api/set-site-settings", {
@@ -77,11 +85,8 @@ const ScreenshotSettings = (props) => {
    * Gets the injected JS from local storage if it exists
    */
   useEffect(() => {
-    const localInjectedJS =
-      localStorage.getItem(`${sitePath}-injectedJS`) ?? "";
-    setInjectedJS(localInjectedJS);
-    validateJS(localInjectedJS, setValidJS);
-  }, [setInjectedJS, sitePath, setValidJS]);
+    validateJS(injectedJS, setValidJS);
+  }, [setInjectedJS, setValidJS]);
 
   return (
     <div className="screenshot-settings">
@@ -113,6 +118,18 @@ const ScreenshotSettings = (props) => {
             syntaxHighlighting: true,
           }}
           onChange={(value) => updateInjectedJS(value)}
+        />
+      </div>
+      <div className="screenshot-settings__page-timeout">
+        <label>Timeout before screenshot: </label>
+        <InputNumber
+          className="screenshot-settings__page-timeout-input"
+          min={0}
+          max={5000}
+          defaultValue={pageTimeout}
+          value={pageTimeout}
+          addonAfter="ms"
+          onChange={(value) => setPageTimeout(value)}
         />
       </div>
       <div className="screenshot-settings__trim-pages">
