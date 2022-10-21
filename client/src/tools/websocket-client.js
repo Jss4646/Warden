@@ -3,7 +3,9 @@ const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 const socketUrl =
   process.env?.NODE_ENV === "development"
     ? `${protocol}//${window.location.hostname}:8080`
-    : `${protocol}://${window.location.hostname}/ws`;
+    : `${protocol}//${window.location.hostname}/ws`;
+
+console.log("socketUrl", socketUrl);
 
 export function wsInit(setAllScreenshots) {
   let socket;
