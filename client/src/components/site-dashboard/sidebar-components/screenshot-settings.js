@@ -86,7 +86,7 @@ const ScreenshotSettings = (props) => {
    */
   useEffect(() => {
     validateJS(injectedJS, setValidJS);
-  }, [setInjectedJS, setValidJS]);
+  }, [setValidJS, injectedJS]);
 
   return (
     <div className="screenshot-settings">
