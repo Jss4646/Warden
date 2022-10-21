@@ -11,9 +11,18 @@ const ScreenshotSettings = (props) => {
     setInjectedJS,
     setValidJS,
     setTrimPages,
+    setScrollPage,
+    setPageTimeout,
   } = props;
-  const { failingPercentage, sitePath, injectedJS, validJS, trimPages } =
-    siteData;
+  const {
+    failingPercentage,
+    sitePath,
+    injectedJS,
+    validJS,
+    trimPages,
+    scrollPage,
+    pageTimeout,
+  } = siteData;
 
   /**
    * Sets whether the injected JS is valid or not
@@ -22,7 +31,12 @@ const ScreenshotSettings = (props) => {
    * @param {Function} setValidJS - The function to set whether the injected JS is valid or not
    */
   const validateJS = (value, setValidJS) => {
-    JSHINT(value, {}, {});
+    if (!value) {
+      setValidJS(true);
+      return;
+    }
+
+    JSHINT(value, { esversion: 11 }, {});
     const data = JSHINT.data();
 
     if (data.errors) {
@@ -39,7 +53,6 @@ const ScreenshotSettings = (props) => {
    * @param {String} value - The new value
    */
   const updateInjectedJS = (value) => {
-    localStorage.setItem(`${sitePath}-injectedJS`, value);
     setInjectedJS(value);
     validateJS(value, setValidJS);
   };
@@ -52,6 +65,9 @@ const ScreenshotSettings = (props) => {
       sitePath,
       failingPercentage,
       trimPages,
+      scrollPage,
+      injectedJS,
+      pageTimeout,
     };
 
     fetch("/api/set-site-settings", {
@@ -69,11 +85,8 @@ const ScreenshotSettings = (props) => {
    * Gets the injected JS from local storage if it exists
    */
   useEffect(() => {
-    const localInjectedJS =
-      localStorage.getItem(`${sitePath}-injectedJS`) ?? "";
-    setInjectedJS(localInjectedJS);
-    validateJS(localInjectedJS, setValidJS);
-  }, [setInjectedJS, sitePath, setValidJS]);
+    validateJS(injectedJS, setValidJS);
+  }, [setValidJS, injectedJS]);
 
   return (
     <div className="screenshot-settings">
@@ -107,6 +120,18 @@ const ScreenshotSettings = (props) => {
           onChange={(value) => updateInjectedJS(value)}
         />
       </div>
+      <div className="screenshot-settings__page-timeout">
+        <label>Timeout before screenshot: </label>
+        <InputNumber
+          className="screenshot-settings__page-timeout-input"
+          min={0}
+          max={5000}
+          defaultValue={pageTimeout}
+          value={pageTimeout}
+          addonAfter="ms"
+          onChange={(value) => setPageTimeout(value)}
+        />
+      </div>
       <div className="screenshot-settings__trim-pages">
         <Checkbox
           onChange={() => setTrimPages(!trimPages)}
@@ -114,6 +139,14 @@ const ScreenshotSettings = (props) => {
           defaultChecked={true}
         >
           Trim pages
+        </Checkbox>
+      </div>
+      <div className="screenshot-settings__scroll-page">
+        <Checkbox
+          onChange={() => setScrollPage(!scrollPage)}
+          checked={scrollPage}
+        >
+          Scroll page
         </Checkbox>
       </div>
       <Button onClick={saveSettings}>Save</Button>

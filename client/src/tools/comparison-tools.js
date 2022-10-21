@@ -66,6 +66,8 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     failingPercentage,
     validJS,
     injectedJS,
+    scrollPage,
+    pageTimeout,
   } = siteData;
 
   if (cookies && !validateCookies(cookies)) {
@@ -82,6 +84,8 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
     failingThreshold: failingPercentage,
     injectedJS: validJS ? injectedJS : "",
     siteLogin: { username: siteUsername, password: sitePassword },
+    scrollPage,
+    pageTimeout,
   };
 
   generateScreenshots(
@@ -100,6 +104,7 @@ export function runPageComparison(siteData, pages, generateBaselines = false) {
  * @param siteData.comparisonUrl {string}
  * @param siteData.sitePath {string}
  * @param siteData.screenshotPages {Object}
+ * @param siteData.scrollPage {boolean}
  * @param page {Array[string]}
  * @param [generateBaselines] {boolean}
  */

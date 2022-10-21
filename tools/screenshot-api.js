@@ -67,7 +67,9 @@ async function initialiseCluster() {
     timeout: 500000,
     // monitor: true,
     puppeteerOptions: {
+      IgnoreHTTPSErrors: true,
       args: [
+        "--ignore-certificate-errors",
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
@@ -95,6 +97,7 @@ async function initialiseCluster() {
  * @property {{username: String, password: String}} siteLogin - The username and password to be passed to the browser before loading the page
  * @property {String} path - path to folder to save screenshot to
  * @property {String} injectedJS - JS to be injected into the page before taking the screenshot
+ * @property {Boolean} scrollPage - Whether to scroll the page before taking the screenshot
  */
 
 /**
@@ -117,6 +120,8 @@ async function takeScreenshot({
     siteLogin,
     path,
     injectedJS,
+    scrollPage,
+    pageTimeout,
   },
 }) {
   if (!fs.existsSync(path)) {
@@ -167,26 +172,32 @@ async function takeScreenshot({
     .goto(url, { timeout: 60000, waitUntil: "networkidle0" })
     .catch((err) => logger.log("error", screenshotIdentifier, err));
 
-  logger.log("debug", `${screenshotIdentifier}: Injecting JS`);
-  await page
-    .evaluate(injectedJS)
-    .catch((err) => logger.log("error", screenshotIdentifier, err));
+  if (injectedJS) {
+    logger.log("debug", `${screenshotIdentifier}: Injecting JS`);
+    await page
+      .evaluate(injectedJS)
+      .catch((err) => logger.log("error", screenshotIdentifier, err));
+  }
 
-  // logger.log("debug", "Waiting for images to load");
-  // await page.evaluate(async () => {
-  //   document.body.scrollIntoView(false);
-  //
-  //   const selectors = Array.from(document.querySelectorAll("img"));
-  //   await Promise.all(
-  //     selectors.map((img) => {
-  //       if (img.complete) return;
-  //       return new Promise((resolve, reject) => {
-  //         img.addEventListener("load", resolve);
-  //         img.addEventListener("error", reject);
-  //       });
-  //     })
-  //   );
-  // });
+  if (scrollPage) {
+    logger.log("debug", `${screenshotIdentifier}: Scrolling page`);
+    await page.evaluate(async () => {
+      for (let i = 0; i < document.body.scrollHeight; i = i + 100) {
+        window.scrollTo(0, i);
+        await new Promise((res) => setTimeout(res, 20));
+      }
+    });
+  }
+
+  if (pageTimeout) {
+    logger.log(
+      "debug",
+      `${screenshotIdentifier}: Waiting for page timeout for ${pageTimeout}ms`
+    );
+    await page.waitForTimeout(pageTimeout);
+  }
+
+  await page.waitForNetworkIdle();
 
   logger.log(
     "debug",
@@ -208,7 +219,9 @@ async function takeScreenshot({
   }
 
   logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
-  convertToWebp(screenshot, filePath, screenshotIdentifier);
+  convertToWebp(screenshot, filePath, screenshotIdentifier).catch((err) =>
+    logger.log("error", screenshotIdentifier, err)
+  );
 
   await page.close();
   logger.log(
@@ -251,6 +264,8 @@ async function compareScreenshots(
     failingThreshold,
     injectedJS,
     id,
+    scrollPage,
+    pageTimeout,
   } = screenshotData;
 
   const screenshotIdentifier = `${baselineUrl}:${device}`;
@@ -279,6 +294,8 @@ async function compareScreenshots(
     siteLogin,
     path,
     injectedJS,
+    scrollPage,
+    pageTimeout,
   };
 
   const screenshotDatas = {

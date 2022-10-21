@@ -109,6 +109,14 @@ function siteData(state = [], action) {
       stateCopy.trimPages = action.trimPages;
       return stateCopy;
 
+    case "SET_SCROLL_PAGE":
+      stateCopy.scrollPage = action.scrollPage;
+      return stateCopy;
+
+    case "SET_PAGE_TIMEOUT":
+      stateCopy.pageTimeout = action.pageTimeout;
+      return stateCopy;
+
     default:
       return stateCopy;
   }
