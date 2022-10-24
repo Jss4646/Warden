@@ -36,7 +36,7 @@ const calculatePassing = (screenshots) => {
   return Object.keys(screenshots).reduce((sum, key) => {
     const screenshot = screenshots[key];
 
-    if (screenshot.loading) {
+    if (screenshot.loading || !screenshot.baselineScreenshot) {
       return 0;
     }
     return sum + !screenshots[key].failing;
@@ -50,8 +50,10 @@ const calculatePassing = (screenshots) => {
  * @returns {number} - total number of screenshots
  */
 const calculateTotalScreenshots = (screenshots) => {
+  console.log("calculateTotalScreenshots", screenshots);
   return Object.keys(screenshots).filter(
-    (device) => !screenshots[device].loading
+    (device) =>
+      !screenshots[device].loading && screenshots[device].baselineScreenshot
   ).length;
 };
 
