@@ -20,6 +20,7 @@ const {
   deletePages,
   setSiteDevices,
   setSiteSettings,
+  getNumOfLoadingScreenshotsEndpoint,
 } = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -96,6 +97,9 @@ let db;
   app.post("/api/set-site-devices", (req, res) => setSiteDevices(db, req, res));
   app.post("/api/set-site-settings", (req, res) =>
     setSiteSettings(db, req, res)
+  );
+  app.get("/api/get-num-of-loading-screenshots", (req, res) =>
+    getNumOfLoadingScreenshotsEndpoint(db, req, res)
   );
 })();
 

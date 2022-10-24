@@ -144,7 +144,7 @@ async function getAllSites(db, req, res) {
     res.send("No sites found");
   }
 
-  res.send(results);
+  res.send(results.sort((a, b) => (a.siteName > b.siteName ? 1 : -1)));
   logger.log("info", "Sent all sites");
 }
 
@@ -589,6 +589,35 @@ async function setSiteSettings(db, req, res) {
   res.send(true);
 }
 
+/**
+ * Gets number of loading screenshots
+ *
+ * @param db
+ * @returns {*}
+ */
+async function getNumOfLoadingScreenshots(db) {
+  const screenshots = await db.collection("pages").find().toArray();
+
+  let loadingScreenshots = 0;
+  for (let screenshot of Object.values(screenshots)) {
+    for (let device in screenshot.screenshots) {
+      if (screenshot.screenshots[device].loading) {
+        loadingScreenshots++;
+      }
+    }
+  }
+
+  return loadingScreenshots;
+}
+
+async function getNumOfLoadingScreenshotsEndpoint(db, req, res) {
+  const numOfLoadingScreenshots = await getNumOfLoadingScreenshots(db).catch(
+    (err) => res.send(err)
+  );
+  logger.log("info", "Number of loading screenshots", numOfLoadingScreenshots);
+  res.send(numOfLoadingScreenshots.toString());
+}
+
 module.exports = {
   addSite,
   getSite,
@@ -607,4 +636,5 @@ module.exports = {
   getSitePages,
   setSiteDevices,
   setSiteSettings,
+  getNumOfLoadingScreenshotsEndpoint,
 };

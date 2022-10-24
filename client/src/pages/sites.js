@@ -10,10 +10,14 @@ class Sites extends Component {
     this.state = { sites: [], loading: true };
   }
 
-  async getSiteData(fetchUrl) {
+  async getSiteData(fetchUrl, json) {
     return await fetch(fetchUrl).then((res) => {
       if (res.status === 200) {
-        return res.json();
+        if (json) {
+          return res.json();
+        }
+
+        return res.text();
       } else {
         console.error(res.text());
         return false;
@@ -22,13 +26,14 @@ class Sites extends Component {
   }
 
   async componentDidMount() {
-    const fetchUrl = `${window.location.origin}/api/get-all-sites`;
+    const siteDataFetchUrl = `${window.location.origin}/api/get-all-sites`;
+    const loadingFetchUrl = `${window.location.origin}/api/get-num-of-loading-screenshots`;
     console.log("Getting site");
 
     let siteData;
 
     for (let i = 0; i < 10; i++) {
-      siteData = await this.getSiteData(fetchUrl);
+      siteData = await this.getSiteData(siteDataFetchUrl, true);
       if (siteData) {
         break;
       }
@@ -36,13 +41,20 @@ class Sites extends Component {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
+    const numOfLoadingScreenshots = await this.getSiteData(loadingFetchUrl);
+
     console.log("site data:", siteData);
 
-    this.setState({ ...this.state, sites: siteData, loading: false });
+    this.setState({
+      ...this.state,
+      sites: siteData,
+      numOfLoadingScreenshots,
+      loading: false,
+    });
   }
 
   render() {
-    const sites = this.state?.sites;
+    const { sites, numOfLoadingScreenshots } = this.state;
 
     if (this.state.loading) {
       return <div>Loading</div>;
@@ -56,6 +68,9 @@ class Sites extends Component {
       <div className="sites">
         <div className="sites__options">
           <AddSite />
+          <span className="sites__loading-screenshots">
+            Loading screenshots: {numOfLoadingScreenshots}
+          </span>
           <ClearQueue />
         </div>
         <div className="sites__cards">
