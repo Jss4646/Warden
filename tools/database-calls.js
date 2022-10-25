@@ -311,6 +311,10 @@ function trimUrls(urls) {
   const pathPrefixes = [];
 
   urls.forEach((url) => {
+    if (!isValidUrl(url)) {
+      return;
+    }
+
     url = new URL(url);
     const paths = url.pathname.split("/").filter((p) => p !== "");
     const pathPrefix = paths.slice(0, paths.length - 1).join("/");
@@ -328,6 +332,14 @@ function trimUrls(urls) {
 
   return newUrls;
 }
+
+const isValidUrl = (urlString) => {
+  try {
+    return Boolean(new URL(urlString));
+  } catch (e) {
+    return false;
+  }
+};
 
 /**
  * Deletes all pages from an array of page ids
