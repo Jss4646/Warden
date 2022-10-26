@@ -79,7 +79,7 @@ class Sites extends Component {
 
             const siteStatus = {
               passing: site.passing,
-              difference: site.difference ? site.difference : "--",
+              loading: site.loading,
               failing: site.failing,
             };
             const frequency = site.frequency ? site.frequency : "Not set";
@@ -91,7 +91,6 @@ class Sites extends Component {
                 siteName={site.siteName}
                 sitePath={site.sitePath}
                 siteStatus={siteStatus}
-                frequency={frequency}
                 key={index}
               />
             );

@@ -14,8 +14,10 @@ class SiteCard extends Component {
   render() {
     const { siteName, url, lastRan, frequency, siteStatus } = this.props;
 
+    const loadingClass = siteStatus.loading ? "site-card--loading" : "";
+
     return (
-      <div className="site-card">
+      <div className={`site-card ${loadingClass}`}>
         <div className="site-card__header">
           <h2 className="site-card__name">{siteName}</h2>
           <a
@@ -37,6 +39,10 @@ class SiteCard extends Component {
           <div className="site-card__status site-card__status--passing">
             <h3>Passing</h3>
             <h3>{siteStatus.passing}</h3>
+          </div>
+          <div className="site-card__status site-card__status--loading">
+            <h3>loading</h3>
+            <h3>{siteStatus.loading}</h3>
           </div>
           <div className="site-card__status site-card__status--failing">
             <h3>Failing</h3>
