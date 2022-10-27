@@ -585,6 +585,7 @@ async function setSiteSettings(db, req, res) {
   } = req.body;
 
   if (!sitePath) {
+    logger.log("error", "No site path provided");
     res.status(400);
     res.send("No site path provided");
     return;
