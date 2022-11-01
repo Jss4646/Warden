@@ -50,7 +50,6 @@ const calculatePassing = (screenshots) => {
  * @returns {number} - total number of screenshots
  */
 const calculateTotalScreenshots = (screenshots) => {
-  console.log("calculateTotalScreenshots", screenshots);
   return Object.keys(screenshots).filter(
     (device) =>
       !screenshots[device].loading && screenshots[device].baselineScreenshot
