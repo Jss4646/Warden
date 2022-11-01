@@ -82,7 +82,6 @@ class Sites extends Component {
               loading: site.loading,
               failing: site.failing,
             };
-            const frequency = site.frequency ? site.frequency : "Not set";
 
             return (
               <SiteCard
