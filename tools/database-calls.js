@@ -114,10 +114,16 @@ async function getAllSites(db, req, res) {
 
     let passing = 0;
     let failing = 0;
+    let loading = 0;
 
     for (const page of Object.values(pages)) {
       page.screenshots = Object.values(page.screenshots);
       for (const screenshot of page.screenshots) {
+        if (screenshot.loading) {
+          loading++;
+          continue;
+        }
+
         if (screenshot.failing) {
           failing++;
           continue;
@@ -136,6 +142,7 @@ async function getAllSites(db, req, res) {
       sitePath: site.sitePath,
       passing,
       failing,
+      loading,
     });
   }
 
@@ -144,7 +151,7 @@ async function getAllSites(db, req, res) {
     res.send("No sites found");
   }
 
-  res.send(results);
+  res.send(results.sort((a, b) => (a.siteName > b.siteName ? 1 : -1)));
   logger.log("info", "Sent all sites");
 }
 
@@ -311,6 +318,10 @@ function trimUrls(urls) {
   const pathPrefixes = [];
 
   urls.forEach((url) => {
+    if (!isValidUrl(url)) {
+      return;
+    }
+
     url = new URL(url);
     const paths = url.pathname.split("/").filter((p) => p !== "");
     const pathPrefix = paths.slice(0, paths.length - 1).join("/");
@@ -328,6 +339,14 @@ function trimUrls(urls) {
 
   return newUrls;
 }
+
+const isValidUrl = (urlString) => {
+  try {
+    return Boolean(new URL(urlString));
+  } catch (e) {
+    return false;
+  }
+};
 
 /**
  * Deletes all pages from an array of page ids
@@ -589,6 +608,35 @@ async function setSiteSettings(db, req, res) {
   res.send(true);
 }
 
+/**
+ * Gets number of loading screenshots
+ *
+ * @param db
+ * @returns {*}
+ */
+async function getNumOfLoadingScreenshots(db) {
+  const screenshots = await db.collection("pages").find().toArray();
+
+  let loadingScreenshots = 0;
+  for (let screenshot of Object.values(screenshots)) {
+    for (let device in screenshot.screenshots) {
+      if (screenshot.screenshots[device].loading) {
+        loadingScreenshots++;
+      }
+    }
+  }
+
+  return loadingScreenshots;
+}
+
+async function getNumOfLoadingScreenshotsEndpoint(db, req, res) {
+  const numOfLoadingScreenshots = await getNumOfLoadingScreenshots(db).catch(
+    (err) => res.send(err)
+  );
+  logger.log("info", "Number of loading screenshots", numOfLoadingScreenshots);
+  res.send(numOfLoadingScreenshots.toString());
+}
+
 module.exports = {
   addSite,
   getSite,
@@ -607,4 +655,5 @@ module.exports = {
   getSitePages,
   setSiteDevices,
   setSiteSettings,
+  getNumOfLoadingScreenshotsEndpoint,
 };

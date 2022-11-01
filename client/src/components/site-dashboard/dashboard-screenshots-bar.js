@@ -17,6 +17,10 @@ const DashboardScreenshotsBar = (props) => {
     loading,
   } = screenshots;
 
+  if (!baselineScreenshot) {
+    return "";
+  }
+
   const baselineImg = (
     <ScreenshotContainer
       src={baselineScreenshot}
