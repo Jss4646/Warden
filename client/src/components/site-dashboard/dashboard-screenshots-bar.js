@@ -17,7 +17,7 @@ const DashboardScreenshotsBar = (props) => {
     loading,
   } = screenshots;
 
-  if (!baselineScreenshot && !loading) {
+  if ((!baselineScreenshot || !comparisonScreenshot || !diffImage) && !loading) {
     return "";
   }
 
