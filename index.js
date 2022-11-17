@@ -21,6 +21,7 @@ const {
   setSiteDevices,
   setSiteSettings,
   getNumOfLoadingScreenshotsEndpoint,
+  importUrls,
 } = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -101,6 +102,7 @@ let db;
   app.get("/api/get-num-of-loading-screenshots", (req, res) =>
     getNumOfLoadingScreenshotsEndpoint(db, req, res)
   );
+  app.post("/api/import-urls", (req, res) => importUrls(db, req, res));
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);

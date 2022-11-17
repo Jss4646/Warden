@@ -2,7 +2,14 @@
   display: flex;
   flex-direction: column;
 
-  &__import-pages {
+  &__import-export {
+    display: flex;
+    column-gap: 10px;
     margin-bottom: 5px;
+    justify-content: space-between;
+
+    button {
+      flex-grow: 1;
+    }
   }
 }
