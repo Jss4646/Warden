@@ -63,7 +63,13 @@ const PagesSettings = (props) => {
           Trim pages
         </Checkbox>
       </div>
-      <Button onClick={loadUrls}>Import pages</Button>
+      <Button
+        className="pages-settings__import-pages"
+        onClick={loadUrls}
+        disabled
+      >
+        Import pages
+      </Button>
       <input
         type="file"
         accept=".txt"

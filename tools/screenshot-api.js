@@ -214,6 +214,8 @@ async function takeScreenshot({
         window.scrollTo(0, i);
         await new Promise((res) => setTimeout(res, 20));
       }
+
+      window.scrollTo(0, 0);
     });
   }
 
