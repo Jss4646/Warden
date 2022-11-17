@@ -343,7 +343,7 @@ function trimUrls(urls) {
 const isValidUrl = (urlString) => {
   try {
     return Boolean(new URL(urlString));
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -395,24 +395,31 @@ async function deletePages(db, req, res) {
  * @param req {Request}
  * @param res {Response}
  */
-async function deleteAllSitePages(db, req, res) {
+async function deleteAllSitePagesEndpoint(db, req, res) {
+  const { sitePath } = req.body;
+  await deleteAllSitePages(db, sitePath);
+
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
+  res.send("Deleted pages");
+}
+
+async function deleteAllSitePages(db, sitePath) {
+  logger.log("info", `Deleting all pages for site: ${sitePath}`);
   await db
     .collection("pages")
-    .deleteMany({ sitePath: req.body.sitePath, pagePath: { $ne: "/" } });
+    .deleteMany({ sitePath: sitePath, pagePath: { $ne: "/" } });
 
   await db
     .collection("pages")
     .updateMany(
-      { sitePath: req.body.sitePath, pagePath: "/" },
+      { sitePath: sitePath, pagePath: "/" },
       { $set: { screenshots: {} } }
     );
-
-  broadcastData(
-    "UPDATE_SCREENSHOTS",
-    await getSitePages(req.body.sitePath, db),
-    req.body.sitePath
-  );
-  res.send("Deleted pages");
+  logger.log("info", `Finished deleting all pages for site: ${sitePath}`);
 }
 
 /**
@@ -631,12 +638,79 @@ async function getNumOfLoadingScreenshots(db) {
   return loadingScreenshots;
 }
 
+/**
+ * Gets the number of failing screenshots
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
 async function getNumOfLoadingScreenshotsEndpoint(db, req, res) {
   const numOfLoadingScreenshots = await getNumOfLoadingScreenshots(db).catch(
     (err) => res.send(err)
   );
   logger.log("info", "Number of loading screenshots", numOfLoadingScreenshots);
   res.send(numOfLoadingScreenshots.toString());
+}
+
+/**
+ * Imports pages from an array of urls
+ *
+ * @param db
+ * @param req
+ * @param res
+ * @returns {Promise<void>}
+ */
+async function importUrls(db, req, res) {
+  const { sitePath, urls } = req.body;
+  logger.log("info", `Importing urls for: ${sitePath}`);
+
+  await deleteAllSitePages(db, sitePath);
+  await addPages(db, sitePath, urls);
+
+  logger.log("info", `Finished importing urls for: ${sitePath}`);
+  res.send(true);
+}
+
+async function addPages(db, sitePath, urls) {
+  logger.log("debug", "Adding pages", urls);
+  const pageData = {
+    failing: false,
+    sitePath,
+    screenshots: {},
+  };
+
+  const siteData = await db.collection("sites").findOne({ sitePath });
+  const { url: baselineUrl, comparisonUrl } = siteData;
+
+  urls.forEach((url) => {
+    if (!isValidUrl(url)) {
+      return;
+    }
+
+    const parsedUrl = new URL(url);
+
+    if (
+      `${parsedUrl.origin}/` !== baselineUrl &&
+      `${parsedUrl.origin}/` !== comparisonUrl
+    ) {
+      return;
+    }
+
+    pageData.url = url;
+    pageData.pagePath = parsedUrl.pathname;
+
+    db.collection("pages").insertOne({ ...pageData });
+  });
+
+  broadcastData(
+    "UPDATE_SCREENSHOTS",
+    await getSitePages(sitePath, db),
+    sitePath
+  );
+
+  logger.log("debug", "Finished adding pages");
 }
 
 module.exports = {
@@ -648,7 +722,7 @@ module.exports = {
   addSitePage,
   deleteSitePage,
   fillSitePages,
-  deleteAllSitePages,
+  deleteAllSitePagesEndpoint,
   addDeviceScreenshots,
   updateBaselineUrl,
   updateComparisonUrl,
@@ -658,4 +732,5 @@ module.exports = {
   setSiteDevices,
   setSiteSettings,
   getNumOfLoadingScreenshotsEndpoint,
+  importUrls,
 };

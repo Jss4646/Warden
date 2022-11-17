@@ -21,6 +21,8 @@ const {
   setSiteDevices,
   setSiteSettings,
   getNumOfLoadingScreenshotsEndpoint,
+  importUrls,
+  deleteAllSitePagesEndpoint,
 } = require("./tools/database-calls");
 const { getSiteStatus } = require("./tools/status-checker");
 
@@ -85,7 +87,7 @@ let db;
   app.post("/api/delete-site-page", (req, res) => deleteSitePage(db, req, res));
   app.post("/api/fill-site-pages", (req, res) => fillSitePages(db, req, res));
   app.post("/api/delete-all-site-pages", (req, res) =>
-    deleteAllSitePages(db, req, res)
+    deleteAllSitePagesEndpoint(db, req, res)
   );
   app.post("/api/update-baseline-url", (req, res) =>
     updateBaselineUrl(db, req, res)
@@ -101,6 +103,7 @@ let db;
   app.get("/api/get-num-of-loading-screenshots", (req, res) =>
     getNumOfLoadingScreenshotsEndpoint(db, req, res)
   );
+  app.post("/api/import-urls", (req, res) => importUrls(db, req, res));
 })();
 
 app.post("/api/crawl-url", crawlSitemapEndpoint);
