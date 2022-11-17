@@ -25,4 +25,7 @@ const logger = new createLogger({
   ],
 });
 
+logger.log("info", `Logging level set to: ${debuggingLevel}`);
+
+
 module.exports = logger;

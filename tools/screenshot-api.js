@@ -26,7 +26,7 @@ async function runComparison(req, res, cluster, db, abortController) {
 
   const { devices, sitePath } = siteRequestData;
   await removeRedundantScreenshots(db, sitePath, devices);
-  await setScreenshotsLoading(screenshots, db);
+  await setScreenshotsLoading(screenshots, sitePath, db);
 
   broadcastData(
     "UPDATE_SCREENSHOTS",
@@ -214,6 +214,8 @@ async function takeScreenshot({
         window.scrollTo(0, i);
         await new Promise((res) => setTimeout(res, 20));
       }
+
+      window.scrollTo(0, 0);
     });
   }
 
@@ -509,10 +511,12 @@ function convertToWebp(image, filePath, screenshotIdentifier) {
  * Sets all screenshots that are being taken to loading
  *
  * @param {screenshotData} screenshots
+ * @param {String} sitePath
  * @param db
  * @returns {Promise<void>}
  */
-async function setScreenshotsLoading(screenshots, db) {
+async function setScreenshotsLoading(screenshots, sitePath, db) {
+  logger.log("debug", "Setting screenshots to loading");
   await new Promise((res) => {
     for (let screenshot of screenshots) {
       db.collection("pages").updateOne(
@@ -528,12 +532,12 @@ async function setScreenshotsLoading(screenshots, db) {
     res();
   });
 
-  const sitePath = screenshots[0].sitePath;
   broadcastData(
     "UPDATE_SCREENSHOTS",
     await getSitePages(sitePath, db),
     sitePath
   );
+  logger.log("debug", "Finished setting screenshots to loading");
 }
 
 /**

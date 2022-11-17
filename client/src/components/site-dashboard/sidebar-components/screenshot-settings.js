@@ -10,7 +10,6 @@ const ScreenshotSettings = (props) => {
     setFailingPercentage,
     setInjectedJS,
     setValidJS,
-    setTrimPages,
     setScrollPage,
     setPageTimeout,
   } = props;
@@ -19,7 +18,6 @@ const ScreenshotSettings = (props) => {
     sitePath,
     injectedJS,
     validJS,
-    trimPages,
     scrollPage,
     pageTimeout,
   } = siteData;
@@ -64,7 +62,6 @@ const ScreenshotSettings = (props) => {
     const body = {
       sitePath,
       failingPercentage,
-      trimPages,
       scrollPage,
       injectedJS,
       pageTimeout,
@@ -131,15 +128,6 @@ const ScreenshotSettings = (props) => {
           addonAfter="ms"
           onChange={(value) => setPageTimeout(value)}
         />
-      </div>
-      <div className="screenshot-settings__trim-pages">
-        <Checkbox
-          onChange={() => setTrimPages(!trimPages)}
-          checked={trimPages}
-          defaultChecked={true}
-        >
-          Trim pages
-        </Checkbox>
       </div>
       <div className="screenshot-settings__scroll-page">
         <Checkbox

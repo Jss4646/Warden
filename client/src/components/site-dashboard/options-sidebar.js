@@ -6,6 +6,7 @@ import SiteLogin from "./sidebar-components/site-login";
 import Devices from "./sidebar-components/devices";
 import ScreenshotSettings from "./sidebar-components/screenshot-settings";
 import Misc from "./sidebar-components/misc";
+import PagesSettings from "./sidebar-components/pages-settings";
 
 const { Panel } = Collapse;
 
@@ -28,10 +29,13 @@ class OptionsSidebar extends Component {
         <Panel key={3} header="Screenshot Settings">
           <ScreenshotSettings {...this.props} />
         </Panel>
-        <Panel key={4} header={"Site login"}>
+        <Panel key={4} header="Pages Settings">
+          <PagesSettings {...this.props} />
+        </Panel>
+        <Panel key={5} header={"Site login"}>
           <SiteLogin {...this.props} />
         </Panel>
-        <Panel key={5} header={"Misc"}>
+        <Panel key={6} header={"Misc"}>
           <Misc {...this.props} />
         </Panel>
       </Collapse>

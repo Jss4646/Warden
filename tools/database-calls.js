@@ -580,17 +580,19 @@ async function setSiteSettings(db, req, res) {
     failingPercentage,
     trimPages,
     scrollPage,
-    injectedJs,
+    injectedJS,
     pageTimeout,
   } = req.body;
 
   if (!sitePath) {
+    logger.log("error", "No site path provided");
     res.status(400);
     res.send("No site path provided");
     return;
   }
 
   logger.log("info", "Saving site settings");
+  logger.log("debug", "Site settings", req.body);
   await db.collection("sites").updateOne(
     { sitePath },
     {
@@ -598,7 +600,7 @@ async function setSiteSettings(db, req, res) {
         trimPages,
         scrollPage,
         failingPercentage,
-        injectedJs,
+        injectedJS,
         pageTimeout,
       },
     }
