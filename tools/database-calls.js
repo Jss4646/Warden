@@ -722,7 +722,7 @@ module.exports = {
   addSitePage,
   deleteSitePage,
   fillSitePages,
-  deleteAllSitePages: deleteAllSitePagesEndpoint,
+  deleteAllSitePagesEndpoint,
   addDeviceScreenshots,
   updateBaselineUrl,
   updateComparisonUrl,

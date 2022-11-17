@@ -21,7 +21,7 @@ const { ObjectId } = require("mongodb");
  * @param abortController
  * @returns {Promise<void>}
  */
-async function runComparison(req, res, cluster, db, abortController) {
+async function runComparison(req, res, cluster, db) {
   const { pages: screenshots, siteRequestData, generateBaselines } = req.body;
 
   const { devices, sitePath } = siteRequestData;
@@ -38,13 +38,9 @@ async function runComparison(req, res, cluster, db, abortController) {
     logger.log("debug", "Comparing screenshots: ", screenshot);
     screenshot = { ...screenshot, ...siteRequestData };
 
-    compareScreenshots(
-      screenshot,
-      generateBaselines,
-      cluster,
-      db,
-      abortController
-    ).catch((err) => logger.log("error", `${err}`));
+    compareScreenshots(screenshot, generateBaselines, cluster, db).catch(
+      (err) => logger.log("error", `${err}`)
+    );
 
     if ((index + 1) % 1000 === 0) {
       await new Promise((res) => setTimeout(res, 500));
@@ -268,15 +264,13 @@ async function takeScreenshot({
  * @param generateBaselines {boolean}
  * @param cluster {Cluster}
  * @param db {Db}
- * @param abortController {AbortController}
  * @returns {Promise<void>}
  */
 async function compareScreenshots(
   screenshotData,
   generateBaselines,
   cluster,
-  db,
-  abortController
+  db
 ) {
   const {
     baselineUrl,
