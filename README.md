@@ -32,12 +32,11 @@ when running comparisons on multiple sites.
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 - [Node v16+](https://nodejs.org/en/)
-- [MongoDB](https://www.mongodb.com/try/download/community)
+- [MongoDB](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-os-x/)
 
 ### Installation
 1. Clone the repo
