@@ -16,6 +16,8 @@ class SiteCard extends Component {
 
     const loadingClass = siteStatus.loading ? "site-card--loading" : "";
 
+    console.log(siteStatus);
+
     return (
       <div className={`site-card ${loadingClass}`}>
         <div className="site-card__header">
@@ -37,17 +39,17 @@ class SiteCard extends Component {
         </div>
         <div className="site-card__site-status">
           <div className="site-card__status site-card__status--passing">
-            <h3>Passing</h3>
-            <h3>{siteStatus.passing}</h3>
+            <h3>Pages</h3>
+            <h3>{siteStatus.numOfPages}</h3>
           </div>
-          <div className="site-card__status site-card__status--loading">
-            <h3>loading</h3>
-            <h3>{siteStatus.loading}</h3>
-          </div>
-          <div className="site-card__status site-card__status--failing">
-            <h3>Failing</h3>
-            <h3>{siteStatus.failing}</h3>
-          </div>
+          {/*<div className="site-card__status site-card__status--loading">*/}
+          {/*  <h3>loading</h3>*/}
+          {/*  <h3>{siteStatus.loading}</h3>*/}
+          {/*</div>*/}
+          {/*<div className="site-card__status site-card__status--failing">*/}
+          {/*  <h3>Failing</h3>*/}
+          {/*  <h3>{siteStatus.failing}</h3>*/}
+          {/*</div>*/}
         </div>
         <div className="site-card__buttons">
           <Button>Run comparison</Button>

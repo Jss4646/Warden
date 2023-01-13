@@ -78,9 +78,7 @@ class Sites extends Component {
             const lastRan = site.lastRan ? site.lastRan : "Never";
 
             const siteStatus = {
-              passing: site.passing,
-              loading: site.loading,
-              failing: site.failing,
+              numOfPages: site.numOfPages,
             };
 
             return (

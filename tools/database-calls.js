@@ -111,38 +111,35 @@ async function getAllSites(db, req, res) {
 
   for (const site of sites) {
     const pages = await getSitePages(site.sitePath, db);
-
-    let passing = 0;
-    let failing = 0;
-    let loading = 0;
-
-    for (const page of Object.values(pages)) {
-      page.screenshots = Object.values(page.screenshots);
-      for (const screenshot of page.screenshots) {
-        if (screenshot.loading) {
-          loading++;
-          continue;
-        }
-
-        if (screenshot.failing) {
-          failing++;
-          continue;
-        }
-
-        if (!screenshot.baselineScreenshot) {
-          continue;
-        }
-
-        passing++;
-      }
-    }
-
+  //
+  //   let passing = 0;
+  //   let failing = 0;
+  //   let loading = 0;
+  //
+  //   for (const page of Object.values(pages)) {
+  //     page.screenshots = Object.values(page.screenshots);
+  //     for (const screenshot of page.screenshots) {
+  //       if (screenshot.loading) {
+  //         loading++;
+  //         continue;
+  //       }
+  //
+  //       if (screenshot.failing) {
+  //         failing++;
+  //         continue;
+  //       }
+  //
+  //       if (!screenshot.baselineScreenshot) {
+  //         continue;
+  //       }
+  //
+  //       passing++;
+  //     }
+  //   }
     results.push({
       siteName: site.siteName,
       sitePath: site.sitePath,
-      passing,
-      failing,
-      loading,
+      numOfPages: Object.keys(pages).length,
     });
   }
 
