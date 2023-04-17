@@ -16,8 +16,6 @@ class SiteCard extends Component {
 
     const loadingClass = siteStatus.loading ? "site-card--loading" : "";
 
-    console.log(siteStatus);
-
     return (
       <div className={`site-card ${loadingClass}`}>
         <div className="site-card__header">
