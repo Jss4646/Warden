@@ -13,7 +13,7 @@ const ScreenshotSettings = (props) => {
     setScrollPage,
     setPageTimeout,
   } = props;
-  const {
+  let {
     failingPercentage,
     sitePath,
     injectedJS,
@@ -21,6 +21,8 @@ const ScreenshotSettings = (props) => {
     scrollPage,
     pageTimeout,
   } = siteData;
+
+  injectedJS = injectedJS ?? "";
 
   /**
    * Sets whether the injected JS is valid or not

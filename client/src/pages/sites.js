@@ -33,23 +33,30 @@ class Sites extends Component {
     let siteData;
 
     for (let i = 0; i < 10; i++) {
+      console.log("Trying to get site data", i);
+
       siteData = await this.getSiteData(siteDataFetchUrl, true);
       if (siteData) {
         break;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-
-    const numOfLoadingScreenshots = await this.getSiteData(loadingFetchUrl);
 
     console.log("site data:", siteData);
 
     this.setState({
       ...this.state,
       sites: siteData,
-      numOfLoadingScreenshots,
+      numOfLoadingScreenshots: false,
       loading: false,
+    });
+
+    const numOfLoadingScreenshots = await this.getSiteData(loadingFetchUrl);
+
+    this.setState({
+      ...this.state,
+      numOfLoadingScreenshots,
     });
   }
 
@@ -64,13 +71,15 @@ class Sites extends Component {
       return <div>Server is down :( please message jack</div>;
     }
 
+    const loadingText = numOfLoadingScreenshots
+      ? `Loading screenshots: ${numOfLoadingScreenshots}`
+      : "Getting number of loading screenshots";
+
     return (
       <div className="sites">
         <div className="sites__options">
           <AddSite />
-          <span className="sites__loading-screenshots">
-            Loading screenshots: {numOfLoadingScreenshots}
-          </span>
+          <span className="sites__loading-screenshots">{loadingText}</span>
           <ClearQueue />
         </div>
         <div className="sites__cards">
