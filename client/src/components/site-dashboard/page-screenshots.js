@@ -29,11 +29,12 @@ class PageScreenshots extends Component {
 
   /**
    * Generates the screenshot bars for the current page or failing screenshots
-   * @param {Object} page -
+   * @param {Object} page
+   * @param {string} path
    * @param {Boolean} hidePassing
-   * @returns {string|unknown[]}
+   * @returns {string|[DashboardScreenshotsBar]}
    */
-  generateScreenshotBars(page, hidePassing) {
+  generateScreenshotBars(page, path, hidePassing) {
     if (!page) {
       return "";
     }
@@ -55,6 +56,7 @@ class PageScreenshots extends Component {
               urls={urls}
               screenshots={screenshots}
               deviceName={deviceName}
+              page={path}
               key={device}
             />
           );
@@ -111,13 +113,13 @@ class PageScreenshots extends Component {
         <div className="page-screenshots">
           <div className="page-screenshots__buttons-bar">
             <h1 className="dashboard-screenshot-bar__current-page-title">
-              {this.props.siteData.currentPage}
+              {currentPage}
             </h1>
             <Button onClick={this.runComparison}>Run comparison</Button>
             <Button onClick={this.generateBaselines}>Generate baselines</Button>
             {removePageButton}
           </div>
-          {this.generateScreenshotBars(screenshots, false)}
+          {this.generateScreenshotBars(screenshots, currentPage, false)}
         </div>
       );
     }
@@ -154,7 +156,11 @@ class PageScreenshots extends Component {
       .sort()
       .map((site) => {
         const screenshots = pages[site].screenshots;
-        const screenshotBars = this.generateScreenshotBars(screenshots, true);
+        const screenshotBars = this.generateScreenshotBars(
+          screenshots,
+          site,
+          true
+        );
         if (Object.keys(screenshotBars).length > 0) {
           return (
             <div key={site}>

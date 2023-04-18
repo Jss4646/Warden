@@ -7,7 +7,7 @@ import ScreenshotContainer from "./screenshot-container";
 const DashboardScreenshotsBar = (props) => {
   const scrollState = useState(0);
 
-  const { screenshots, urls } = props;
+  const { screenshots, urls, page } = props;
 
   const {
     baselineScreenshot,
@@ -17,7 +17,10 @@ const DashboardScreenshotsBar = (props) => {
     loading,
   } = screenshots;
 
-  if ((!baselineScreenshot || !comparisonScreenshot || !diffImage) && !loading) {
+  if (
+    (!baselineScreenshot || !comparisonScreenshot || !diffImage) &&
+    !loading
+  ) {
     return "";
   }
 
@@ -54,13 +57,21 @@ const DashboardScreenshotsBar = (props) => {
       <h3 className="dashboard-screenshot-bar__title">{props.deviceName}</h3>
       <div className={`dashboard-screenshot-bar__screenshots ${failingClass}`}>
         <div className="dashboard-screenshot-bar__screenshot">
-          <a href={urls.baseline} target="_blank" rel="noreferrer noopener">
+          <a
+            href={`${new URL(page, urls.baseline)}`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             <h3>Baseline</h3>
           </a>
           {baselineImg}
         </div>
         <div className="dashboard-screenshot-bar__screenshot">
-          <a href={urls.comparison} target="_blank" rel="noreferrer noopener">
+          <a
+            href={`${new URL(page, urls.comparison)}`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             <h3>Changed</h3>
           </a>
           {changedImg}
