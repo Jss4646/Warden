@@ -191,6 +191,7 @@ async function deleteSite(db, req, res) {
  */
 async function addSitePage(db, req, res) {
   const { sitePath, pagePath, url, screenshots, failing } = req.body;
+  logger.log("debug", `Adding page: ${pagePath.toString()}`);
 
   const page = {
     sitePath,

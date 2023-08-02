@@ -1,10 +1,11 @@
 import React from "react";
 import { Button, Checkbox } from "antd";
 import { saveAs } from "file-saver";
+import { addPage } from "../../../tools/pages";
 
 const PagesSettings = (props) => {
   const { siteData, setTrimPages } = props;
-  const { trimPages, sitePath } = siteData;
+  const { trimPages, sitePath, url } = siteData;
   const uploadUrlsRef = React.createRef();
 
   const saveSettings = () => {
@@ -60,6 +61,40 @@ const PagesSettings = (props) => {
     };
   };
 
+  // creates a new page for each wp-admin page
+  const addWpAdminPages = () => {
+    const wpAdminPages = [
+      "/wp-admin/",
+      "/wp-admin/edit.php",
+      "/wp-admin/post-new.php",
+      "/wp-admin/edit-tags.php?taxonomy=category",
+      "/wp-admin/upload.php",
+      "/wp-admin/media-new.php",
+      "/wp-admin/edit.php?post_type=page",
+      "/wp-admin/post-new.php?post_type=page",
+      "/wp-admin/post-new.php?post_type=page",
+      "/wp-admin/themes.php",
+      "/wp-admin/customize.php?return=%2Fwp-admin%2Fthemes.php",
+      "/wp-admin/nav-menus.php",
+      "/wp-admin/widgets.php",
+      "/wp-admin/plugins.php",
+      "/wp-admin/users.php",
+      "/wp-admin/user-new.php",
+      "/wp-admin/profile.php",
+      "/wp-admin/tools.php",
+      "/wp-admin/options-general.php",
+      "/wp-admin/options-writing.php",
+      "/wp-admin/options-reading.php",
+      "/wp-admin/options-media.php",
+      "/wp-admin/options-permalink.php",
+      "/wp-admin/options-privacy.php",
+    ];
+
+    wpAdminPages.forEach((page) => {
+      addPage(url, page, sitePath, props.addPage);
+    });
+  };
+
   const exportPages = () => {
     const urls = Object.values(siteData.pages).map((page) => `${page.url}\n`);
     const blob = new Blob(urls, { type: "text/plain;charset=utf-8" });
@@ -93,6 +128,12 @@ const PagesSettings = (props) => {
         ref={uploadUrlsRef}
         onInput={uploadUrls}
       />
+      <Button
+        className="pages-settings__add-wp-admin-pages"
+        onClick={addWpAdminPages}
+      >
+        Add WP Admin pages
+      </Button>
       <Button onClick={saveSettings}>Save</Button>
     </div>
   );

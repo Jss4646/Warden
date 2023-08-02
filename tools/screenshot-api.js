@@ -301,9 +301,15 @@ async function compareScreenshots(
   );
 
   let page = screenshotData.page.replaceAll("/", "-");
+
+  if (process.platform === "win32") {
+    page = sanitizeFilename(screenshotData.page);
+  }
+
   if (page !== "-") {
     page = page.slice(1, page.length - 1);
   }
+  logger.log("debug", `page ${page}`);
 
   const path = `${__dirname}/../screenshots/${sitePath}/${page}`;
   const comparisonFilePath = `${path}/${comparisonFileName}.png`;
@@ -591,6 +597,24 @@ function sendError(errMessage, err, res) {
   console.error(err);
   res.status(500);
   res.send(errMessage);
+}
+
+function sanitizeFilename(filename) {
+  // Create a list of allowed characters.
+  const allowedCharacters =
+    "-_.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  // Create a new string by replacing all invalid characters with underscores.
+  let sanitizedFilename = "";
+  for (const character of filename) {
+    if (allowedCharacters.includes(character)) {
+      sanitizedFilename += character;
+    } else {
+      sanitizedFilename += "-";
+    }
+  }
+
+  return sanitizedFilename;
 }
 
 module.exports = {

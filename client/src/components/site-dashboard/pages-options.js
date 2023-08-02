@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button, Input } from "antd";
 import PagesList from "./pages-list";
+import { addPage } from "../../tools/pages";
 
 /**
  * Options that change the page list
@@ -34,30 +35,12 @@ class PagesOptions extends Component {
    * @returns {Promise<void>}
    */
   addPage = () => {
-    const url = new URL(this.props.siteData.url);
-    url.pathname = this.state.addPagePath;
-    const newPage = {
-      url: url.toString(),
-      screenshots: {},
-      failing: false,
-    };
-
-    this.props.addPage(url.pathname, newPage);
-
-    const params = {
-      sitePath: this.props.siteData.sitePath,
-      ...newPage,
-      pagePath: url.pathname,
-    };
-
-    const fetchUrl = new URL(`${window.location.origin}/api/add-site-page`);
-    fetch(fetchUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    }).catch(console.error);
+    addPage(
+      this.props.siteData.url,
+      this.state.addPagePath,
+      this.props.siteData.sitePath,
+      this.props.addPage
+    );
   };
 
   /**
