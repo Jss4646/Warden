@@ -63,14 +63,15 @@ const PagesSettings = (props) => {
     };
   };
 
-  // creates a new page for each wp-admin page
+  /**
+   * Creates all wp-admin pages from the UI and db
+   */
   const addWpAdminPages = () => {
     wpAdminPages.forEach((wpAdminPage) => {
-      if (wpAdminPage === "") {
-        wpAdminPage = "wp-admin";
-      }
+      const defaultPaths = ["wp-admin", ""];
 
-      if (wpAdminPath !== "wp-admin" || wpAdminPath !== "") {
+      if (!defaultPaths.includes(wpAdminPage) && wpAdminPath) {
+        console.log(wpAdminPath);
         const splitPage = wpAdminPage.split("/");
         splitPage[1] = wpAdminPath;
         wpAdminPage = splitPage.join("/");
@@ -80,11 +81,20 @@ const PagesSettings = (props) => {
     });
   };
 
+  /**
+   * Removes all wp-admin pages from the UI and db
+   */
   const removeWpAdminPages = () => {
     Object.values(siteData.pages).forEach((page) => {
-      if (page.pagePath.includes(wpAdminPath)) {
-        removePage(page.pagePath, sitePath, props.removePage);
+      let checkPath =
+        !wpAdminPath || wpAdminPath === "" ? "wp-admin" : wpAdminPath;
+
+      console.log(checkPath);
+      if (!page.pagePath.includes(checkPath)) {
+        return;
       }
+
+      removePage(page.pagePath, sitePath, props.removePage);
     });
   };
 
