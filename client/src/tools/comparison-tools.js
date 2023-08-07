@@ -133,7 +133,6 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
           .pop()
           .split(".webp")[0];
     const comparisonFileName = createFilename(fullComparisonUrl, device);
-    console.log(comparisonFileName);
 
     let screenshotData = {
       resolution: { height, width },
@@ -164,7 +163,6 @@ function createPageRequestData(siteData, page, generateBaselines = false) {
 export function createFilename(url, device) {
   const parsedUrl = new URL(url);
   let deviceSanitised = device.replaceAll("/", "-");
-  console.log(parsedUrl.host);
   return `${parsedUrl.host}-${deviceSanitised}`;
 }
 
