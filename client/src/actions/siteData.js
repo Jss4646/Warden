@@ -186,3 +186,10 @@ export function setPageTimeout(pageTimeout) {
     pageTimeout,
   };
 }
+
+export function setWpAdminPath(wpAdminPath) {
+  return {
+    type: "SET_WP_ADMIN_PATH",
+    wpAdminPath,
+  };
+}

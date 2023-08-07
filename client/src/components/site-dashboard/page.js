@@ -6,6 +6,10 @@ import React from "react";
 const Page = (props) => {
   const { page, path, currentPage, setCurrentPage } = props;
 
+  if (!page) {
+    return null;
+  }
+
   const screenshots = page.screenshots;
 
   const passing = calculatePassing(screenshots);

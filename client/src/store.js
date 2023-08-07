@@ -21,6 +21,7 @@ const siteData = {
   siteUsername: "",
   sitePassword: "",
   currentPage: "",
+  wpAdminPath: "",
   failingPercentage: 5,
   failingScreenshots: {},
   devices: ["1080p"],

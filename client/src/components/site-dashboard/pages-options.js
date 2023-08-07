@@ -34,7 +34,7 @@ class PagesOptions extends Component {
    *
    * @returns {Promise<void>}
    */
-  addPage = () => {
+  addPageEvent = () => {
     addPage(
       this.props.siteData.url,
       this.state.addPagePath,
@@ -96,6 +96,10 @@ class PagesOptions extends Component {
    */
   calculateFailing(pages) {
     return Object.keys(pages).reduce((sum, site) => {
+      if (!pages[site]) {
+        return sum;
+      }
+
       const screenshots = pages[site].screenshots;
 
       Object.keys(screenshots).forEach((device) => {
@@ -127,7 +131,7 @@ class PagesOptions extends Component {
         <div className="pages-list__add-page">
           <Button
             className="pages-list__add-page-button"
-            onClick={this.addPage}
+            onClick={this.addPageEvent}
           >
             Add page
           </Button>

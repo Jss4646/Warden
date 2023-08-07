@@ -117,6 +117,10 @@ function siteData(state = [], action) {
       stateCopy.pageTimeout = action.pageTimeout;
       return stateCopy;
 
+    case "SET_WP_ADMIN_PATH":
+      stateCopy.wpAdminPath = action.wpAdminPath;
+      return stateCopy;
+
     default:
       return stateCopy;
   }

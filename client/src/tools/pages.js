@@ -4,9 +4,9 @@
  * @param {string|URL} url - the url of the site without the path
  * @param {string} pagePath - the path of the page you wish to add
  * @param {string} sitePath - the path of the site in the db
- * @param {function} addPage - the function to add the page to the client
+ * @param {function} addLocalPage - the function to add the page to the client
  */
-export function addPage(url, pagePath, sitePath, addPage) {
+export function addPage(url, pagePath, sitePath, addLocalPage) {
   pagePath += pagePath.endsWith("/") ? "" : "/";
 
   url = new URL(url);
@@ -14,11 +14,12 @@ export function addPage(url, pagePath, sitePath, addPage) {
 
   const newPage = {
     url: url.toString(),
+    pagePath,
     screenshots: {},
     failing: false,
   };
 
-  addPage(url.pathname, newPage);
+  addLocalPage(url.pathname, newPage);
 
   const params = {
     sitePath,
@@ -28,6 +29,23 @@ export function addPage(url, pagePath, sitePath, addPage) {
 
   const fetchUrl = new URL(`${window.location.origin}/api/add-site-page`);
   fetch(fetchUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+  }).catch(console.error);
+}
+
+export function removePage(pagePath, sitePath, removeLocalPage) {
+  removeLocalPage(pagePath);
+
+  const params = {
+    pagePath,
+    sitePath,
+  };
+
+  fetch(`${window.location.origin}/api/delete-site-page`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

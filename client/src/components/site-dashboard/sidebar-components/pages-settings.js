@@ -1,17 +1,19 @@
 import React from "react";
-import { Button, Checkbox } from "antd";
+import { Button, Checkbox, Input } from "antd";
 import { saveAs } from "file-saver";
-import { addPage } from "../../../tools/pages";
+import { addPage, removePage } from "../../../tools/pages";
+import wpAdminPages from "../../../data/wp-admin-pages.json";
 
 const PagesSettings = (props) => {
-  const { siteData, setTrimPages } = props;
-  const { trimPages, sitePath, url } = siteData;
+  const { siteData, setTrimPages, setWpAdminPath } = props;
+  const { trimPages, sitePath, url, wpAdminPath } = siteData;
   const uploadUrlsRef = React.createRef();
 
   const saveSettings = () => {
     const body = {
       trimPages,
       sitePath,
+      wpAdminPath,
     };
 
     fetch("/api/set-site-settings", {
@@ -63,35 +65,26 @@ const PagesSettings = (props) => {
 
   // creates a new page for each wp-admin page
   const addWpAdminPages = () => {
-    const wpAdminPages = [
-      "/wp-admin/",
-      "/wp-admin/edit.php",
-      "/wp-admin/post-new.php",
-      "/wp-admin/edit-tags.php?taxonomy=category",
-      "/wp-admin/upload.php",
-      "/wp-admin/media-new.php",
-      "/wp-admin/edit.php?post_type=page",
-      "/wp-admin/post-new.php?post_type=page",
-      "/wp-admin/post-new.php?post_type=page",
-      "/wp-admin/themes.php",
-      "/wp-admin/customize.php?return=%2Fwp-admin%2Fthemes.php",
-      "/wp-admin/nav-menus.php",
-      "/wp-admin/widgets.php",
-      "/wp-admin/plugins.php",
-      "/wp-admin/users.php",
-      "/wp-admin/user-new.php",
-      "/wp-admin/profile.php",
-      "/wp-admin/tools.php",
-      "/wp-admin/options-general.php",
-      "/wp-admin/options-writing.php",
-      "/wp-admin/options-reading.php",
-      "/wp-admin/options-media.php",
-      "/wp-admin/options-permalink.php",
-      "/wp-admin/options-privacy.php",
-    ];
+    wpAdminPages.forEach((wpAdminPage) => {
+      if (wpAdminPage === "") {
+        wpAdminPage = "wp-admin";
+      }
 
-    wpAdminPages.forEach((page) => {
-      addPage(url, page, sitePath, props.addPage);
+      if (wpAdminPath !== "wp-admin" || wpAdminPath !== "") {
+        const splitPage = wpAdminPage.split("/");
+        splitPage[1] = wpAdminPath;
+        wpAdminPage = splitPage.join("/");
+      }
+
+      addPage(url, wpAdminPage, sitePath, props.addPage);
+    });
+  };
+
+  const removeWpAdminPages = () => {
+    Object.values(siteData.pages).forEach((page) => {
+      if (page.pagePath.includes(wpAdminPath)) {
+        removePage(page.pagePath, sitePath, props.removePage);
+      }
     });
   };
 
@@ -128,12 +121,29 @@ const PagesSettings = (props) => {
         ref={uploadUrlsRef}
         onInput={uploadUrls}
       />
-      <Button
-        className="pages-settings__add-wp-admin-pages"
-        onClick={addWpAdminPages}
-      >
-        Add WP Admin pages
-      </Button>
+      <div className="pages-settings__wp-admin-path">
+        <span>WP Admin Path:</span>
+        <Input
+          placeholder="wp-admin"
+          defaultValue="wp-admin"
+          value={wpAdminPath}
+          onChange={(event) => setWpAdminPath(event.target.value)}
+        />
+      </div>
+      <div className="pages-settings__wp-admin-buttons">
+        <Button
+          className="pages-settings__add-wp-admin-pages"
+          onClick={addWpAdminPages}
+        >
+          Add WP Admin pages
+        </Button>
+        <Button
+          className="pages-settings__remove-wp-admin-pages"
+          onClick={removeWpAdminPages}
+        >
+          Remove WP Admin pages
+        </Button>
+      </div>
       <Button onClick={saveSettings}>Save</Button>
     </div>
   );
