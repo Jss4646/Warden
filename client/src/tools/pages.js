@@ -37,6 +37,13 @@ export function addPage(url, pagePath, sitePath, addLocalPage) {
   }).catch(console.error);
 }
 
+/**
+ * Removes a page from the client and db
+ *
+ * @param {string} pagePath - the path of the page you wish to remove
+ * @param {string} sitePath - the path of the site in the db
+ * @param {function} removeLocalPage - the function to remove the page from the client
+ */
 export function removePage(pagePath, sitePath, removeLocalPage) {
   removeLocalPage(pagePath);
 
