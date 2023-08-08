@@ -1,16 +1,19 @@
 import React from "react";
-import { Button, Checkbox } from "antd";
+import { Button, Checkbox, Input } from "antd";
 import { saveAs } from "file-saver";
+import { addPage, removePage } from "../../../tools/pages";
+import wpAdminPages from "../../../data/wp-admin-pages.json";
 
 const PagesSettings = (props) => {
-  const { siteData, setTrimPages } = props;
-  const { trimPages, sitePath } = siteData;
+  const { siteData, setTrimPages, setWpAdminPath } = props;
+  const { trimPages, sitePath, url, wpAdminPath } = siteData;
   const uploadUrlsRef = React.createRef();
 
   const saveSettings = () => {
     const body = {
       trimPages,
       sitePath,
+      wpAdminPath,
     };
 
     fetch("/api/set-site-settings", {
@@ -60,6 +63,39 @@ const PagesSettings = (props) => {
     };
   };
 
+  /**
+   * Creates all wp-admin pages from the UI and db
+   */
+  const addWpAdminPages = () => {
+    wpAdminPages.forEach((wpAdminPage) => {
+      const defaultPaths = ["wp-admin", ""];
+
+      if (!defaultPaths.includes(wpAdminPage) && wpAdminPath) {
+        const splitPage = wpAdminPage.split("/");
+        splitPage[1] = wpAdminPath;
+        wpAdminPage = splitPage.join("/");
+      }
+
+      addPage(url, wpAdminPage, sitePath, props.addPage);
+    });
+  };
+
+  /**
+   * Removes all wp-admin pages from the UI and db
+   */
+  const removeWpAdminPages = () => {
+    Object.values(siteData.pages).forEach((page) => {
+      const checkPath =
+        !wpAdminPath || wpAdminPath === "" ? "wp-admin" : wpAdminPath;
+
+      if (!page.pagePath.includes(checkPath)) {
+        return;
+      }
+
+      removePage(page.pagePath, sitePath, props.removePage);
+    });
+  };
+
   const exportPages = () => {
     const urls = Object.values(siteData.pages).map((page) => `${page.url}\n`);
     const blob = new Blob(urls, { type: "text/plain;charset=utf-8" });
@@ -93,6 +129,29 @@ const PagesSettings = (props) => {
         ref={uploadUrlsRef}
         onInput={uploadUrls}
       />
+      <div className="pages-settings__wp-admin-path">
+        <span>WP Admin Path:</span>
+        <Input
+          placeholder="wp-admin"
+          defaultValue="wp-admin"
+          value={wpAdminPath}
+          onChange={(event) => setWpAdminPath(event.target.value)}
+        />
+      </div>
+      <div className="pages-settings__wp-admin-buttons">
+        <Button
+          className="pages-settings__add-wp-admin-pages"
+          onClick={addWpAdminPages}
+        >
+          Add WP Admin pages
+        </Button>
+        <Button
+          className="pages-settings__remove-wp-admin-pages"
+          onClick={removeWpAdminPages}
+        >
+          Remove WP Admin pages
+        </Button>
+      </div>
       <Button onClick={saveSettings}>Save</Button>
     </div>
   );

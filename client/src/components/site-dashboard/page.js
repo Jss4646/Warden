@@ -6,6 +6,10 @@ import React from "react";
 const Page = (props) => {
   const { page, path, currentPage, setCurrentPage } = props;
 
+  if (!page) {
+    return null;
+  }
+
   const screenshots = page.screenshots;
 
   const passing = calculatePassing(screenshots);
@@ -20,7 +24,7 @@ const Page = (props) => {
       }`}
       onClick={() => setCurrentPage(path)}
     >
-      <span className="pages-list__page-url">{path}</span>
+      <span className="pages-list__page-url">{page.pagePath}</span>
       <span className="pages-list__page-passing-count">{passingString}</span>
     </div>
   );

@@ -5,11 +5,19 @@
   &__import-export {
     display: flex;
     column-gap: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     justify-content: space-between;
 
     button {
       flex-grow: 1;
     }
+  }
+
+  &__wp-admin-buttons {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    margin-bottom: 20px;
+    margin-top: 10px;
   }
 }

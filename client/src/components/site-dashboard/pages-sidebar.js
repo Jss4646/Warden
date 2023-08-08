@@ -77,6 +77,10 @@ class PagesSidebar extends Component {
    */
   calculateNumInQueue(pages) {
     return Object.keys(pages).reduce((sum, site) => {
+      if (!pages[site]) {
+        return sum;
+      }
+
       const screenshots = pages[site].screenshots;
 
       Object.keys(screenshots).forEach((device) => {

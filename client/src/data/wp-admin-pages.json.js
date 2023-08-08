@@ -1,0 +1,27 @@
+const wpAdminPages = [
+  "/wp-admin/",
+  "/wp-admin/edit.php",
+  "/wp-admin/post-new.php",
+  "/wp-admin/edit-tags.php?taxonomy=category",
+  "/wp-admin/upload.php",
+  "/wp-admin/media-new.php",
+  "/wp-admin/edit.php?post_type=page",
+  "/wp-admin/post-new.php?post_type=page",
+  "/wp-admin/themes.php",
+  "/wp-admin/customize.php",
+  "/wp-admin/nav-menus.php",
+  "/wp-admin/widgets.php",
+  "/wp-admin/plugins.php",
+  "/wp-admin/users.php",
+  "/wp-admin/user-new.php",
+  "/wp-admin/profile.php",
+  "/wp-admin/tools.php",
+  "/wp-admin/options-general.php",
+  "/wp-admin/options-writing.php",
+  "/wp-admin/options-reading.php",
+  "/wp-admin/options-media.php",
+  "/wp-admin/options-permalink.php",
+  "/wp-admin/options-privacy.php",
+];
+
+export default wpAdminPages;

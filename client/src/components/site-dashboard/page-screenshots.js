@@ -72,9 +72,11 @@ class PageScreenshots extends Component {
    * Removes the current page from the UI and db
    */
   removePage = () => {
+    const { pages, currentPage, sitePath } = this.props.siteData;
+
     const params = {
-      pageId: this.props.siteData.pages[this.props.siteData.currentPage]._id,
-      sitePath: this.props.siteData.sitePath,
+      pagePath: pages[currentPage].pagePath,
+      sitePath,
     };
     fetch(`${window.location.origin}/api/delete-site-page`, {
       method: "POST",
@@ -84,7 +86,7 @@ class PageScreenshots extends Component {
       body: JSON.stringify(params),
     }).catch((err) => console.error(err));
 
-    this.props.removePage(this.props.siteData.currentPage);
+    this.props.removePage(currentPage);
   };
 
   render() {

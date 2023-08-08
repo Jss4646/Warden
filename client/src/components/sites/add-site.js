@@ -70,6 +70,7 @@ class AddSite extends Component {
       url,
       comparisonUrl,
       sitePath,
+      wpAdminPath: "wp-admin",
       failingPercentage: 5,
       devices: ["1080p", "iphone-x/xs"],
     };

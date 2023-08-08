@@ -191,6 +191,7 @@ async function deleteSite(db, req, res) {
  */
 async function addSitePage(db, req, res) {
   const { sitePath, pagePath, url, screenshots, failing } = req.body;
+  logger.log("debug", `Adding page: ${pagePath?.toString()}`);
 
   const page = {
     sitePath,
@@ -208,7 +209,7 @@ async function addSitePage(db, req, res) {
  * deletes a page from a site in the db
  *
  * {
- *    pageId {String},
+ *    pagePath {String},
  * }
  *
  * @param db {Db}
@@ -216,9 +217,9 @@ async function addSitePage(db, req, res) {
  * @param res {Response}
  */
 async function deleteSitePage(db, req, res) {
-  logger.log("info", "Deleting page: ", req.body.pageId);
-  const { pageId } = req.body;
-  await db.collection("pages").deleteOne({ _id: ObjectId(pageId) });
+  const { pagePath } = req.body;
+  logger.log("debug", `Deleting page: ${pagePath.toString()}`);
+  await db.collection("pages").deleteOne({ pagePath });
   res.send("Page deleted");
   broadcastData(
     "UPDATE_SCREENSHOTS",
@@ -573,6 +574,7 @@ async function setSiteSettings(db, req, res) {
     trimPages,
     scrollPage,
     injectedJS,
+    wpAdminPath,
     pageTimeout,
   } = req.body;
 
@@ -583,18 +585,28 @@ async function setSiteSettings(db, req, res) {
     return;
   }
 
+  const updatedSettings = {
+    sitePath,
+    failingPercentage,
+    trimPages,
+    scrollPage,
+    injectedJS,
+    wpAdminPath,
+    pageTimeout,
+  };
+
+  for (const [key, value] of Object.entries(updatedSettings)) {
+    if (value === null) {
+      delete updatedSettings[key];
+    }
+  }
+
   logger.log("info", "Saving site settings");
   logger.log("debug", "Site settings", req.body);
   await db.collection("sites").updateOne(
     { sitePath },
     {
-      $set: {
-        trimPages,
-        scrollPage,
-        failingPercentage,
-        injectedJS,
-        pageTimeout,
-      },
+      $set: updatedSettings,
     }
   );
 
