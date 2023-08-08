@@ -604,7 +604,7 @@ function sanitizeFilename(filename) {
   const allowedCharacters =
     "-_.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-  // Create a new string by replacing all invalid characters with underscores.
+  // Create a new string by replacing all invalid characters with hyphens.
   let sanitizedFilename = "";
   for (const character of filename) {
     if (allowedCharacters.includes(character)) {
