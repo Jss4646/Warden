@@ -71,7 +71,6 @@ const PagesSettings = (props) => {
       const defaultPaths = ["wp-admin", ""];
 
       if (!defaultPaths.includes(wpAdminPage) && wpAdminPath) {
-        console.log(wpAdminPath);
         const splitPage = wpAdminPage.split("/");
         splitPage[1] = wpAdminPath;
         wpAdminPage = splitPage.join("/");
@@ -86,10 +85,9 @@ const PagesSettings = (props) => {
    */
   const removeWpAdminPages = () => {
     Object.values(siteData.pages).forEach((page) => {
-      let checkPath =
+      const checkPath =
         !wpAdminPath || wpAdminPath === "" ? "wp-admin" : wpAdminPath;
 
-      console.log(checkPath);
       if (!page.pagePath.includes(checkPath)) {
         return;
       }

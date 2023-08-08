@@ -24,7 +24,7 @@ const Page = (props) => {
       }`}
       onClick={() => setCurrentPage(path)}
     >
-      <span className="pages-list__page-url">{page["pagePath"]}</span>
+      <span className="pages-list__page-url">{page.pagePath}</span>
       <span className="pages-list__page-passing-count">{passingString}</span>
     </div>
   );
