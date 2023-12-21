@@ -245,7 +245,7 @@ async function takeScreenshot({
   }
 
   logger.log("debug", `${screenshotIdentifier}: Converting screenshot to webp`);
-  convertToWebp(screenshot, filePath, screenshotIdentifier).catch((err) =>
+  convertToWebp(filePath, screenshotIdentifier).catch((err) =>
     logger.log("error", screenshotIdentifier, err)
   );
 
@@ -346,6 +346,10 @@ async function compareScreenshots(
     screenshotDatas,
     generateBaselines
   );
+
+  if (!fs.existsSync(baselineFilePath)) {
+    convertToPng(baselineFilePath, screenshotIdentifier);
+  }
 
   const diffFilePath = `${path}/${baselineFileName}-diff.png`;
   const filePaths = {
@@ -465,9 +469,11 @@ async function generateDiffImg(
   const diffFile = await fs.readFileSync(diffFilePath);
 
   logger.log("debug", `${screenshotIdentifier}: converting diff image to webp`);
-  convertToWebp(diffFile, diffFilePath, screenshotIdentifier).catch((err) =>
+  await convertToWebp(diffFilePath, screenshotIdentifier).catch((err) =>
     logger.log("error", screenshotIdentifier, err)
   );
+
+  deleteScreenshotFile(diffFilePath);
 
   const { width, height, diffCount } = diffData;
   const percentageDiff = (diffCount / (width * height)) * 100;
@@ -490,21 +496,41 @@ async function generateDiffImg(
  * @param screenshotIdentifier
  * @returns {Promise<T>}
  */
-function convertToWebp(image, filePath, screenshotIdentifier) {
-  return sharp(image)
-    .metadata()
-    .then(({ height }) => {
-      const sharpImage = sharp(image);
+async function convertToWebp(filePath, screenshotIdentifier) {
+  const image = await fs.readFileSync(filePath);
 
-      if (height > 16_383) {
-        sharpImage.resize({ height: 16_383 });
-      }
+  const metadata = await sharp(image).metadata();
+  const sharpImage = await sharp(image);
 
-      sharpImage
-        .toFormat("webp", { quality: 50, effort: 6 })
-        .toFile(filePath.replace(".png", ".webp"))
-        .catch((err) => logger.log("error", screenshotIdentifier, err));
-    });
+  if (metadata.height > 16_383) {
+    sharpImage.resize({ height: 16_383 });
+  }
+
+  await sharpImage
+    .toFormat("webp", { quality: 50, effort: 6 })
+    .toFile(filePath.replace(".png", ".webp"))
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
+}
+
+async function convertToPng(filePath, screenshotIdentifier) {
+  const image = await fs.readFileSync(filePath);
+
+  const sharpImage = await sharp(image);
+
+  await sharpImage
+    .toFormat("png")
+    .toFile(filePath.replace(".webp", ".png"))
+    .catch((err) => logger.log("error", screenshotIdentifier, err));
+}
+
+function deleteScreenshotFile(filePath) {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      logger.log("error", err);
+    }
+
+    logger.log("debug", `Deleted ${filePath}`);
+  });
 }
 
 /**

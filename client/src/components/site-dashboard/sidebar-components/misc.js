@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "antd";
+import { Button, InputNumber } from "antd";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 
@@ -63,6 +63,7 @@ const Misc = (props) => {
 
   return (
     <div className="misc">
+      <InputNumber addonAfter="days" precision={0} defaultValue={7} />
       <Button
         className="misc__download-button"
         type="primary"
