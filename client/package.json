@@ -2,7 +2,7 @@
   "name": "qa-hub",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:5051",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@codemirror/lang-javascript": "^6.0.2",

@@ -17,6 +17,7 @@ export function addPage(url, pagePath, sitePath, addLocalPage) {
     pagePath,
     screenshots: {},
     failing: false,
+    trimPages: true,
   };
 
   addLocalPage(url.pathname, newPage);
