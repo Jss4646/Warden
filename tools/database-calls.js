@@ -136,7 +136,11 @@ async function getAllSites(db, req, res) {
     res.send("No sites found");
   }
 
-  res.send(results.sort((a, b) => (a.siteName > b.siteName ? 1 : -1)));
+  res.send(
+    results.sort((a, b) =>
+      a.siteName.toUpperCase() > b.siteName.toUpperCase() ? 1 : -1
+    )
+  );
   logger.log("info", "Sent all sites");
 }
 
