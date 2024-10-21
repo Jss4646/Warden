@@ -64,4 +64,4 @@ To get a local copy up and running follow these simple example steps.
 <!-- CONTACT -->
 ## Contact
 
-Jack Sandeman - [Slack](https://angrycreative.slack.com/archives/D01BMQH8081) - jack.sandeman@angrycreative.uk
+Jack Sandeman - jacksandeman@hotmail.co.uk
