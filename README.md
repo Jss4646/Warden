@@ -9,12 +9,6 @@
 
   <p align="center">
     A visual regression tool used to compare screenshots of web pages. 
-    <br />
-    <a href="https://angrycreative.slack.com/archives/C03HUR24QFQ">Slack channel</a>
-    ·
-    <a href="http://warden.synotio.se/">Live site</a>
-    ·
-    <a href="https://confluence.angrycreative.se/display/TOOL/Warden">Confluence Page</a>
 </div>
 
 <!-- ABOUT THE PROJECT -->
